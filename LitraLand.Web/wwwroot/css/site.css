@@ -1,0 +1,44 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* start ovveride the Theme */
+.form-floating > .form-select { /*this is for the select element in the form-floating class*/
+    padding-top: 1.15rem;
+    padding-bottom: 0.225rem;
+}
+/* end ovveride the Theme */
+
+/* ovveride the default validation error message */
+.field-validation-error {
+    display: block;
+}
+
+/* Start Custom Styles */
+.dt-spinner + div {
+    display: none !important;
+}
+
+.h-70px {
+    height: 70px !important;
+}
+/* End Custom Styles */

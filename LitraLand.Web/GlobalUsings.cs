@@ -1,0 +1,15 @@
+﻿global using AutoMapper;
+global using LitraLand.Web.Core.Consts;
+global using LitraLand.Web.Core.Models;
+global using LitraLand.Web.Core.ViewModels;
+global using LitraLand.Web.Core.ViewModels.AuthorViews;
+global using LitraLand.Web.Core.ViewModels.BookViews;
+global using LitraLand.Web.Core.ViewModels.CategoryViews;
+global using LitraLand.Web.Data;
+global using LitraLand.Web.filters;
+global using LitraLand.Web.Settings;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Rendering;
+global using Microsoft.EntityFrameworkCore;
+global using System.ComponentModel.DataAnnotations;
+global using UoN.ExpressiveAnnotations.NetCore.Attributes;

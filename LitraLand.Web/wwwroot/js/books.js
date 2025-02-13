@@ -1,9 +1,12 @@
 ﻿document.addEventListener("DOMContentLoaded", function () { 
 
+    // handle the search input to filter the table 
+    // metronic theme hide the orginal search input of the datatable and add a new one so we need to handle it manually 
+    // by get the value of the new search input and send it to the datatable orignal search input
     $('[data-kt-filter="search"]').on('keyup', function () {
-        var input = $(this);
-        datatable.search(input.value).draw();
+        datatable.search(this.value).draw();
     });
+
 
     datatable = $('#Books').DataTable({
         serverSide: true, // Enable server-side processing (thats means the data will be fetched from the server)
@@ -31,11 +34,15 @@
             },
             {
                 targets: 3, // Published Date column index
-                width: "109px" // Set specific width
+                width: "122.25px" // Set specific width
             },
             {
-                target: 8, // Actions column index
-                width: "100px", // Set specific width
+                targets: 6, // Status column index
+                width: "61.25px" // Set specific width
+            },
+            {
+                target: 7, // Actions column index (note if you will uncomment the categories column you should change this index to 8)
+                width: "120px", // Set specific width
             }
         ],
         // note that tha "data" value should be written in camelCase (e.g. authorName) because the data that will be returned from the ajax request will be in camelCase, and the "name" value should be written as it written in the model (e.g. AuthorName)
@@ -66,7 +73,7 @@
                 }
             },
             { "data": "hall", "name": "Hall" },
-            { "data": "categories", "name": "Categories", "orderable": false }, 
+            // { "data": "categories", "name": "Categories", "orderable": false }, 
             {
                 "name": "IsAvailableForRental",
                 "render": function (data, type, row) {

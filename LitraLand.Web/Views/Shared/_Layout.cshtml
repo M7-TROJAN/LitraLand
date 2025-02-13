@@ -24,7 +24,8 @@
         if (document.documentElement) {
             if (document.documentElement.hasAttribute("data-theme-mode")) {
                 themeMode = document.documentElement.getAttribute("data-theme-mode");
-            } else {
+            } 
+            else {
                 if (localStorage.getItem("data-theme") !== null) {
                     themeMode = localStorage.getItem("data-theme");
                 } else {
@@ -32,9 +33,7 @@
                 }
             }
             if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "dark"
-                    : "light";
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
             }
             document.documentElement.setAttribute("data-theme", themeMode);
         }
@@ -94,12 +93,15 @@
 	</div>
     <!--end::Scrolltop Button-->
     
-
     <span id="Message" class="d-none">@TempData["Message"]</span>
     
     <!--begin::Modals-->
     <partial name="_Modal" />
     <!--end::Modals-->
+
+    <!--begin::Footer-->
+    <partial name="_Footer" />
+    <!--end::Footer-->
 
     <!--begin::Javascript-->
     <script> var hostUrl = "assets/"; </script>
@@ -111,5 +113,6 @@
     @await RenderSectionAsync("Plugins", required: false)
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <!--end::Javascript-->
 </body>
 </html>

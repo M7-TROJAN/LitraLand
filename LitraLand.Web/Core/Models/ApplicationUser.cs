@@ -1,13 +1,14 @@
-﻿namespace LitraLand.Web.Core.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace LitraLand.Web.Core.Models
 {
-    public class BaseModel
+    public class ApplicationUser : IdentityUser
     {
+        public string FullName { get; set; } = null!;
         public bool IsDeleted { get; set; }
         public string? CreatedById { get; set; }
-        public ApplicationUser? CreatedBy { get; set; } // navigation property
         public DateTime CreatedOn { get; set; }
         public DateTime? LastUpdatedOn { get; set; }
         public string? LastUpdatedById { get; set; }
-        public ApplicationUser? LastUpdatedBy { get; set; }
     }
 }

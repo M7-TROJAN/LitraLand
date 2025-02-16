@@ -50,30 +50,20 @@ body {
 /* End Custom Styles */
 
 
-/* General Footer Styles */
-.footer {
-    background-color: #1E1E2D;
-    color: #ffffff;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 14px;
-    position: relative;
-    width: 100%;
-    bottom: 0;
-}
-
+/* start custom footer */
 /* Social Icons */
-.footer .social-icons {
+#kt_app_footer .social-icons {
     margin-top: 5px;
 }
 
-.footer .social-icons a {
+#kt_app_footer .social-icons a {
     color: #ffffff;
     margin: 0 8px;
     font-size: 16px;
     transition: 0.3s;
 }
 
-.footer .social-icons a:hover {
+#kt_app_footer .social-icons a:hover {
     color: #258cfb;
 }
+/* end custom footer */

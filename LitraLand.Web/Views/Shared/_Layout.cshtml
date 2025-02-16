@@ -68,6 +68,9 @@
 						<div class="content flex-column-fluid" id="kt_content">
 							@RenderBody()
 						</div>
+                        <!--begin::Footer-->
+                        <partial name="_Footer" />
+                        <!--end::Footer-->
 					</div>
 					<!--end::Container-->
 				</div>
@@ -98,10 +101,6 @@
     <!--begin::Modals-->
     <partial name="_Modal" />
     <!--end::Modals-->
-
-    <!--begin::Footer-->
-    <partial name="_Footer" />
-    <!--end::Footer-->
 
     <!--begin::Javascript-->
     <script> var hostUrl = "assets/"; </script>

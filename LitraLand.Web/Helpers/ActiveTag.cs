@@ -29,7 +29,7 @@ namespace LitraLand.Web.Helpers
                 return;
 
             // 6. we need to check if the current controller is the same as the ActiveWhen property
-            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString();
+            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
             if (ActiveWhen == currentController)
             {

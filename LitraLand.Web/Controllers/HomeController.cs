@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 namespace LitraLand.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

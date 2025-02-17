@@ -420,12 +420,18 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
     // end TinyMCE
 
     // disable submit button in forms to prevent multiple submits and show loading indicator
-    $('form').on('submit', function () {
+    $('form').not('#SignOutForm').on('submit', function () {
         var isValid = $(this).valid(); // Check if the form is valid or not
 
         // If the form is valid, disable the submit button and show the loading indicator
         if (isValid)
             disableSubmitButton();
+    });
+
+    // Handle sign out
+    $('.js-sign-out').on('click', function () {
+        $('#SignOutForm').trigger('submit');
+
     });
 });
 // end Document Ready

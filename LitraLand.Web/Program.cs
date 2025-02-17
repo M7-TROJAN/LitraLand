@@ -72,10 +72,12 @@ namespace LitraLand.Web
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             await DefaultRols.SeedRolsAsync(roleManager);
             await DefaultUsers.SeedAdminUserAsync(userManager);
+            // end seed the database
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

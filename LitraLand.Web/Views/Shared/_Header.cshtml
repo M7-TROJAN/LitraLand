@@ -178,7 +178,9 @@
 					<!--end::Menu item-->
 					<!--begin::Menu item-->
 					<div class="menu-item px-5">
-						<a href="../../demo14/dist/authentication/layouts/corporate/sign-in.html" class="menu-link px-5">Sign Out</a>
+						<form id="SignOutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">
+							<a class="menu-link px-5 js-sign-out">Sign Out</a>
+						</form>
 					</div>
 					<!--end::Menu item-->
 				</div>

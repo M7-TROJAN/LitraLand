@@ -1,9 +1,12 @@
 ﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using LitraLand.Web.Core.Models;
 using Microsoft.Extensions.Options;
 using System.Linq.Dynamic.Core;
 
 namespace LitraLand.Web.Controllers
 {
+    [Authorize(Roles = AppRoles.Archive)]
     public class BooksController : Controller
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
@@ -172,6 +175,8 @@ namespace LitraLand.Web.Controllers
 
             var book = _mapper.Map<Book>(model); // map the view model to the domain model
 
+            book.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             _context.Books.Add(book);
 
             foreach (var categoryId in model.SelectedCategories)
@@ -210,7 +215,10 @@ namespace LitraLand.Web.Controllers
             if (!ModelState.IsValid)
                 return View("Form", populateViewModel(model));
 
-            var book = _context.Books.Include(b => b.Categories).FirstOrDefault(b => b.Id == model.Id);
+            var book = _context.Books
+                .Include(b => b.Categories)
+                .Include(b => b.Copies)
+                .FirstOrDefault(b => b.Id == model.Id);
 
             if (book is null)
                 return NotFound();
@@ -313,13 +321,24 @@ namespace LitraLand.Web.Controllers
             // update the book properties with the new values from the model
             book = _mapper.Map(model, book);
 
-            // update the LastUpdatedOn property
+            // update the LastUpdatedOn property and the LastUpdatedById property
             book.LastUpdatedOn = DateTime.Now;
+            book.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // update the book categories (note: BookCategories records related to the bookId will be deleted and re-inserted)
             foreach (var categoryId in model.SelectedCategories)
             {
                 book.Categories.Add(new BookCategory { CategoryId = categoryId });
+            }
+
+            // update the book copies availability status if the IsAvailableForRental property of the original book is changed to false
+            if (!model.IsAvailableForRental)
+            {
+                // if the book is not available for rental, then set the IsAvailableForRental property of all copies to false
+                foreach (var copy in book.Copies)
+                {
+                    copy.IsAvailableForRental = false;
+                }
             }
 
             // save the changes
@@ -335,17 +354,22 @@ namespace LitraLand.Web.Controllers
         {
             var book = _context.Books.Find(id);
             if (book is null)
-                return NotFound();
+                return NotFound("Book not found.");
 
             book.IsDeleted = !book.IsDeleted;
 
             book.IsAvailableForRental = !book.IsDeleted ? book.IsAvailableForRental : false; // if the book is deleted, then it should not be available for rental
 
             book.LastUpdatedOn = DateTime.Now;
+            book.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _context.SaveChanges();
 
-            return Ok();
+            return Ok( new
+            {
+                message = "Book status updated successfully.",
+                lastUpdatedOn = book.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")
+            });
         }
 
         [HttpPost]
@@ -354,7 +378,7 @@ namespace LitraLand.Web.Controllers
         {
             var book = _context.Books.Find(id);
             if (book is null)
-                return NotFound();
+                return NotFound("Book not found.");
 
             // first delete the bookCategories records if exists
             var bookCategories = _context.BookCategories.Where(bc => bc.BookId == id).ToList();
@@ -377,7 +401,7 @@ namespace LitraLand.Web.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Index));
+            return Ok( $"the book {book.Title} has been deleted successfully.");
         }
 
         public IActionResult AllowItem(BookFormViewModel model)

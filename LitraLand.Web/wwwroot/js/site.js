@@ -23,7 +23,7 @@ function showErrorMessage(message = 'Something went wrong!') {
     Swal.fire({
         icon: 'error',
         title: 'Oops...!',
-        text: message,
+        text: message.responseText != undefined ? message.responseText : message,
         customClass: {
             confirmButton: 'btn btn-primary'
         }
@@ -41,6 +41,17 @@ function disableSubmitButton() {
     // Activate indicator
     button.attr('data-kt-indicator', 'on');
 }
+
+// Function to reinitialize select2
+function applySelect2() {
+    $('.js-select2').select2();
+    // Trigger validation when a select2 value is changed
+    $('.js-select2').on('select2:select', function (e) {
+        var select = $(this);
+        $('form').not('#SignOutForm').validate().element('#' + select.attr('id')); // # + select.attr('id') = #CategoryId, #AuthorId, etc.
+    });
+}
+
 // end Global functions
 
 // start Modal functions
@@ -57,17 +68,17 @@ function onModalSuccess(item) {
         updatedRow = null; // Reset the updatedRow variable to null
     }
 
-    var newRow = $(item); 
+    var newRow = $(item);
     datatable.row.add(newRow).draw(); // Add the new row to the datatable and redraw the table
 
     //KTMenu.init(); // Reinitialize the menu for Metronic theme
     //KTMenu.initGlobalHandlers(); // Reinitialize global handlers
-    
+
 }
 
-function onModalError() {
+function onModalError(errorMessage) {
     $('#Modal').modal('hide');
-    showErrorMessage();
+    showErrorMessage(errorMessage);
 }
 
 function onModalComplete() {
@@ -307,35 +318,40 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
         }
 
         $.ajax({
-            url: btn.data('url'), 
+            url: btn.data('url'),
             type: 'GET',
             success: function (form) {
                 modal.find('.modal-body').html(form); // Set the modal's body to the form that we got from the server
                 $.validator.unobtrusive.parse(modal); // Reinitialize unobtrusive validation on the modal form elements (this is needed because the form is loaded dynamically and the validation needs to be reinitialized)
                 modal.modal('show');// Show the modal
+                applySelect2(); // Reinitialize select2
             },
-            error: function (xhr, status, error) {
-                showErrorMessage('Something went wrong!' + error);
+            error: function (error) {
+                showErrorMessage(error ? error : 'An error occurred while loading the form');
             }
         });
-        
+
     });
     // end Handle Bootstrap's Modal
 
     // Handle Toggle Status
     $('body').on('click', '.js-toggle-status', function () {
         var btn = $(this);
+        var name = btn.data("name") || "item"; // Default fallback if data-name is missing
 
         bootbox.confirm({
-            message: 'Are you sure you want to toggle this item status?',
+            title: `<i class="fa fa-exclamation-circle text-warning"></i> <span class="fw-bolder fs-5">Confirm Action</span>`,
+            message: `<p class="text-dark fs-6">
+                        <strong class="fw-bolder">Are you sure you want to toggle the status of this <span class="text-primary">${name}</span>?</strong>
+                      </p>`,
             buttons: {
                 confirm: {
-                    label: 'Yes',
-                    className: 'btn-danger'
+                    label: '<i class="fa fa-check"></i> <span class="fw-bolder">Yes, Toggle</span>',
+                    className: 'btn btn-danger btn-sm'
                 },
                 cancel: {
-                    label: 'No',
-                    className: 'btn-secondary'
+                    label: '<i class="fa fa-times"></i> <span class="fw-bolder">No, Cancel</span>',
+                    className: 'btn btn-secondary btn-sm'
                 }
             },
             callback: function (result) {
@@ -346,17 +362,23 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                         data: { // Send anti-forgery token
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
-                        success: function (lastUpdatedOn) {
+                        success: function (data) {
+                            // Ensure data contains the expected properties before using them (Message (optional), LastUpdatedOn))
+                            if (!data || !data.lastUpdatedOn) { 
+                                showErrorMessage('Unexpected response from the server!');
+                                return;
+                            }
+
                             var row = btn.parents("tr");
                             var status = row.find(".js-status");
                             var newStatus = status.text().trim() === "Available" ? "Deleted" : "Available";
 
                             status.text(newStatus);
-
                             status.toggleClass("badge-light-success badge-light-danger");
 
+                            // Update the "Last Updated On" field
                             var lastUpdatedOnElement = row.find(".js-updated-on");
-                            lastUpdatedOnElement.text(lastUpdatedOn);
+                            lastUpdatedOnElement.text(data.lastUpdatedOn);
 
                             // Trigger the flash animation
                             row.addClass("animate__flash animate__animated");
@@ -366,10 +388,11 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                                 row.removeClass("animate__flash animate__animated");
                             });
 
-                            showSuccessMessage('Saved successfully!');
+                            // Show success message using the returned message from the server
+                            showSuccessMessage(data.message ? data.message : 'Item status has been toggled successfully');
                         },
-                        error: function () {
-                            showErrorMessage('An error occurred while saving!');
+                        error: function (errorMessage) {
+                            showErrorMessage(errorMessage ? errorMessage : 'Something went wrong!');
                         }
                     });
                 }
@@ -378,16 +401,52 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
     });
     // end Handle Toggle Status
 
-    // select2
-    // Initialize select2
-    $('.js-select2').select2();
+    // begin handle the physical delete action
+    $('body').on('click', '.js-physical-delete', function () {
+        var btn = $(this);
+        var name = btn.data("name") || "item"; // Default fallback if data-name is missing
 
-    // Trigger validation when a select2 value is changed
-    $('.js-select2').on('select2:select', function (e) { 
-        var select = $(this);
-        $('form').validate().element('#' + select.attr('id')); // # + select.attr('id') = #CategoryId, #AuthorId, etc.
-
+        bootbox.confirm({
+            title: `<i class="fa fa-exclamation-triangle text-danger"></i> <span class="fw-bolder fs-5">Delete ${name} Record (Danger)</span>`,
+            message: `<p class="text-dark fs-6">
+                        <strong class="fw-bolder">Are you sure you want to delete this ${name} record?</strong><br>
+                        This action <span class="text-danger fw-bolder">cannot</span> be undone.
+                      </p>`,
+            buttons: {
+                confirm: {
+                    label: '<i class="fa fa-trash"></i> <span class="fw-bolder">Yes, Delete</span>',
+                    className: 'btn btn-danger btn-sm'
+                },
+                cancel: {
+                    label: '<i class="fa fa-times"></i> <span class="fw-bolder">No, Cancel</span>',
+                    className: 'btn btn-secondary btn-sm'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        url: btn.data("url"),
+                        type: "POST",
+                        data: { // Send anti-forgery token
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (successMessage) {
+                            var row = btn.parents("tr");
+                            datatable.row(row).remove().draw(false);
+                            showSuccessMessage(successMessage ? successMessage : 'record has been deleted successfully');
+                        },
+                        error: function (errorMessage) {
+                            showErrorMessage(errorMessage ? errorMessage : 'An error occurred while deleting the record');
+                        }
+                    });
+                }
+            }
+        });
     });
+    // end handle the physical delete action
+
+    // select2
+    applySelect2();
     // end select2
 
     // Datepicker

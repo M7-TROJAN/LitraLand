@@ -109,12 +109,12 @@
                                     </a>
                                 </div>
                                 <div class="menu-item px-3">
-                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-url="/Books/ToggleStatus/${row.id}">
+                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-name="Book" data-url="/Books/ToggleStatus/${row.id}">
                                         Toggle Status
                                     </a>
                                 </div>
                                 <div class="menu-item px-3">
-                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-physical-delete" data-url="/Books/Delete/${row.id}">
+                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-physical-delete" data-name="Book" data-url="/Books/Delete/${row.id}">
                                         physical delete
                                     </a>
                                 </div>
@@ -123,44 +123,4 @@
             },
         ]
     });
-
-    // begin handle the physical delete action
-    $('body').on('click', '.js-physical-delete', function () {
-        var btn = $(this);
-
-        bootbox.confirm({
-            title: 'Delete Item (Danger)',
-            message: 'Are you sure you want to delete this item! This action cannot be undone.',
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-danger'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-secondary'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    $.ajax({
-                        url: btn.data("url"),
-                        type: "POST",
-                        data: { // Send anti-forgery token
-                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: function (lastUpdatedOn) {
-                            var row = btn.parents("tr");
-                            datatable.row(row).remove().draw(false);
-                            showSuccessMessage('item has been deleted successfully');
-                        },
-                        error: function () {
-                            showErrorMessage('An error occurred while deleting the item');
-                        }
-                    });
-                }
-            }
-        });
-    });
-    // end handle the physical delete action
 });

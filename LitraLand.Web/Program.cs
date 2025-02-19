@@ -28,6 +28,19 @@ namespace LitraLand.Web
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequiredLength = 8;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
+                options.User.RequireUniqueEmail = true;
+
+                // visit the below link for more information about Identity configuration
+                // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-10.0
+            });
+
             builder.Services.AddControllersWithViews();
 
             // Add AutoMapper

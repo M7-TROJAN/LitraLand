@@ -1,5 +1,6 @@
 ﻿namespace LitraLand.Web.Controllers
 {
+    [Authorize(Roles = AppRoles.Archive)]
     public class BookCopiesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -43,7 +44,8 @@
             var copy = new BookCopy
             {
                 EditionNumber = model.EditionNumber,
-                IsAvailableForRental = book.IsAvailableForRental ? model.IsAvailableForRental : false // if book is not available for rental, copy should not be available for rental
+                IsAvailableForRental = book.IsAvailableForRental ? model.IsAvailableForRental : false, // if book is not available for rental, copy should not be available for rental
+                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier),
             };
 
             book.Copies.Add(copy);
@@ -85,6 +87,7 @@
             copy.EditionNumber = model.EditionNumber;
             copy.IsAvailableForRental = copy.Book!.IsAvailableForRental ? model.IsAvailableForRental : false; // if book is not available for rental, copy should not be available for rental
             copy.LastUpdatedOn = DateTime.Now;
+            copy.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _context.SaveChanges();
 
@@ -100,17 +103,22 @@
             var copy = _context.BookCopies.Find(id);
 
             if (copy is null)
-                return NotFound();
+                return NotFound("Book copy not found");
 
             copy.IsDeleted = !copy.IsDeleted;
 
             copy.IsAvailableForRental = !copy.IsDeleted ? copy.IsAvailableForRental : false; // if book copy is deleted, it should not be available for rental
 
             copy.LastUpdatedOn = DateTime.Now;
+            copy.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new
+            {
+                message = "Book copy status updated successfully.",
+                lastUpdatedOn = copy.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")
+            });
         }
     }
 }

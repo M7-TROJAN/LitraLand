@@ -1,5 +1,6 @@
 ﻿namespace LitraLand.Web.Controllers
 {
+    [Authorize(Roles = AppRoles.Archive)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -39,6 +40,8 @@
 
             var category = _mapper.Map<Category>(model);
 
+            category.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             _context.Categories.Add(category);
             _context.SaveChanges();
 
@@ -75,6 +78,7 @@
 
             category = _mapper.Map(model, category); // this overload of Map will map the properties of model to the existing category object and not create a new one
             category.LastUpdatedOn = DateTime.Now;
+            category.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _context.SaveChanges();
 
             var viewModel = _mapper.Map<CategoryViewModel>(category);
@@ -89,14 +93,19 @@
             var category = _context.Categories.Find(id);
 
             if (category is null)
-                return NotFound();
+                return NotFound("Category not found");
 
             category.IsDeleted = !category.IsDeleted;
             category.LastUpdatedOn = DateTime.Now;
+            category.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _context.SaveChanges();
 
-            return Ok(category.LastUpdatedOn.ToString());
+            return Ok(new
+            {
+                message = "Category status updated successfully.",
+                lastUpdatedOn = category.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")
+            });
         }
 
         public IActionResult AllowItem(CategoryFormViewModel model)
@@ -109,21 +118,6 @@
 
             return Json(isAllowed);
 
-        }
-
-        public IActionResult Delete(int id)
-        {
-            var category = _context.Categories.Find(id);
-
-            if (category is null)
-                return NotFound();
-
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
-
-            TempData["Message"] = "Category deleted successfully";
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }

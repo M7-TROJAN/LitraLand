@@ -15,3 +15,4 @@ global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 global using UoN.ExpressiveAnnotations.NetCore.Attributes;
 global using Microsoft.AspNetCore.Authorization;
+global using System.Security.Claims;

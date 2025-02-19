@@ -9,7 +9,7 @@
             @(Model.IsDeleted ? "Deleted" : "Available")
         </span>
     </td>
-    <td>@Model.CreatedOn</td>
+    <td>@Model.CreatedOn.ToString("dd MMM yyyy hh:mm:ss tt")</td>
     <td class="js-updated-on">@Model.LastUpdatedOn</td>
     <td class="text-end">
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -29,8 +29,18 @@
                 </a>
             </div>
             <div class="menu-item px-3">
-                <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-url="Users/ToggleStatus/@Model.Id">
+                <a href="javascript:;" class="menu-link px-3 js-render-modal" data-title="Reset Password" data-url="Users/ResetPassword/@Model.Id" data-update="true">
+                    Reset Password
+                </a>
+            </div>
+            <div class="menu-item px-3">
+                <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-name="User" data-url="Users/ToggleStatus/@Model.Id">
                     Toggle Status
+                </a>
+            </div>
+            <div class="menu-item px-3">
+                <a href="javascript:;" class="menu-link flex-stack px-3 js-physical-delete" data-name="User" data-url="Users/Delete/@Model.Id">
+                    physical delete
                 </a>
             </div>
         </div>

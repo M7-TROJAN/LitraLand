@@ -104,18 +104,13 @@
                             </a>
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
                                 <div class="menu-item px-3">
-                                    <a href="/Books/Edit/${row.id}" class="menu-link px-3">
-                                        Edit
+                                    <a href="/Books/Edit/${row.id}" class="menu-link px-3 justify-content-between text-hover-primary">
+                                        Edit <i class="fa fa-edit text-secondary fs-5 me-2"></i>
                                     </a>
                                 </div>
                                 <div class="menu-item px-3">
-                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-name="Book" data-url="/Books/ToggleStatus/${row.id}">
-                                        Toggle Status
-                                    </a>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="javascript:;" class="menu-link flex-stack px-3 js-physical-delete" data-name="Book" data-url="/Books/Delete/${row.id}">
-                                        physical delete
+                                    <a href="javascript:;" class="menu-link flex-stack px-3 justify-content-between text-hover-primary js-toggle-status" data-name="Book" data-url="/Books/ToggleStatus/${row.id}">
+                                        Toggle Status <i class="fa fa-sync-alt text-secondary fs-5 me-2"></i>
                                     </a>
                                 </div>
                             </div>`;

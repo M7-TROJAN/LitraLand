@@ -1,11 +1,9 @@
 using LitraLand.Web.Core.Mapping;
+using LitraLand.Web.Helpers;
 using LitraLand.Web.Seeds;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection;
-using System.Threading.Tasks;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
-using LitraLand.Web.Data;
-using Microsoft.EntityFrameworkCore;
 namespace LitraLand.Web
 {
     public class Program
@@ -37,9 +35,20 @@ namespace LitraLand.Web
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
                 options.User.RequireUniqueEmail = true;
 
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                options.Lockout.MaxFailedAccessAttempts = 2;
+                options.Lockout.AllowedForNewUsers = true;
+
                 // visit the below link for more information about Identity configuration
                 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-10.0
             });
+
+            // Add ClaimsPrincipalFactory to add custom claims to the user (e.g. FullName)
+            builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
+
+            // Add ImageService to the container of services
+            builder.Services.AddTransient<IImageServices, ImageService>();
 
             builder.Services.AddControllersWithViews();
 

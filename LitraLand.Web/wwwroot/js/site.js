@@ -30,6 +30,19 @@ function showErrorMessage(message = 'Something went wrong!') {
     });
 }
 
+// Function to show a loading message using SweetAlert2 while processing a request to the server
+function showLoadingMessage(title = "Processing...", message = "Please wait...") {
+    Swal.fire({
+        title: title,
+        text: message,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+}
+
+
 // Function to disable the submit button and show the loading indicator
 function disableSubmitButton() {
     // Get the submit button
@@ -362,7 +375,11 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                         data: { // Send anti-forgery token
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
+                        beforeSend: function () {
+                            showLoadingMessage("Processing...", "Toggling status, please wait...");
+                        },
                         success: function (data) {
+                            Swal.close(); // Close the loading message
                             // Ensure data contains the expected properties before using them (Message (optional), LastUpdatedOn))
                             if (!data || !data.lastUpdatedOn) { 
                                 showErrorMessage('Unexpected response from the server!');
@@ -380,18 +397,19 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                             var lastUpdatedOnElement = row.find(".js-updated-on");
                             lastUpdatedOnElement.text(data.lastUpdatedOn);
 
-                            // Trigger the flash animation
-                            row.addClass("animate__flash animate__animated");
+                            // Animate the row to indicate success
+                            row.addClass("animate__flash animate__animated bg-light-success");
 
                             // Remove the animation classes after animation ends
                             row.on('animationend', function () {
-                                row.removeClass("animate__flash animate__animated");
+                                row.removeClass("animate__flash animate__animated bg-light-success");
                             });
 
                             // Show success message using the returned message from the server
                             showSuccessMessage(data.message ? data.message : 'Item status has been toggled successfully');
                         },
                         error: function (errorMessage) {
+                            Swal.close(); // Close the loading message
                             showErrorMessage(errorMessage ? errorMessage : 'Something went wrong!');
                         }
                     });
@@ -400,6 +418,63 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
         });
     });
     // end Handle Toggle Status
+
+    // begin Handle Confirm
+    $('body').on('click', '.js-confirm', function () {
+        var btn = $(this);
+        var title = btn.data('title') || 'Confirm Action';
+        var message = btn.data('message') || 'Are you sure you want to perform this action?';
+
+        bootbox.confirm({
+            title: `
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-exclamation-circle text-warning fs-3 me-2"></i>
+                    <span class="fw-bold fs-5 text-dark">${title}</span>
+                </div>`,
+            message: `
+                <div class="text-center">
+                    <p class="text-muted fs-6 mb-3">
+                        <strong class="fw-bold">${message}</strong>
+                    </p>
+                </div>`,
+            buttons: {
+                confirm: {
+                    label: '<i class="fa fa-check-circle"></i> <span class="fw-bold">Confirm</span>',
+                    className: 'btn btn-success btn-sm px-4 shadow-sm'
+                },
+                cancel: {
+                    label: '<i class="fa fa-times-circle"></i> <span class="fw-bold">Cancel</span>',
+                    className: 'btn btn-light btn-sm px-4 shadow-sm'
+                }
+            },
+            backdrop: true,
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        url: btn.data("url"),
+                        type: "POST",
+                        data: {
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        beforeSend: function () {
+                            showLoadingMessage();
+                        },
+                        success: function (message) {
+                            Swal.close();
+
+                            // Show success message
+                            showSuccessMessage(message || "Action has been performed successfully");
+                        },
+                        error: function (xhr) {
+                            Swal.close();
+                            showErrorMessage(xhr.responseText || "An error occurred while processing the request");
+                        }
+                    });
+                }
+            }
+        });
+    });
+    // end Handle Confirm
 
     // begin handle the physical delete action
     $('body').on('click', '.js-physical-delete', function () {
@@ -430,12 +505,17 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                         data: { // Send anti-forgery token
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
+                        beforeSend: function () {
+                            showLoadingMessage("Processing...", "Deleting record, please wait...");
+                        },
                         success: function (successMessage) {
+                            Swal.close(); // Close the loading message
                             var row = btn.parents("tr");
                             datatable.row(row).remove().draw(false);
                             showSuccessMessage(successMessage ? successMessage : 'record has been deleted successfully');
                         },
                         error: function (errorMessage) {
+                            Swal.close(); // Close the loading message
                             showErrorMessage(errorMessage ? errorMessage : 'An error occurred while deleting the record');
                         }
                     });

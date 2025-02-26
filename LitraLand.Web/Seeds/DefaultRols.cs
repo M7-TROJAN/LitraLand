@@ -8,8 +8,8 @@ namespace LitraLand.Web.Seeds
         {
             if (!await roleManager.Roles.AnyAsync())
             {
-                await roleManager.CreateAsync(new IdentityRole(AppRoles.Admin));
                 await roleManager.CreateAsync(new IdentityRole(AppRoles.SuperAdmin));
+                await roleManager.CreateAsync(new IdentityRole(AppRoles.Admin));
                 await roleManager.CreateAsync(new IdentityRole(AppRoles.Archive));
                 await roleManager.CreateAsync(new IdentityRole(AppRoles.Reception));
                 await roleManager.CreateAsync(new IdentityRole(AppRoles.User));

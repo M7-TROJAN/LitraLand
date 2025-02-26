@@ -40,8 +40,9 @@ namespace LitraLand.Web.Controllers
                 roles = roles.Where(r => r.Value != AppRoles.SuperAdmin).ToList();
             }
 
-            var viewModel = new UserFormViewModel { 
-                Roles = roles 
+            var viewModel = new UserFormViewModel
+            {
+                Roles = roles
             };
 
             return PartialView("_Form", viewModel);
@@ -144,13 +145,13 @@ namespace LitraLand.Web.Controllers
                 return BadRequest();
 
             var user = await _userManager.FindByIdAsync(model.Id!);
-            
-             if (user is null)
+
+            if (user is null)
                 return NotFound("User not found.");
 
-             user = _mapper.Map(model, user);
-             user.LastUpdatedOn = DateTime.Now;
-             user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            user = _mapper.Map(model, user);
+            user.LastUpdatedOn = DateTime.Now;
+            user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -246,6 +247,36 @@ namespace LitraLand.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnLock(string id)
+        {
+            var targetUser = await _userManager.FindByIdAsync(id);
+            if (targetUser is null)
+                return NotFound("User not found.");
+
+            // check if the user is already unlocked
+            var isLocked = await _userManager.IsLockedOutAsync(targetUser);
+
+            // if the user is already unlocked, return a BadRequest response
+            if (!isLocked)
+                return BadRequest("User is already unlocked.");
+
+            var result = await _userManager.SetLockoutEndDateAsync(targetUser, null);
+            if (result.Succeeded)
+            {
+                targetUser.LastUpdatedOn = DateTime.Now;
+                targetUser.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return Ok(new
+                {
+                    message = $"User {targetUser.UserName} has been unlocked.",
+                    lastUpdatedOn = targetUser.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt"),
+                });
+            }
+            var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+            return BadRequest(errors);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleStatus(string id)
         {
             // Find the user to be deleted by ID
@@ -294,6 +325,7 @@ namespace LitraLand.Web.Controllers
             return BadRequest($"Failed to update user status: {errors}");
         }
 
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id)
@@ -343,6 +375,7 @@ namespace LitraLand.Web.Controllers
                 ? Ok($"User {targetUser.UserName} deleted successfully.")
                 : BadRequest(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
         }
+        */
 
         public async Task<IActionResult> AllowUserName(UserFormViewModel model)
         {

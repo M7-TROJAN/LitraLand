@@ -1,7 +1,6 @@
 ﻿using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
-using LitraLand.Web.Core.Models;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
 using System.Linq.Dynamic.Core;
 
 namespace LitraLand.Web.Controllers
@@ -12,17 +11,19 @@ namespace LitraLand.Web.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IImageServices _imageServices;
         private readonly Cloudinary _cloudinary;
 
-        private readonly List<string> AllowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
+        private readonly List<string> _allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
         private readonly long MaxImageSize = 2 * 1024 * 1024; // 2097152 bytes (2MB)
 
         public BooksController(ApplicationDbContext context, IMapper mapper,
-            IWebHostEnvironment hostingEnvironment, IOptions<CloudinarySettings> cloudinary)
+            IWebHostEnvironment hostingEnvironment, IImageServices imageServices, IOptions<CloudinarySettings> cloudinary)
         {
             _context = context;
             _mapper = mapper;
             _hostingEnvironment = hostingEnvironment;
+            _imageServices = imageServices;
             Account account = new Account
             {
                 Cloud = cloudinary.Value.Cloud,
@@ -106,46 +107,24 @@ namespace LitraLand.Web.Controllers
                 return View("Form", model);
             }
 
+            var book = _mapper.Map<Book>(model); // map the view model to the domain model
+
             if (model.Image is not null)
             {
-                var imageExtension = Path.GetExtension(model.Image.FileName);
-                if (!AllowedImageExtensions.Contains(imageExtension))
-                {
-                    ModelState.AddModelError(nameof(model.Image), $"Invalid image format. Only {string.Join(", ", AllowedImageExtensions)} are allowed.");
-                    model = populateViewModel(model);
+                // to upload the image to the server
+                // generate a unique name for the image file 
+                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.Image.FileName)}";
 
-                    return View("Form", model);
+                var uploadResult = await _imageServices.UploadAsync(model.Image, imageName, "/images/books", hasThumbnail: true);
+
+                if (!uploadResult.isUploaded)
+                {
+                    ModelState.AddModelError(nameof(model.Image), uploadResult.errorMessage!);
+                    return View("Form", populateViewModel(model));
                 }
 
-                if (model.Image.Length > MaxImageSize)
-                {
-                    ModelState.AddModelError("Image", $"Image size should not exceed {MaxImageSize / 1024 / 1024}MB.");
-                    model = populateViewModel(model);
-
-                    return View("Form", model);
-                }
-
-                // begin to uoload the image to the server
-                var imageName = $"{Guid.NewGuid()}{imageExtension}"; // make the image name unique
-
-                var path = Path.Combine($"{_hostingEnvironment.WebRootPath}/images/books", imageName); // wwwroot/images/books/imageName
-                var thumbPath = Path.Combine($"{_hostingEnvironment.WebRootPath}/images/books/thumb", imageName); // wwwroot/images/books/thumb/imageName
-
-                using var stream = System.IO.File.Create(path); // create the image file
-                await model.Image.CopyToAsync(stream); // copy the image to the file
-                stream.Dispose(); // close the stream
-
-                model.ImageUrl = $"/images/books/{imageName}"; 
-                model.ImageThumbnailUrl = $"/images/books/thumb/{imageName}";
-
-                // to resize the image for the thumbnail
-                using var image = Image.Load(model.Image.OpenReadStream()); // use ImageSharp package to load the image
-                var newWidth = 200; // the new width of the thumbnail image
-                var ratio = (float)image.Width / newWidth; // calculate the ratio (ratio means the width of the image divided by the new width you want)
-                var height = image.Height / ratio; // calculate the new height based on the ratio (example: if the image width is 400 and the new width is 200, then the ratio is 400/200 = 2, then the new height is height/2)
-                image.Mutate(i => i.Resize(width: newWidth, height: (int)height)); // resize the image
-                image.Save(thumbPath); // save the thumbnail image
-                // end uoload the image to the server
+                book.ImageUrl = $"/images/books/{imageName}";
+                book.ImageThumbnailUrl = $"/images/books/thumb/{imageName}";
 
                 // to upload the image to Cloudinary 
                 //using var stream = model.Image.OpenReadStream();
@@ -168,12 +147,10 @@ namespace LitraLand.Web.Controllers
 
                 //    return View("Form", model);
                 //}
-                //model.ImageUrl = uploadResult.SecureUrl.ToString();
-                //model.ImageThumbnailUrl = GetThumbnailImageUrl(model.ImageUrl);
-                //model.ImagePublicId = uploadResult.PublicId;
+                //book.ImageUrl = uploadResult.SecureUrl.ToString();
+                //book.ImageThumbnailUrl = GetThumbnailImageUrl(book.ImageUrl);
+                //book.ImagePublicId = uploadResult.PublicId;
             }
-
-            var book = _mapper.Map<Book>(model); // map the view model to the domain model
 
             book.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -225,65 +202,34 @@ namespace LitraLand.Web.Controllers
 
             if (model.Image is not null)
             {
+                // check if there is an old image and delete it
                 if (!string.IsNullOrEmpty(book.ImageUrl)/*&& !string.IsNullOrEmpty(book.ImagePublicId)*/)
                 {
-                    // delete the old image file if exists in the server
-                    var oldImagePath = $"{_hostingEnvironment.WebRootPath}{book.ImageUrl}";
-                    var oldThumbPath = $"{_hostingEnvironment.WebRootPath}{book.ImageThumbnailUrl}";
+                    // delete the old image from the server
+                    _imageServices.Delete(book.ImageUrl, book.ImageThumbnailUrl);
 
-                    if (System.IO.File.Exists(oldImagePath))
-                        System.IO.File.Delete(oldImagePath);
-
-                    if (System.IO.File.Exists(oldThumbPath))
-                        System.IO.File.Delete(oldThumbPath);
 
                     // delete the old image from Cloudinary
-                    //await _cloudinary.DeleteResourcesAsync(new DelResParams
-                    //{
-                    //    PublicIds = new List<string> { book.ImagePublicId }
-                    //});
-
+                    //await _cloudinary.DeleteResourcesAsync(book.ImagePublicId);
                     //book.ImageUrl = null;
                     //book.ImageThumbnailUrl = null;
                     //book.ImagePublicId = null;
                 }
 
-                var imageExtension = Path.GetExtension(model.Image.FileName);
-                if (!AllowedImageExtensions.Contains(imageExtension))
+                // begin upload the image to the server
+                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.Image.FileName)}";
+
+                var uploadResult = await _imageServices.UploadAsync(model.Image, imageName, "/images/books", hasThumbnail: true);
+
+                if (!uploadResult.isUploaded)
                 {
-                    ModelState.AddModelError(nameof(model.Image), $"Invalid image format. Only {string.Join(", ", AllowedImageExtensions)} are allowed.");
-                    model = populateViewModel(model);
-
-                    return View("Form", model);
+                    ModelState.AddModelError(nameof(model.Image), uploadResult.errorMessage!);
+                    return View("Form", populateViewModel(model));
                 }
-
-                if (model.Image.Length > MaxImageSize)
-                {
-                    ModelState.AddModelError("Image", "Image size should not exceed 2MB.");
-                    model = populateViewModel(model);
-
-                    return View("Form", model);
-                }
-
-                // begin uoload the image to the server
-                var imageName = $"{Guid.NewGuid()}{imageExtension}"; // make the image name unique
-
-                var path = Path.Combine($"{_hostingEnvironment.WebRootPath}/images/books", imageName); // wwwroot/images/books/imageName
-                var thumbPath = Path.Combine($"{_hostingEnvironment.WebRootPath}/images/books/thumb", imageName); // wwwroot/images/books/thumb/imageName
-
-                using var stream = System.IO.File.Create(path); // create the image file
-                await model.Image.CopyToAsync(stream); // copy the image to the file
-                stream.Dispose(); // close the stream
 
                 model.ImageUrl = $"/images/books/{imageName}";
                 model.ImageThumbnailUrl = $"/images/books/thumb/{imageName}";
-
-                using var image = Image.Load(model.Image.OpenReadStream()); // use ImageSharp package to load the image
-                var ratio = (float)image.Width / 200; // calculate the ratio (ratio means the width of the image divided by the new width you want)
-                var height = image.Height / ratio; // calculate the new height based on the ratio
-                image.Mutate(i => i.Resize(width: 200, height: (int)height)); // resize the image
-                image.Save(thumbPath); // save the thumbnail image
-                // End uoload the image to the server
+                // end upload the image to the server
 
                 // Begin upload the image to Cloudinary
                 //using var stream = model.Image.OpenReadStream();
@@ -365,13 +311,14 @@ namespace LitraLand.Web.Controllers
 
             _context.SaveChanges();
 
-            return Ok( new
+            return Ok(new
             {
                 message = "Book status updated successfully.",
                 lastUpdatedOn = book.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")
             });
         }
 
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id) // physical delete (dangerous operation the book will be deleted permanently)
@@ -401,8 +348,9 @@ namespace LitraLand.Web.Controllers
 
             _context.SaveChanges();
 
-            return Ok( $"the book {book.Title} has been deleted successfully.");
+            return Ok($"the book {book.Title} has been deleted successfully.");
         }
+        */
 
         public IActionResult AllowItem(BookFormViewModel model)
         {

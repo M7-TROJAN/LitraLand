@@ -6,7 +6,7 @@ namespace LitraLand.Web.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.Property( u => u.FullName)
+            builder.Property(u => u.FullName)
                 .HasMaxLength(100)
                 .IsRequired();
 

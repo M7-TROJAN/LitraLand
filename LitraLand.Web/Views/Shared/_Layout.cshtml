@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject SignInManager<ApplicationUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,20 +24,20 @@
         var defaultThemeMode = "light";
         var themeMode;
         if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-theme-mode")) {
-                themeMode = document.documentElement.getAttribute("data-theme-mode");
-            } 
-            else {
-                if (localStorage.getItem("data-theme") !== null) {
-                    themeMode = localStorage.getItem("data-theme");
-                } else {
-                    themeMode = defaultThemeMode;
-                }
-            }
-            if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            }
-            document.documentElement.setAttribute("data-theme", themeMode);
+        if (document.documentElement.hasAttribute("data-theme-mode")) {
+        themeMode = document.documentElement.getAttribute("data-theme-mode");
+        } 
+        else {
+        if (localStorage.getItem("data-theme") !== null) {
+        themeMode = localStorage.getItem("data-theme");
+        } else {
+        themeMode = defaultThemeMode;
+        }
+        }
+        if (themeMode === "system") {
+        themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", themeMode);
         }
     </script>
     <!--end::Theme mode setup on page load-->
@@ -48,39 +50,45 @@
     </div>
     <!--end::Page Loader-->
 
-	<!--begin::Main-->
-	<!--begin::Root-->
-	<div class="d-flex flex-column flex-root">
-		<!--begin::Page-->
-		<div class="page d-flex flex-row flex-column-fluid">
-			<!--begin::Wrapper-->
-			<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
-                <!--begin::Header-->
-				<partial name="_Header" />
-                <!--end::Header-->
-				<!--begin::Content wrapper-->
-				<div class="d-flex flex-column-fluid">
-					<!--begin::Aside-->
-                    <partial name="_Aside" />
-					<!--end::Aside-->
-					<!--begin::Container-->
-					<div class="d-flex flex-column flex-column-fluid container-fluid"> 
-						<div class="content flex-column-fluid" id="kt_content">
-							@RenderBody()
-						</div>
-                        <!--begin::Footer-->
-                        <partial name="_Footer" />
-                        <!--end::Footer-->
-					</div>
-					<!--end::Container-->
-				</div>
-				<!--end::Content wrapper-->
-			</div>
-			<!--end::Wrapper-->
-		</div>
-		<!--end::Page-->
-	</div>
-	<!--end::Root-->
+    <!--begin::Main-->
+    <!--begin::Root-->
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="d-flex flex-column flex-root">
+            <!--begin::Page-->
+            <div class="page d-flex flex-row flex-column-fluid">
+                <!--begin::Wrapper-->
+                <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                    <!--begin::Header-->
+                    <partial name="_Header" />
+                    <!--end::Header-->
+                    <!--begin::Content wrapper-->
+                    <div class="d-flex flex-column-fluid">
+                        <!--begin::Aside-->
+                        <partial name="_Aside" />
+                        <!--end::Aside-->
+                        <!--begin::Container-->
+                        <div class="d-flex flex-column flex-column-fluid container-fluid">
+                            <div class="content flex-column-fluid" id="kt_content">
+                                @RenderBody()
+                            </div>
+                            <!--begin::Footer-->
+                            <partial name="_Footer" />
+                            <!--end::Footer-->
+                        </div>
+                        <!--end::Container-->
+                    </div>
+                    <!--end::Content wrapper-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Page-->
+        </div>
+    }
+    else {
+        @RenderBody()
+    }
+    <!--end::Root-->
 	<!--end::Main-->
 
 	<!--begin::Scrolltop Button-->

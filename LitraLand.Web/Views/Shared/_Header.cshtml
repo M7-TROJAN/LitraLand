@@ -1,4 +1,37 @@
-﻿<!--begin::Header-->
+﻿@inject IWebHostEnvironment WebHostEnvironment
+@{
+	// the below logic is to get the user's avatar image
+
+	// Get the current user's ID
+	var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+	// Build the physical path for the "users" images folder inside wwwroot
+	var userImagesPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "users");
+
+	// Search for any file that starts with the userId and has any extension
+	var searchPattern = $"{userId}.*";
+	var userFilePath = System.IO.Directory.GetFiles(userImagesPath, searchPattern).FirstOrDefault();
+
+	// Initialize the avatar URL
+	string avatarUrl;
+
+	if (!string.IsNullOrEmpty(userFilePath))
+	{
+		// Extract the actual extension of the file (e.g., .jpg, .png, .webp, etc.)
+		var ext = System.IO.Path.GetExtension(userFilePath);
+
+		// Build the public URL to the user’s image
+		avatarUrl = $"/images/users/{userId}{ext}";
+	}
+	else
+	{
+		// Fallback to a default image if no user file is found
+		avatarUrl = "/assets/images/avatar2.webp";
+	}
+}
+
+
+<!--begin::Header-->
 <div id="kt_header" class="header">
 	<!--begin::Container-->
 	<div class="container-fluid d-flex flex-stack">
@@ -127,13 +160,13 @@
 				<div class="btn btn-flex align-items-center bg-hover-white bg-hover-opacity-10 py-2 px-2 px-md-3" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
 					<!--begin::Name-->
 					<div class="d-none d-md-flex flex-column align-items-end justify-content-center me-2 me-md-4">
-						<span class="text-muted fs-8 fw-semibold lh-1 mb-1">Mahmoud</span>
-						<span class="text-white fs-8 fw-bold lh-1">Software Developer</span>
+						<span class="text-muted fs-8 fw-semibold lh-1 mb-1">Welcome</span>
+						<span class="text-white fs-8 fw-bold lh-1">@User.FindFirstValue(ClaimTypes.GivenName)</span>
 					</div>
 					<!--end::Name-->
 					<!--begin::Symbol-->
 					<div class="symbol symbol-30px symbol-md-40px">
-						<img src="~/assets/images/avatar2.webp" alt="image" />
+						<img src="@avatarUrl" alt="image" />
 					</div>
 					<!--end::Symbol-->
 				</div>
@@ -145,16 +178,15 @@
 						<div class="menu-content d-flex align-items-center px-3">
 							<!--begin::Avatar-->
 							<div class="symbol symbol-50px me-5">
-								<img alt="Logo" src="~/assets/images/avatar2.webp" />
+								<img alt="Logo" src="@avatarUrl" />
 							</div>
 							<!--end::Avatar-->
 							<!--begin::Username-->
 							<div class="d-flex flex-column">
 								<div class="fw-bold d-flex align-items-center fs-5">
-									M7-TROJAN
-									<span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span>
+									@User.FindFirstValue(ClaimTypes.Name)
 								</div>
-								<a href="#" class="fw-semibold text-muted text-hover-primary fs-7">mahmoud@gmail.com</a>
+								<a asp-area="Identity" asp-page="/Account/Manage/Index" class="fw-semibold text-muted text-hover-primary fs-7">@User.FindFirstValue(ClaimTypes.Email)</a>
 							</div>
 							<!--end::Username-->
 						</div>
@@ -173,7 +205,7 @@
 					<!--end::Menu separator-->
 					<!--begin::Menu item-->
 					<div class="menu-item px-5 my-1">
-						<a href="../../demo14/dist/account/settings.html" class="menu-link px-5">Account Settings</a>
+						<a asp-area="Identity" asp-page="/Account/Manage/Index" class="menu-link px-5">Account Settings</a>
 					</div>
 					<!--end::Menu item-->
 					<!--begin::Menu item-->

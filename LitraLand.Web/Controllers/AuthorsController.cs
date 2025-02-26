@@ -102,7 +102,7 @@
 
             _context.SaveChanges();
 
-            return Ok( new
+            return Ok(new
             {
                 message = "User status updated successfully.",
                 lastUpdatedOn = author.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")

@@ -6,7 +6,7 @@
         public const string MaxMinLength = "The {0} must be at least {2} and at max {1} characters long.";
         public const string Duplicated = "Another record with the same {0} is already exists!"; // note that the {0} is replaced with the property name
         public const string DuplicatedBook = "Book with the same title is already exists with the same author!";
-        public const string NotAllowedExtension = "Invalid Image format. Only .jpg, .jpeg, .png are allowed.";
+        public const string NotAllowedExtension = "Invalid Image format. Only .jpg, .jpeg, .png and .webp are allowed.";
         public const string MaxSize = "Image size should not exceed 2MB.";
         public const string Required = "{0} is required.";
         public const string NotAllowFutureDates = "{0} cannot be in the future!";

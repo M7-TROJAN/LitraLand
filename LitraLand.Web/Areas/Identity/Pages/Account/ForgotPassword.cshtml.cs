@@ -15,11 +15,13 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         /// <summary>
@@ -65,10 +67,14 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                var body = _emailBodyBuilder.GetEmailBody(
+                "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg",
+                $"Hey {user.FullName},",
+                "Please reset your password by clicking the link below.",
+                url: HtmlEncoder.Default.Encode(callbackUrl!),
+                "Reset Password");
+
+                await _emailSender.SendEmailAsync(user.Email, "Reset Password", body);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

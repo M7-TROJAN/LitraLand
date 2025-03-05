@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Encodings.Web;
+using System.Text;
 
 namespace LitraLand.Web.Controllers
 {
@@ -7,13 +11,27 @@ namespace LitraLand.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<ApplicationUser> signInManager,
+            IEmailSender emailSender,
+            IWebHostEnvironment webHostEnvironment,
+            IMapper mapper,
+            IEmailBodyBuilder emailBodyBuilder)
         {
             _userManager = userManager;
-            _mapper = mapper;
             _roleManager = roleManager;
+            _signInManager = signInManager;
+            _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         public async Task<IActionResult> Index()
@@ -65,22 +83,41 @@ namespace LitraLand.Web.Controllers
 
             var result = await _userManager.CreateAsync(user, model.Password!);
 
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRolesAsync(user, model.SelectedRoles);
-                var viweModel = _mapper.Map<UserViewModel>(user);
-                return PartialView("_UserRow", viweModel);
-            }
-            else
+            if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+
+                var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+                return BadRequest(errors);
             }
 
-            var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
-            return BadRequest(errors);
+            await _userManager.AddToRolesAsync(user, model.SelectedRoles);
+
+            // start send email confirmation
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = user.Id, code = code},
+                protocol: Request.Scheme);
+            
+            var body = _emailBodyBuilder.GetEmailBody(
+                "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg",
+                $"Hey {user.UserName}, thanks for joining us!",
+                "Please click the link below to verify your email address.",
+                HtmlEncoder.Default.Encode(callbackUrl!),
+                "Verify Email");
+
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
+            // end send email confirmation
+
+            var viweModel = _mapper.Map<UserViewModel>(user);
+            return PartialView("_UserRow", viweModel);
         }
 
         [HttpGet]
@@ -171,6 +208,9 @@ namespace LitraLand.Web.Controllers
                     await _userManager.RemoveFromRolesAsync(user, currentRoles);
                     await _userManager.AddToRolesAsync(user, model.SelectedRoles);
                 }
+
+                // enforce security stamp update to force re-authentication (meaning the user will be logged out)
+                await _userManager.UpdateSecurityStampAsync(user);
 
                 var viweModel = _mapper.Map<UserViewModel>(user);
                 return PartialView("_UserRow", viweModel);
@@ -302,7 +342,7 @@ namespace LitraLand.Web.Controllers
             if (!isCurrentUserSuperAdmin && isTargetUserSuperAdmin)
                 return BadRequest("Admins cannot modify the status of a Super Admin.");
 
-            // Toggle the user's status (activate/deactivate)
+            // Toggle the user's status (active/deleted)
             targetUser.IsDeleted = !targetUser.IsDeleted;
             targetUser.LastUpdatedOn = DateTime.Now;
             targetUser.LastUpdatedById = currentUserId;
@@ -313,9 +353,12 @@ namespace LitraLand.Web.Controllers
             // If update succeeds, return the new status update time
             if (result.Succeeded)
             {
+                if(targetUser.IsDeleted)
+                    await _userManager.UpdateSecurityStampAsync(targetUser);
+
                 return Ok(new
                 {
-                    message = "User status updated successfully.",
+                    message = "User status updated successfully. the user is now " + (targetUser.IsDeleted ? "deleted" : "active"),
                     lastUpdatedOn = targetUser.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt"),
                 });
             }

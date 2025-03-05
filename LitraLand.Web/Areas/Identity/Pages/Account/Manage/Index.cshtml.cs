@@ -11,13 +11,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IImageServices _imageServices;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IImageServices imageServices)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _imageServices = imageServices;
         }
 
         /// <summary>
@@ -99,6 +102,31 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
+            if(Input.Avatar is not null)
+            {
+                var isAllowedExt = _imageServices.IsAllowedImageExtension(Input.Avatar, new[] {".png"});
+
+                if (!isAllowedExt)
+                {
+                    ModelState.AddModelError("Input.Avatar", "Invalid Image format. Only .png is allowed.");
+                    await LoadAsync(user);
+                    return Page();
+                }
+
+                _imageServices.Delete($"/images/users/{user.Id}.png");
+
+                var (isUploaded, errorMessage) = await _imageServices.UploadAsync(Input.Avatar, $"{user.Id}.png", "/images/users", hasThumbnail: false);
+
+                if (!isUploaded)
+                {
+                    ModelState.AddModelError("Input.Avatar", errorMessage);
+                    await LoadAsync(user);
+                    return Page();
+                }
+            }
+            else if (Input.ImageRemoved)
+                _imageServices.Delete($"/images/users/{user.Id}.png");
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)

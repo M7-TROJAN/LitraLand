@@ -42,7 +42,6 @@ function showLoadingMessage(title = "Processing...", message = "Please wait...")
     });
 }
 
-
 // Function to disable the submit button and show the loading indicator
 function disableSubmitButton() {
     // Get the submit button
@@ -53,6 +52,22 @@ function disableSubmitButton() {
 
     // Activate indicator
     button.attr('data-kt-indicator', 'on');
+}
+
+// Function to enable the submit button and remove the loading indicator
+function enableSubmitButton() {
+
+    
+    setTimeout(function () {
+        // Get the submit button
+        var button = $('body :submit');
+
+        // Enable the button
+        button.removeAttr('disabled');
+
+        // Deactivate indicator
+        button.removeAttr('data-kt-indicator');
+    }, 500);
 }
 
 // Function to reinitialize select2
@@ -95,6 +110,7 @@ function onModalError(errorMessage) {
 }
 
 function onModalComplete() {
+
     // Get the submit button
     var button = $('body :submit');
 
@@ -560,11 +576,25 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
 
     // disable submit button in forms to prevent multiple submits and show loading indicator
     $('form').not('#SignOutForm').on('submit', function () {
-        var isValid = $(this).valid(); // Check if the form is valid or not
+        //var form = $(this);
+        //var isValid = form.valid(); // Check if the form is valid or not
 
-        // If the form is valid, disable the submit button and show the loading indicator
-        if (isValid)
-            disableSubmitButton();
+        //// If the form is valid, disable the submit button and show the loading indicator
+        //if (isValid)
+        //    disableSubmitButton();
+
+        var form = $(this);
+        var validator = form.validate();
+
+        // Validate the form before disabling the submit button
+        validator.form();
+
+        // make a short delay to allow the validation to complete before disabling the submit button
+        setTimeout(function () {
+            if (form.valid()) {
+                disableSubmitButton(form);
+            }
+        }, 500);
     });
 
     // Handle sign out
@@ -574,3 +604,13 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
     });
 });
 // end Document Ready
+
+
+// Re-enable the submit button after an AJAX request is completed
+$(document).ajaxComplete(function () {
+    enableSubmitButton();
+});
+
+$(document).ajaxSuccess(function () {
+    enableSubmitButton();
+});

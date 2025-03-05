@@ -1,4 +1,6 @@
-﻿namespace LitraLand.Web.Core.Mapping
+﻿using LitraLand.Web.Core.ViewModels.SubscriberViews;
+
+namespace LitraLand.Web.Core.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -47,6 +49,30 @@
                 .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))
                 .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
                 .ReverseMap();
+
+            // subscriber
+            CreateMap<SubscriberFormViewModel, Subscriber>()
+                .ReverseMap()
+                .ForMember(dest => dest.Areas, opt => opt.Ignore())
+                .ForMember(dest => dest.Governorates, opt => opt.Ignore());
+
+            CreateMap<Subscriber, SubscriberViewModel>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area!.Name))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
+
+            CreateMap<Subscriber, SubscriberSearchResultViewModel>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
+            // governorates
+            CreateMap<Governorate, SelectListItem>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+            // areas
+            CreateMap<Area, SelectListItem>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

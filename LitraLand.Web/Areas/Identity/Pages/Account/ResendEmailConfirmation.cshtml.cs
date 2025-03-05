@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,11 +17,13 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
-        public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         /// <summary>
@@ -41,12 +44,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            //[EmailAddress]
+            public string Username { get; set; }
         }
 
-        public void OnGet()
+        public void OnGet(string Username)
         {
+            Input = new InputModel
+            {
+                Username = Username
+            };
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -56,7 +63,10 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
+            var userName = Input.Username.ToUpper();
+            var user = await _userManager.Users
+                .SingleOrDefaultAsync(u => (u.NormalizedUserName == userName || u.NormalizedEmail == userName) && !u.IsDeleted);
+            
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
@@ -70,11 +80,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 "/Account/ConfirmEmail",
                 pageHandler: null,
                 values: new { userId = userId, code = code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            protocol: Request.Scheme);
+
+            var body = _emailBodyBuilder.GetEmailBody(
+                "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg",
+                $"Hey {user.FullName}, thanks for joining us!",
+                "Please click the link below to verify your email address.", 
+                HtmlEncoder.Default.Encode(callbackUrl!),
+                "Verify Email");
+
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

@@ -1,8 +1,4 @@
-﻿using CloudinaryDotNet;
-using Microsoft.Extensions.Options;
-using SixLabors.ImageSharp;
-using System.Linq.Dynamic.Core;
-
+﻿using System.Linq.Dynamic.Core;
 namespace LitraLand.Web.Controllers
 {
     [Authorize(Roles = AppRoles.Archive)]
@@ -12,25 +8,15 @@ namespace LitraLand.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IImageServices _imageServices;
-        private readonly Cloudinary _cloudinary;
-
-        private readonly List<string> _allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
-        private readonly long MaxImageSize = 2 * 1024 * 1024; // 2097152 bytes (2MB)
-
+        private readonly ICloudinaryService _cloudinaryService;
         public BooksController(ApplicationDbContext context, IMapper mapper,
-            IWebHostEnvironment hostingEnvironment, IImageServices imageServices, IOptions<CloudinarySettings> cloudinary)
+            IWebHostEnvironment hostingEnvironment, IImageServices imageServices, ICloudinaryService cloudinaryService)
         {
             _context = context;
             _mapper = mapper;
             _hostingEnvironment = hostingEnvironment;
             _imageServices = imageServices;
-            Account account = new Account
-            {
-                Cloud = cloudinary.Value.Cloud,
-                ApiKey = cloudinary.Value.ApiKey,
-                ApiSecret = cloudinary.Value.ApiSecret
-            };
-            _cloudinary = new Cloudinary(account);
+            _cloudinaryService = cloudinaryService;
         }
 
         public IActionResult Index()
@@ -111,10 +97,9 @@ namespace LitraLand.Web.Controllers
 
             if (model.Image is not null)
             {
-                // to upload the image to the server
+                // begin upload the image to the server
                 // generate a unique name for the image file 
                 var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.Image.FileName)}";
-
                 var uploadResult = await _imageServices.UploadAsync(model.Image, imageName, "/images/books", hasThumbnail: true);
 
                 if (!uploadResult.isUploaded)
@@ -125,31 +110,21 @@ namespace LitraLand.Web.Controllers
 
                 book.ImageUrl = $"/images/books/{imageName}";
                 book.ImageThumbnailUrl = $"/images/books/thumb/{imageName}";
+                // end upload the image to the server
 
-                // to upload the image to Cloudinary 
-                //using var stream = model.Image.OpenReadStream();
-                //var imageName = $"{Guid.NewGuid()}{imageExtension}";
-                //var imageParams = new ImageUploadParams
+                // Begin upload the image to Cloudinary
+                //var uploadResult = await _cloudinaryService.UploadImageAsync(model.Image, hasThumbnail: true);
+
+                //if (!uploadResult.isUploaded)
                 //{
-                //    File = new FileDescription(imageName, stream),
-                //    UseFilename = true, // to use the same file name as the uploaded file
-                //};
-
-                //var uploadResult = await _cloudinary.UploadAsync(imageParams);
-
-                //if (uploadResult.Error != null)
-                //{
-                //    ModelState.AddModelError("Image", "An error occurred while uploading the image.");
-
-                //    var error = uploadResult.Error.Message;
-
-                //    model = populateViewModel(model);
-
-                //    return View("Form", model);
+                //    ModelState.AddModelError(nameof(model.Image), uploadResult.errorMessage!);
+                //    return View("Form", populateViewModel(model));
                 //}
-                //book.ImageUrl = uploadResult.SecureUrl.ToString();
-                //book.ImageThumbnailUrl = GetThumbnailImageUrl(book.ImageUrl);
-                //book.ImagePublicId = uploadResult.PublicId;
+
+                //book.ImageUrl = uploadResult.imageUrl;
+                //book.ImageThumbnailUrl = uploadResult.thumbnailUrl;
+                //book.ImagePublicId = uploadResult.publicId;
+                // End upload the image to Cloudinary
             }
 
             book.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -203,17 +178,14 @@ namespace LitraLand.Web.Controllers
             if (model.Image is not null)
             {
                 // check if there is an old image and delete it
-                if (!string.IsNullOrEmpty(book.ImageUrl)/*&& !string.IsNullOrEmpty(book.ImagePublicId)*/)
+                if (!string.IsNullOrEmpty(book.ImageUrl))
                 {
                     // delete the old image from the server
                     _imageServices.Delete(book.ImageUrl, book.ImageThumbnailUrl);
 
-
                     // delete the old image from Cloudinary
-                    //await _cloudinary.DeleteResourcesAsync(book.ImagePublicId);
-                    //book.ImageUrl = null;
-                    //book.ImageThumbnailUrl = null;
-                    //book.ImagePublicId = null;
+                    //if(!string.IsNullOrEmpty(book.ImagePublicId))
+                    //    await _cloudinaryService.DeleteImageAsync(book.ImagePublicId);
                 }
 
                 // begin upload the image to the server
@@ -232,29 +204,17 @@ namespace LitraLand.Web.Controllers
                 // end upload the image to the server
 
                 // Begin upload the image to Cloudinary
-                //using var stream = model.Image.OpenReadStream();
-                //var imageName = $"{Guid.NewGuid()}{imageExtension}";
-                //var imageParams = new ImageUploadParams
+                //var uploadResult = await _cloudinaryService.UploadImageAsync(model.Image, hasThumbnail: true);
+
+                //if (!uploadResult.isUploaded)
                 //{
-                //    File = new FileDescription(imageName, stream),
-                //    UseFilename = true, // to use the same file name as the uploaded file
-                //};
-
-                //var uploadResult = await _cloudinary.UploadAsync(imageParams);
-                //if (uploadResult.Error != null)
-                //{
-                //    ModelState.AddModelError("Image", "An error occurred while uploading the image.");
-
-                //    var error = uploadResult.Error.Message;
-
-                //    model = populateViewModel(model);
-
-                //    return View("Form", model);
+                //    ModelState.AddModelError(nameof(model.Image), uploadResult.errorMessage!);
+                //    return View("Form", populateViewModel(model));
                 //}
 
-                //model.ImageUrl = uploadResult.SecureUrl.ToString();
-                //model.ImageThumbnailUrl = GetThumbnailImageUrl(model.ImageUrl);
-                //model.ImagePublicId = uploadResult.PublicId;
+                //model.ImageUrl = uploadResult.imageUrl;
+                //model.ImageThumbnailUrl = uploadResult.thumbnailUrl;
+                //model.ImagePublicId = uploadResult.publicId;
                 // End upload the image to Cloudinary
             }
             else if (!string.IsNullOrEmpty(book.ImageUrl))
@@ -377,18 +337,6 @@ namespace LitraLand.Web.Controllers
             viewModel.Authors = _mapper.Map<IEnumerable<SelectListItem>>(authors);
 
             return viewModel;
-        }
-
-        // to get the thumbnail image url from Cloudinary
-        private string GetThumbnailImageUrl(string imageUrl)
-        {
-            var transformation = "c_thumb,w_200,g_face/";
-            var separator = "image/upload/";
-            var urlParts = imageUrl.Split(separator);
-
-            var thumbnailImageUrl = $"{urlParts[0]}{separator}{transformation}{urlParts[1]}";
-
-            return thumbnailImageUrl;
         }
     }
 }

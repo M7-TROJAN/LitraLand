@@ -1,33 +1,10 @@
 ﻿@inject IWebHostEnvironment WebHostEnvironment
 @{
-	// the below logic is to get the user's avatar image
+	var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
 
-	// Get the current user's ID
-	var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-	// Build the physical path for the "users" images folder inside wwwroot
-	var userImagesPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "users");
-
-	// Search for any file that starts with the userId and has any extension
-	var searchPattern = $"{userId}.*";
-	var userFilePath = System.IO.Directory.GetFiles(userImagesPath, searchPattern).FirstOrDefault();
-
-	// Initialize the avatar URL
-	string avatarUrl;
-
-	if (!string.IsNullOrEmpty(userFilePath))
-	{
-		// Extract the actual extension of the file (e.g., .jpg, .png, .webp, etc.)
-		var ext = System.IO.Path.GetExtension(userFilePath);
-
-		// Build the public URL to the user’s image
-		avatarUrl = $"/images/users/{userId}{ext}";
-	}
-	else
-	{
-		// Fallback to a default image if no user file is found
-		avatarUrl = "/assets/images/avatar2.webp";
-	}
+	avatarUrl = System.IO.File.Exists(avatarUrl)
+		? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
+		: "/assets/images/avatar2.webp";
 }
 
 

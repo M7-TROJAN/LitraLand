@@ -1,0 +1,239 @@
+﻿@using LitraLand.Web.Core.ViewModels.SubscriberViews
+@model SubscriberViewModel
+
+@{
+	ViewData["Title"] = "Subscriber Details";
+}
+
+<div class="d-flex flex-column flex-column-fluid">
+	<!--begin::Toolbar-->
+	<div class="app-toolbar  py-3 py-lg-6 ">
+		<!--begin::Toolbar container-->
+		<div class="app-container  container-xxl d-flex flex-stack ">
+			<!--begin::Page title-->
+			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 ">
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+					Subscriber Details
+				</h1>
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<div class="m-0">
+					<a class="btn btn-sm fw-bold btn-primary" asp-action="Edit" asp-route-id="@Model.Key">
+						<i class="bi bi-plus-square-dotted"></i>
+						Edit
+					</a>
+				</div>
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Toolbar container-->
+	</div>
+	<!--end::Toolbar-->
+    <!--begin::Container-->
+	<div class="d-flex flex-column flex-xl-row">
+		<!--begin::Sidebar-->
+		<div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
+			<!--begin::Card-->
+			<div class="card mb-5 mb-xl-8">
+				<!--begin::Card body-->
+				<div class="card-body pt-15">
+					<!--begin::Summary-->
+					<div class="d-flex flex-center flex-column mb-5">
+						<!--begin::Avatar-->
+						<a data-fslightbox href="@Model.ImageUrl">
+							<div class="symbol symbol-150px symbol-circle mb-7">
+								<img src="@Model.ImageThumbnailUrl" alt="image">
+							</div>
+						</a>
+						<!--end::Avatar-->
+						<!--begin::Name-->
+						<p class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">@Model.FullName</p>
+						<!--end::Name-->
+						<!--begin::Email-->
+						<p class="fs-5 fw-semibold text-muted text-hover-primary mb-6">@Model.Email</p>
+						<!--end::Email-->
+					</div>
+					<!--end::Summary-->
+					<!--begin::Details toggle-->
+					<div class="d-flex flex-stack fs-4 py-3">
+						<div class="fw-bold">Details</div>
+						<!--begin::Badge-->
+						<div class="badge badge-light-success d-inline">Active subscriber</div>
+						<!--begin::Badge-->
+					</div>
+					<!--end::Details toggle-->
+					<div class="separator separator-dashed my-3"></div>
+					<!--begin::Details content-->
+					<div class="pb-5 fs-6">
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Account ID</div>
+						<div class="text-gray-600 text-hover-primary">ID-@Model.ID</div>
+						<!--begin::Details item-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Mobile No.</div>
+						<div class="text-gray-600">
+							<p class="text-gray-600 text-hover-primary">@Model.PhoneNumber</p>
+						</div>
+						<!--begin::Details item-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">National ID</div>
+						<div class="text-gray-600">
+							<p class="text-gray-600 text-hover-primary">@Model.NationalId</p>
+						</div>
+						<!--begin::Details item-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Date of Birth</div>
+						<div class="text-gray-600">
+							<p class="text-gray-600 text-hover-primary">@Model.DateOfBirth.ToString("dd MMM yyyy")</p>
+						</div>
+						<!--begin::Details item-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Address</div>
+						<div class="text-gray-600">
+							@Model.Address,
+							<br>@Model.Area
+							<br>@Model.Governorate
+						</div>
+						<!--begin::Details item-->
+					</div>
+					<!--end::Details content-->
+				</div>
+				<!--end::Card body-->
+			</div>
+			<!--end::Card-->
+		</div>
+		<!--end::Sidebar-->
+		<!--begin::Content-->
+		<div class="flex-lg-row-fluid ms-lg-15">
+			<!--begin:::Tabs-->
+			<ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8" role="tablist">
+				<!--begin:::Tab item-->
+				<li class="nav-item" role="presentation">
+					<a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#Overview" aria-selected="false" role="tab" tabindex="-1">Overview</a>
+				</li>
+				<!--end:::Tab item-->
+				<!--begin:::Tab item-->
+				<li class="nav-item" role="presentation">
+					<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true" role="tab">Rentals</a>
+				</li>
+				<!--end:::Tab item-->
+			</ul>
+			<!--end:::Tabs-->
+			<!--begin:::Tab content-->
+			<div class="tab-content">
+				<!--begin:::Tab pane-->
+				<div class="tab-pane fade active show" id="Overview" role="tabpanel">
+					<div class="row row-cols-1 row-cols-md-2 mb-6 mb-xl-9">
+						<div class="col">
+							<!--begin::Card-->
+							<div class="card pt-4 h-md-100 mb-6 mb-md-0">
+								<!--begin::Card header-->
+								<div class="card-header border-0">
+									<!--begin::Card title-->
+									<div class="card-title">
+										<h2 class="fw-bold">Reward Points</h2>
+									</div>
+									<!--end::Card title-->
+								</div>
+								<!--end::Card header-->
+								<!--begin::Card body-->
+								<div class="card-body pt-0">
+									<div class="fw-bold fs-2">
+										<div class="d-flex">
+											<!--begin::Svg Icon | path: icons/duotune/general/gen030.svg-->
+											<span class="svg-icon svg-icon-info svg-icon-2x">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M18.3721 4.65439C17.6415 4.23815 16.8052 4 15.9142 4C14.3444 4 12.9339 4.73924 12.003 5.89633C11.0657 4.73913 9.66 4 8.08626 4C7.19611 4 6.35789 4.23746 5.62804 4.65439C4.06148 5.54462 3 7.26056 3 9.24232C3 9.81001 3.08941 10.3491 3.25153 10.8593C4.12155 14.9013 9.69287 20 12.0034 20C14.2502 20 19.875 14.9013 20.7488 10.8593C20.9109 10.3491 21 9.81001 21 9.24232C21.0007 7.26056 19.9383 5.54462 18.3721 4.65439Z" fill="currentColor"></path>
+												</svg>
+											</span>
+											<!--end::Svg Icon-->
+											<div class="ms-2">
+												4,571
+												<span class="text-muted fs-4 fw-semibold">Points earned</span>
+											</div>
+										</div>
+										<div class="fs-7 fw-normal text-muted">Earn reward points with every purchase.</div>
+									</div>
+								</div>
+								<!--end::Card body-->
+							</div>
+							<!--end::Card-->
+						</div>
+						<div class="col">
+							<!--begin::Reward Tier-->
+							<div class="card bg-success hoverable h-md-100">
+								<!--begin::Body-->
+								<div class="card-body">
+									<!--begin::Svg Icon | path: icons/duotune/general/gen020.svg-->
+									<span class="svg-icon svg-icon-white svg-icon-3x ms-n1">
+										<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path opacity="0.3" d="M7.16973 20.95C6.26973 21.55 5.16972 20.75 5.46972 19.75L7.36973 14.05L2.46972 10.55C1.56972 9.95005 2.06973 8.55005 3.06973 8.55005H20.8697C21.9697 8.55005 22.3697 9.95005 21.4697 10.55L7.16973 20.95Z" fill="currentColor" />
+											<path d="M11.0697 2.75L7.46973 13.95L16.9697 20.85C17.8697 21.45 18.9697 20.65 18.6697 19.65L13.1697 2.75C12.7697 1.75 11.3697 1.75 11.0697 2.75Z" fill="currentColor" />
+										</svg>
+									</span>
+									<!--end::Svg Icon-->
+									<div class="text-white fw-bold fs-2 mt-5">Active Subscriber</div>
+									<div class="fw-semibold text-white">Subscrber since: @Model.CreatedOn.ToString("dd MMM, yyyy")</div>
+								</div>
+								<!--end::Body-->
+							</div>
+							<!--end::Reward Tier-->
+						</div>
+					</div>
+					<!--begin::Card-->
+					<div class="card pt-4 mb-6 mb-xl-9">
+						<!--begin::Card header-->
+						<div class="card-header border-0">
+							<!--begin::Card title-->
+							<div class="card-title">
+								<h2>Renewal History</h2>
+							</div>
+							<!--end::Card title-->
+						</div>
+						<!--end::Card header-->
+						<!--begin::Card body-->
+						<div class="card-body pt-0 pb-5">
+							<p>Renewal History will be shown here</p>
+						</div>
+						<!--end::Card body-->
+					</div>
+					<!--end::Card-->
+				</div>
+				<!--end:::Tab pane-->
+				<!--begin:::Tab pane-->
+				<div class="tab-pane fade" id="Rentals" role="tabpanel">
+					<!--begin::Card-->
+					<div class="card pt-4 mb-6 mb-xl-9">
+						<!--begin::Card header-->
+						<div class="card-header border-0">
+							<!--begin::Card title-->
+							<div class="card-title">
+								<h2>Rentals</h2>
+							</div>
+							<!--end::Card title-->
+						</div>
+						<!--end::Card header-->
+						<!--begin::Card body-->
+						<div class="card-body pt-0 pb-5">
+							Rentals will be shown here
+						</div>
+						<!--end::Card body-->
+					</div>
+					<!--end::Card-->
+				</div>
+				<!--end:::Tab pane-->
+			</div>
+			<!--end:::Tab content-->
+		</div>
+		<!--end::Content-->
+	</div>
+    <!--end::Container-->
+</div>
+
+
+@section Plugins
+{
+	<script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
+}

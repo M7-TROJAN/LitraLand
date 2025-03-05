@@ -1,7 +1,4 @@
-﻿using LitraLand.Web.Core.Models;
-using Microsoft.AspNetCore.Hosting;
-
-namespace LitraLand.Web.Services
+﻿namespace LitraLand.Web.Services
 {
     public class ImageService : IImageServices
     {
@@ -59,6 +56,15 @@ namespace LitraLand.Web.Services
                 if (File.Exists(oldThumbPath))
                     File.Delete(oldThumbPath);
             }
+        }
+
+        public bool IsAllowedImageExtension(IFormFile image, string[] allowedExtensions)
+        {
+            if (image is null)
+                return false;
+
+            var imageExtension = Path.GetExtension(image.FileName);
+            return allowedExtensions.Contains(imageExtension);
         }
 
         private void CreateThumbnail(IFormFile image, string thumbPath)

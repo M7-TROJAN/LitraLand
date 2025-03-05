@@ -1,6 +1,7 @@
 using LitraLand.Web.Core.Mapping;
 using LitraLand.Web.Helpers;
 using LitraLand.Web.Seeds;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
@@ -44,11 +45,38 @@ namespace LitraLand.Web
                 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-10.0
             });
 
+            // Force immediate re-validation of the security stamp upon any user-related changes (e.g., password change, role update).
+            // This ensures that if a user updates their password or role, they must re-authenticate immediately. 
+            builder.Services.Configure<SecurityStampValidatorOptions>(option => option.ValidationInterval = TimeSpan.Zero);
+
+
+            // Add DataProtection services to the container
+            builder.Services.AddDataProtection()
+                .SetApplicationName(nameof(LitraLand));
+
+            // Add Cloudinary settings
+            var cloudinarySettings = builder.Configuration.GetSection(nameof(CloudinarySettings)) ?? throw new InvalidOperationException("CloudinarySettings section not found.");
+            builder.Services.Configure<CloudinarySettings>(cloudinarySettings);
+
+            // Add Mail settings
+            var mailSettings = builder.Configuration.GetSection(nameof(MailSettings)) ?? throw new InvalidOperationException("MailSettings section not found.");
+            builder.Services.Configure<MailSettings>(mailSettings);
+            // End Add services to the container.
+
             // Add ClaimsPrincipalFactory to add custom claims to the user (e.g. FullName)
             builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
             // Add ImageService to the container of services
             builder.Services.AddTransient<IImageServices, ImageService>();
+
+            // Add CloudinaryService to the container of services
+            builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
+
+            // Add EmailSender to the container of services
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+            // Add EmailBodyBuilder to the container of services
+            builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
 
             builder.Services.AddControllersWithViews();
 
@@ -57,11 +85,6 @@ namespace LitraLand.Web
 
             // Add ExpressiveAnnotations
             builder.Services.AddExpressiveAnnotations();
-
-            // Add Cloudinary settings
-            var cloudinarySettings = builder.Configuration.GetSection(nameof(CloudinarySettings)) ?? throw new InvalidOperationException("CloudinarySettings section not found.");
-            builder.Services.Configure<CloudinarySettings>(cloudinarySettings);
-            // End Add services to the container.
 
             var app = builder.Build();
 

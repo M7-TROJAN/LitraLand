@@ -2,38 +2,14 @@
 @model IndexModel
 @inject IWebHostEnvironment WebHostEnvironment
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Account Settings";
     Layout = "/Views/Shared/_Layout.cshtml";
 
+    var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
 
-    // the below logic is to get the user's avatar image
-
-    // Get the current user's ID
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    // Build the physical path for the "users" images folder inside wwwroot
-    var userImagesPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "users");
-
-    // Search for any file that starts with the userId and has any extension
-    var searchPattern = $"{userId}.*";
-    var userFilePath = System.IO.Directory.GetFiles(userImagesPath, searchPattern).FirstOrDefault();
-
-    // Initialize the avatar URL
-    string avatarUrl;
-
-    if (!string.IsNullOrEmpty(userFilePath))
-    {
-        // Extract the actual extension of the file (e.g., .jpg, .png, .webp, etc.)
-        var ext = System.IO.Path.GetExtension(userFilePath);
-
-        // Build the public URL to the user’s image
-        avatarUrl = $"/images/users/{userId}{ext}";
-    }
-    else
-    {
-        // Fallback to a default image if no user file is found
-        avatarUrl = "/assets/images/avatar2.webp";
-    }
+    avatarUrl = System.IO.File.Exists(avatarUrl)
+        ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
+        : "/assets/images/avatar2.webp";
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -108,7 +84,7 @@
             <!--begin::Content-->
             <div id="kt_account_settings_profile_details" class="collapse show">
                 <!--begin::Form-->
-                <form class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate" method="post">
+                <form class="form fv-plugins-bootstrap5 fv-plugins-framework" enctype="multipart/form-data" novalidate="novalidate" method="post">
                     <!--begin::Card body-->
                     <div class="card-body border-top p-9">
                         <partial name="_StatusMessage" for="StatusMessage" />
@@ -128,7 +104,7 @@
                                     <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
                                         <i class="bi bi-pencil-fill fs-7"></i>
                                         <!--begin::Inputs-->
-                                        <input type="file" name="avatar" accept=".png, .jpg, .jpeg">
+                                        <input type="file" asp-for="Input.Avatar" accept=".png">
                                         <input type="hidden" name="avatar_remove">
                                         <!--end::Inputs-->
                                     </label>
@@ -139,14 +115,16 @@
                                     </span>
                                     <!--end::Cancel-->
                                     <!--begin::Remove-->
-                                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" aria-label="Remove avatar" data-bs-original-title="Remove avatar" data-kt-initialized="1">
+                                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow js-remove-avatar" data-kt-image-input-action="remove" data-bs-toggle="tooltip" aria-label="Remove avatar" data-bs-original-title="Remove avatar" data-kt-initialized="1">
                                         <i class="bi bi-x fs-2"></i>
                                     </span>
                                     <!--end::Remove-->
+                                    <input type="hidden" asp-for="Input.ImageRemoved" /> @*it's id will be 'Input_ImageRemoved' because in page model it's name is 'Input.ImageRemoved'*@
                                 </div>
                                 <!--end::Image input-->
                                 <!--begin::Hint-->
-                                <div class="form-text">Allowed file types:  png, jpg, jpeg.</div>
+                                <div class="form-text">Allowed file types: png</div>
+                                <span class="text-danger" asp-validation-for="Input.Avatar" ></span>
                                 <!--end::Hint-->
                             </div>
                             <!--end::Col-->
@@ -225,40 +203,12 @@
                         <!--begin::Label-->
                         <div id="kt_signin_email">
                             <div class="fs-6 fw-bold mb-1">Email Address</div>
-                            <div class="fw-semibold text-gray-600">support@keenthemes.com</div>
+                            <div class="fw-semibold text-gray-600">@User.FindFirstValue(ClaimTypes.Email)</div>
                         </div>
                         <!--end::Label-->
-                        <!--begin::Edit-->
-                        <div id="kt_signin_email_edit" class="flex-row-fluid d-none">
-                            <!--begin::Form-->
-                            <form id="kt_signin_change_email" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
-                                <div class="row mb-6">
-                                    <div class="col-lg-6 mb-4 mb-lg-0">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="emailaddress" class="form-label fs-6 fw-bold mb-3">Enter New Email Address</label>
-                                            <input type="email" class="form-control form-control-lg form-control-solid" id="emailaddress" placeholder="Email Address" name="emailaddress" value="support@keenthemes.com">
-                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="confirmemailpassword" class="form-label fs-6 fw-bold mb-3">Confirm Password</label>
-                                            <input type="password" class="form-control form-control-lg form-control-solid" name="confirmemailpassword" id="confirmemailpassword">
-                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex">
-                                    <button id="kt_signin_submit" type="button" class="btn btn-primary  me-2 px-6">Update Email</button>
-                                    <button id="kt_signin_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                </div>
-                            </form>
-                            <!--end::Form-->
-                        </div>
-                        <!--end::Edit-->
                         <!--begin::Action-->
                         <div id="kt_signin_email_button" class="ms-auto">
-                            <button class="btn btn-light btn-active-light-primary">Change Email</button>
+                            <a asp-page="./Email" class="btn btn-light btn-active-light-primary">Change Email</a>
                         </div>
                         <!--end::Action-->
                     </div>
@@ -274,54 +224,14 @@
                             <div class="fw-semibold text-gray-600">************</div>
                         </div>
                         <!--end::Label-->
-                        <!--begin::Edit-->
-                        <div id="kt_signin_password_edit" class="flex-row-fluid d-none">
-                            <!--begin::Form-->
-                            <form id="kt_signin_change_password" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
-                                <div class="row mb-1">
-                                    <div class="col-lg-4">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="currentpassword" class="form-label fs-6 fw-bold mb-3">Current Password</label>
-                                            <input type="password" class="form-control form-control-lg form-control-solid " name="currentpassword" id="currentpassword">
-                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="newpassword" class="form-label fs-6 fw-bold mb-3">New Password</label>
-                                            <input type="password" class="form-control form-control-lg form-control-solid " name="newpassword" id="newpassword">
-                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirm New Password</label>
-                                            <input type="password" class="form-control form-control-lg form-control-solid " name="confirmpassword" id="confirmpassword">
-                                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-text mb-5">Password must be at least 8 character and contain symbols</div>
-
-                                <div class="d-flex">
-                                    <button id="kt_password_submit" type="button" class="btn btn-primary me-2 px-6">Update Password</button>
-                                    <button id="kt_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                </div>
-                            </form>
-                            <!--end::Form-->
-                        </div>
-                        <!--end::Edit-->
                         <!--begin::Action-->
                         <div id="kt_signin_password_button" class="ms-auto">
-                            <button class="btn btn-light btn-active-light-primary">Reset Password</button>
+                            <a asp-page="./ChangePassword" class="btn btn-light btn-active-light-primary">Change Password</a>
                         </div>
                         <!--end::Action-->
                     </div>
                     <!--end::Password-->
-                    <!--begin::Notice-->
+                    <!--begin::Two-factor authentication-->
                     <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed  p-6">
                         <!--begin::Icon-->
                         <i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4"><span class="path1"></span><span class="path2"></span></i>        <!--end::Icon-->
@@ -342,7 +252,7 @@
                         </div>
                         <!--end::Wrapper-->
                     </div>
-                    <!--end::Notice-->
+                    <!--end::Two-factor authentication-->
                 </div>
                 <!--end::Card body-->
             </div>
@@ -350,8 +260,7 @@
         </div>
         <!--end::Sign-in Method-->
         <!--begin::Deactivate Account-->
-        <div class="card  ">
-
+        <div class="card">
             <!--begin::Card header-->
             <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_deactivate" aria-expanded="true" aria-controls="kt_account_deactivate">
                 <div class="card-title m-0">
@@ -412,10 +321,6 @@
 </div>
 
 
-
-
-
-
 @* 
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
@@ -439,4 +344,5 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
+    <script src="~/js/profile.js" asp-append-version="true"></script>
 }

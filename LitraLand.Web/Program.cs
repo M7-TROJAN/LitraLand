@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
+using WhatsAppCloudApi.Extensions;
 namespace LitraLand.Web
 {
     public class Program
@@ -85,6 +86,9 @@ namespace LitraLand.Web
 
             // Add ExpressiveAnnotations
             builder.Services.AddExpressiveAnnotations();
+
+            // Add WhatsApp API Client
+            builder.Services.AddWhatsAppApiClient(builder.Configuration);
 
             var app = builder.Build();
 

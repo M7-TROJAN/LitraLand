@@ -124,13 +124,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                     values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
 
-                var body = _emailBodyBuilder.GetEmailBody(
-                "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg",
-                        $"Hey {user.FullName},",
-                        "please confirm your email",
-                        $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                        "Confirm Email"
-                );
+                var placeholders = new Dictionary<string, string>()
+                {
+                    { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
+                    { "header", $"Hey {user.FullName}," },
+                    { "body", "please confirm your email." },
+                    { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
+                    { "linkTitle", "Confirm Email" }
+                };
+
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
                 await _emailSender.SendEmailAsync(Input.NewEmail, "Confirm your email", body);
 
@@ -166,13 +169,17 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
 
-            var body = _emailBodyBuilder.GetEmailBody(
-                "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg",
-                        $"Hey {user.FullName},",
-                        "please confirm your email",
-                        $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                        "Confirm Email"
-                );
+
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
+                { "header", $"Hey {user.FullName}," },
+                { "body", "please confirm your email." },
+                { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
+                { "linkTitle", "Confirm Email" }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
             await _emailSender.SendEmailAsync(email, "Confirm your email", body);
 

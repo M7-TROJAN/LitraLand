@@ -16,7 +16,9 @@
                 type: 'GET',
                 success: function (areas) {
                     $.each(areas, function (i, area) {
-                        var item = $('<option></option>').attr('value', area.value).text(area.text);
+                        var item = $('<option></option>')
+                            .attr('value', area.value) // Set the value attribute
+                            .text(area.text); // Set the text content
                         areasDropdown.append(item);
                     });
                 },

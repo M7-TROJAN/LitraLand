@@ -1,6 +1,9 @@
 ﻿using LitraLand.Web.Views;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
+using WhatsAppCloudApi;
+using WhatsAppCloudApi.Services;
 namespace LitraLand.Web.Controllers
 {
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Reception)]
@@ -11,23 +14,36 @@ namespace LitraLand.Web.Controllers
         private readonly IImageServices _imageServices;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly IDataProtector _dataProtector;
+        private readonly IWhatsAppClient _whatsAppClient;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
         public SubscribersController(
             ApplicationDbContext context,
             IDataProtectionProvider dataProtector,
             IMapper mapper,
+            IWhatsAppClient whatsAppClient,
             IImageServices imageServices,
-            ICloudinaryService cloudinaryService)
+            ICloudinaryService cloudinaryService,
+            IWebHostEnvironment webHostEnvironment,
+            IEmailSender emailSender,
+            IEmailBodyBuilder emailBodyBuilder)
         {
             _context = context;
             _dataProtector = dataProtector.CreateProtector("MySecureKey");
             _mapper = mapper;
+            _whatsAppClient = whatsAppClient;
             _imageServices = imageServices;
             _cloudinaryService = cloudinaryService;
+            _webHostEnvironment = webHostEnvironment;
+            _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         public IActionResult Index()
         {
+            // var result = await _whatsAppClient.SendMessage("+201129816608", WhatsAppLanguageCode.English_US, "hello_world");
             return View();
         }
 
@@ -112,7 +128,7 @@ namespace LitraLand.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SubscriberFormViewModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View("Form", PopulateViewModel(model));
 
             var subscriber = _mapper.Map<Subscriber>(model);
@@ -154,7 +170,44 @@ namespace LitraLand.Web.Controllers
 
             await _context.SaveChangesAsync();
 
-            //TODO: send a welcome email to the subscriber
+            //Send welcome email
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" },
+                { "header", $"Welcome {model.FirstName}," },
+                { "body", "thanks for joining LitraLand! We're excited to have you 🤩\nFeel free to explore our features and let us know if you have any questions👌." }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Welcome to LitraLand",
+                body
+            );
+
+            //if the subscriber has WhatsApp, Send welcome message using WhatsApp
+            if (model.HasWhatsApp)
+            {
+                var components = new List<WhatsAppComponent>()
+                {
+                    new WhatsAppComponent
+                    {
+                        Type = "body",
+                        Parameters = new List<object>()
+                        {
+                            new WhatsAppTextParameter { Text = model.FirstName }
+                        }
+                    }
+                };
+
+                var phoneNumber = _webHostEnvironment.IsDevelopment() ? "01129816608" : model.PhoneNumber;
+
+                //Change 2 with your country code
+                await _whatsAppClient
+                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English_US,
+                    WhatsAppTemplates.WelcomeMessage, components);
+            }
 
             var subscriberId = _dataProtector.Protect(subscriber.Id.ToString()); // encrypt the subscriber id to be used in the url
 
@@ -292,13 +345,11 @@ namespace LitraLand.Web.Controllers
         public async Task<IActionResult> AllowEmail(SubscriberFormViewModel model)
         {
             var subscriber = await _context.Subscribers
-                .FirstOrDefaultAsync(s => s.Email.Equals(model.Email));
+                .SingleOrDefaultAsync(s => s.Email.Equals(model.Email));
 
-            int subscriberId;
+            int subscriberId = 0;
             if (!string.IsNullOrEmpty(model.Key))
                 subscriberId = int.Parse(_dataProtector.Unprotect(model.Key)); // decrypt the subscriber id to use it in the comparison
-            else
-                subscriberId = 0;
 
             var isAllowed = subscriber is null || subscriber.Id.Equals(subscriberId);
 
@@ -308,13 +359,11 @@ namespace LitraLand.Web.Controllers
         public async Task<IActionResult> AllowNationalId(SubscriberFormViewModel model)
         {
             var subscriber = await _context.Subscribers
-                .FirstOrDefaultAsync(s => s.NationalId.Equals(model.NationalId));
+                .SingleOrDefaultAsync(s => s.NationalId.Equals(model.NationalId));
 
-            int subscriberId;
+            int subscriberId = 0;
             if (!string.IsNullOrEmpty(model.Key))
                 subscriberId = int.Parse(_dataProtector.Unprotect(model.Key)); // decrypt the subscriber id to use it in the comparison
-            else
-                subscriberId = 0;
 
             var isAllowed = subscriber is null || subscriber.Id.Equals(subscriberId);
             return Json(isAllowed);
@@ -323,13 +372,11 @@ namespace LitraLand.Web.Controllers
         public async Task<IActionResult> AllowPhoneNumber(SubscriberFormViewModel model)
         {
             var subscriber = await _context.Subscribers
-                .FirstOrDefaultAsync(s => s.PhoneNumber.Equals(model.PhoneNumber));
+                .SingleOrDefaultAsync(s => s.PhoneNumber.Equals(model.PhoneNumber));
 
-            int subscriberId;
+            int subscriberId = 0;
             if (!string.IsNullOrEmpty(model.Key))
                 subscriberId = int.Parse(_dataProtector.Unprotect(model.Key)); // decrypt the subscriber id to use it in the comparison
-            else
-                subscriberId = 0;
 
             var isAllowed = subscriber is null || subscriber.Id.Equals(subscriberId);
             return Json(isAllowed);

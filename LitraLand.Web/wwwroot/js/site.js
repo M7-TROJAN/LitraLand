@@ -44,20 +44,20 @@ function showLoadingMessage(title = "Processing...", message = "Please wait...")
 
 // Function to disable the submit button and show the loading indicator
 function disableSubmitButton() {
-    // Get the submit button
-    var button = $('body :submit'); // 'body :submit' means select all submit buttons in the body
+    setTimeout(function () {
+        // Get the submit button
+        var button = $('body :submit'); // 'body :submit' means select all submit buttons in the body
 
-    // Disable button to prevent multiple submits
-    button.attr('disabled', 'disabled'); // the first 'disabled' is the attribute name, and the second 'disabled' is the attribute value
+        // Disable button to prevent multiple submits
+        button.attr('disabled', 'disabled'); // the first 'disabled' is the attribute name, and the second 'disabled' is the attribute value
 
-    // Activate indicator
-    button.attr('data-kt-indicator', 'on');
+        // Activate indicator
+        button.attr('data-kt-indicator', 'on');
+    }, 500);
 }
 
 // Function to enable the submit button and remove the loading indicator
 function enableSubmitButton() {
-
-    
     setTimeout(function () {
         // Get the submit button
         var button = $('body :submit');
@@ -110,15 +110,7 @@ function onModalError(errorMessage) {
 }
 
 function onModalComplete() {
-
-    // Get the submit button
-    var button = $('body :submit');
-
-    // Enable the button
-    button.removeAttr('disabled');
-
-    // Deactivate indicator
-    button.removeAttr('data-kt-indicator');
+    enableSubmitButton();
 }
 // end Modal functions
 
@@ -576,12 +568,15 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
 
     // disable submit button in forms to prevent multiple submits and show loading indicator
     $('form').not('#SignOutForm').on('submit', function () {
-        //var form = $(this);
-        //var isValid = form.valid(); // Check if the form is valid or not
+        /*
+            // old code
+            var form = $(this);
+            var isValid = form.valid(); // Check if the form is valid or not
 
-        //// If the form is valid, disable the submit button and show the loading indicator
-        //if (isValid)
-        //    disableSubmitButton();
+            // If the form is valid, disable the submit button and show the loading indicator
+            if (isValid)
+                disableSubmitButton();
+        */
 
         var form = $(this);
         var validator = form.validate();
@@ -589,12 +584,10 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
         // Validate the form before disabling the submit button
         validator.form();
 
-        // make a short delay to allow the validation to complete before disabling the submit button
-        setTimeout(function () {
-            if (form.valid()) {
-                disableSubmitButton(form);
-            }
-        }, 500);
+        var isValid = form.valid();
+
+        if (isValid)
+            disableSubmitButton(form);
     });
 
     // Handle sign out

@@ -82,12 +82,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 values: new { userId = userId, code = code },
             protocol: Request.Scheme);
 
-            var body = _emailBodyBuilder.GetEmailBody(
-                "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg",
-                $"Hey {user.FullName}, thanks for joining us!",
-                "Please click the link below to verify your email address.", 
-                HtmlEncoder.Default.Encode(callbackUrl!),
-                "Verify Email");
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
+                { "header", $"Hey {user.FullName}, thanks for joining us!" },
+                { "body", "Please click the link below to verify your email address." },
+                { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
+                { "linkTitle", "Verify Email" }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
 

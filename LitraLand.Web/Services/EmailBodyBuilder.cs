@@ -9,19 +9,33 @@
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public string GetEmailBody(string imageUrl, string header, string body, string url, string linkTitle)
+        public string GetEmailBody(string template, Dictionary<string, string> placeholders)
         {
-            var templeatePath = $"{_webHostEnvironment.WebRootPath}/templates/email.html";
+            var templeatePath = $"{_webHostEnvironment.WebRootPath}/templates/{template}.html";
             StreamReader streamReader = new StreamReader(templeatePath);
-            var template = streamReader.ReadToEnd();
+            var templateContent = streamReader.ReadToEnd();
             streamReader.Close();
 
-            return template
-                .Replace("[[mediaUrl]]", imageUrl)
-                .Replace("[[header]]", header)
-                .Replace("[[body]]", body)
-                .Replace("[[url]]", url)
-                .Replace("[[linkTitle]]", linkTitle);
+            foreach (var placeholder in placeholders)
+                templateContent = templateContent.Replace($"[{placeholder.Key}]", placeholder.Value);
+
+            return templateContent;
         }
+
+        // old implementation
+        //public string GetEmailBody(string imageUrl, string header, string body, string url, string linkTitle)
+        //{
+        //    var templeatePath = $"{_webHostEnvironment.WebRootPath}/templates/email.html";
+        //    StreamReader streamReader = new StreamReader(templeatePath);
+        //    var template = streamReader.ReadToEnd();
+        //    streamReader.Close();
+
+        //    return template
+        //        .Replace("[[mediaUrl]]", imageUrl)
+        //        .Replace("[[header]]", header)
+        //        .Replace("[[body]]", body)
+        //        .Replace("[[url]]", url)
+        //        .Replace("[[linkTitle]]", linkTitle);
+        //}
     }
 }

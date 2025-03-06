@@ -29,7 +29,7 @@
                                data-bs-dismiss="click">
                             <i class="bi bi-pencil-fill fs-7"></i>
                             <!--begin::Inputs-->
-                            <input type="file" asp-for="Image" accept=".png, .jpg, .jpeg" />
+                            <input type="file" asp-for="Image" accept=".png, .jpg, .jpeg, .webp" />
                             <input type="hidden" name="avatar_remove" />
                             <!--end::Inputs-->
                         </label>
@@ -49,7 +49,7 @@
                         </span>
                         <!--end::Remove button-->
                     </div>
-                    <div class="form-text">Allowed file types: png, jpg, jpeg and cannot be more that 2 MB</div>
+                    <div class="form-text">Allowed file types: png, jpg, jpeg, webp and cannot be more that 2 MB</div>
                     <span asp-validation-for="Image" class="text-danger d-block"></span>
                     <!--end::Image input-->
                 </div>

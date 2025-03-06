@@ -105,16 +105,24 @@ namespace LitraLand.Web.Controllers
                 pageHandler: null,
                 values: new { area = "Identity", userId = user.Id, code = code},
                 protocol: Request.Scheme);
-            
-            var body = _emailBodyBuilder.GetEmailBody(
-                "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg",
-                $"Hey {user.UserName}, thanks for joining us!",
-                "Please click the link below to verify your email address.",
-                HtmlEncoder.Default.Encode(callbackUrl!),
-                "Verify Email");
 
-            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
-            // end send email confirmation
+
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" },
+                { "header", $"Hey {user.UserName}, thanks for joining us!" },
+                { "body", "Please click the link below to verify your email address." },
+                { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
+                { "linkTitle", "Verify Email" }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Confirm your email",
+                body
+            );
 
             var viweModel = _mapper.Map<UserViewModel>(user);
             return PartialView("_UserRow", viweModel);
@@ -266,23 +274,39 @@ namespace LitraLand.Web.Controllers
             await _userManager.RemovePasswordAsync(user);
 
             var result = await _userManager.AddPasswordAsync(user, model.Password);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                user.LastUpdatedOn = DateTime.Now;
-                user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+                user.PasswordHash = CurrenthashedPassword; // Revert the password hash if the new password addition fails
                 await _userManager.UpdateAsync(user);
 
-                var viweModel = _mapper.Map<UserViewModel>(user);
-                return PartialView("_UserRow", viweModel);
+                var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+
+                return BadRequest(errors);
             }
 
-            user.PasswordHash = CurrenthashedPassword; // Revert the password hash if the new password addition fails
+            user.LastUpdatedOn = DateTime.Now;
+            user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             await _userManager.UpdateAsync(user);
 
-            var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+            //Send email notification
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" },
+                { "header", $"Hey {user.UserName}," },
+                { "body", "Your password has been reset successfully." }
+            };
 
-            return BadRequest(errors);
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                email: user.Email!,
+                subject: "Password Reset",
+                htmlMessage: body
+             );
+
+            var viweModel = _mapper.Map<UserViewModel>(user);
+            return PartialView("_UserRow", viweModel);
         }
 
         [HttpPost]
@@ -301,18 +325,19 @@ namespace LitraLand.Web.Controllers
                 return BadRequest("User is already unlocked.");
 
             var result = await _userManager.SetLockoutEndDateAsync(targetUser, null);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                targetUser.LastUpdatedOn = DateTime.Now;
-                targetUser.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                return Ok(new
-                {
-                    message = $"User {targetUser.UserName} has been unlocked.",
-                    lastUpdatedOn = targetUser.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt"),
-                });
+                var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+                return BadRequest(errors);
             }
-            var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
-            return BadRequest(errors);
+
+            targetUser.LastUpdatedOn = DateTime.Now;
+            targetUser.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(new
+            {
+                message = $"User {targetUser.UserName} has been unlocked.",
+                lastUpdatedOn = targetUser.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt"),
+            });
         }
 
         [HttpPost]

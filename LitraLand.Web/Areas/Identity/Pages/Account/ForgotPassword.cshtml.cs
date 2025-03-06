@@ -67,12 +67,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                var body = _emailBodyBuilder.GetEmailBody(
-                "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg",
-                $"Hey {user.FullName},",
-                "Please reset your password by clicking the link below.",
-                url: HtmlEncoder.Default.Encode(callbackUrl!),
-                "Reset Password");
+                var placeholders = new Dictionary<string, string>()
+                {
+                    { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
+                    { "header", $"Hey {user.FullName}," },
+                    { "body", "Please reset your password by clicking the link below." },
+                    { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
+                    { "linkTitle", "Reset Password" }
+                };
+
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
                 await _emailSender.SendEmailAsync(user.Email, "Reset Password", body);
 

@@ -1,5 +1,5 @@
 ﻿// Set default page size (number of subscribers per page)
-let pageSize = 10;
+const pageSize = 9;
 
 // Function to update the pagination display in the UI
 const updatePaginationDisplay = (page, pageSize, totalRecords) => {
@@ -21,7 +21,6 @@ const renderSubscribers = (subscribers) => {
 
     // If no subscribers were found, display the alert message
     if (subscribers.length === 0) {
-        // If no subscribers were found, display the alert message
         container.html(`
             <div class="alert bg-light-warning border border-warning border-3 border-dashed d-flex flex-column flex-sm-row align-items-center justify-content-between w-100 p-5">
                 <div class="d-flex flex-column">
@@ -89,6 +88,7 @@ const renderPagination = (totalRecords, currentPage) => {
 };
 
 
+// in document.ready
 document.addEventListener("DOMContentLoaded", function () {
 
     // Function to load subscribers via AJAX
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 searchTerm: search
             },
             headers: {
-                // Include the anti-forgery token for security
+                // Include the anti-forgery token
                 "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
             },
             success: (response) => {

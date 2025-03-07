@@ -3,6 +3,36 @@
 
 @{
 	ViewData["Title"] = "Subscriber Details";
+
+	// Get the last subscription
+	var lastSubscription = Model.Subscriptions.Last();
+
+	// Check if the subscription is expired
+	bool isSubscriptionExpired = lastSubscription.EndDate < DateTime.Today;
+
+	// Determine the subscriber's status
+	var subscriberStatus = Model.IsBlackListed
+		? SubscriberStatus.Banned
+		: isSubscriptionExpired
+			? SubscriberStatus.Inactive
+			: SubscriberStatus.Active;
+
+    var statusClass = subscriberStatus switch
+    {
+        SubscriberStatus.Active => "success",
+        SubscriberStatus.Inactive => "warning",
+        SubscriberStatus.Banned => "danger",
+        _ => ""
+    };
+
+
+    var statusText = subscriberStatus switch
+    {
+        SubscriberStatus.Active => "Active subscriber",
+        SubscriberStatus.Inactive => "Inactive subscriber",
+        SubscriberStatus.Banned => "Banned subscriber",
+        _ => "Unknown"
+    };
 }
 
 <div class="d-flex flex-column flex-column-fluid">
@@ -60,7 +90,7 @@
 					<div class="d-flex flex-stack fs-4 py-3">
 						<div class="fw-bold">Details</div>
 						<!--begin::Badge-->
-						<div class="badge badge-light-success d-inline">Active subscriber</div>
+						<div class="badge badge-light-@statusClass d-inline" id="StatusBadge">@statusText</div>
 						<!--begin::Badge-->
 					</div>
 					<!--end::Details toggle-->
@@ -111,12 +141,16 @@
 			<ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8" role="tablist">
 				<!--begin:::Tab item-->
 				<li class="nav-item" role="presentation">
-					<a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#Overview" aria-selected="false" role="tab" tabindex="-1">Overview</a>
+					<a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#Overview" aria-selected="false" role="tab" tabindex="-1">
+						Overview
+					</a>
 				</li>
 				<!--end:::Tab item-->
 				<!--begin:::Tab item-->
 				<li class="nav-item" role="presentation">
-					<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true" role="tab">Rentals</a>
+					<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true" role="tab">
+						Rentals
+					</a>
 				</li>
 				<!--end:::Tab item-->
 			</ul>
@@ -163,18 +197,32 @@
 						</div>
 						<div class="col">
 							<!--begin::Reward Tier-->
-							<div class="card bg-success hoverable h-md-100">
+							<div class="card bg-@statusClass hoverable h-md-100">
 								<!--begin::Body-->
 								<div class="card-body">
 									<!--begin::Svg Icon | path: icons/duotune/general/gen020.svg-->
 									<span class="svg-icon svg-icon-white svg-icon-3x ms-n1">
-										<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="@(subscriberStatus == SubscriberStatus.Active && !Model.IsBlackListed ? string.Empty : "d-none")" id="ActiveStatusIcon">
 											<path opacity="0.3" d="M7.16973 20.95C6.26973 21.55 5.16972 20.75 5.46972 19.75L7.36973 14.05L2.46972 10.55C1.56972 9.95005 2.06973 8.55005 3.06973 8.55005H20.8697C21.9697 8.55005 22.3697 9.95005 21.4697 10.55L7.16973 20.95Z" fill="currentColor" />
 											<path d="M11.0697 2.75L7.46973 13.95L16.9697 20.85C17.8697 21.45 18.9697 20.65 18.6697 19.65L13.1697 2.75C12.7697 1.75 11.3697 1.75 11.0697 2.75Z" fill="currentColor" />
 										</svg>
+										@if (Model.IsBlackListed)
+										{
+											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path opacity="0.3" d="M12 10.6L14.8 7.8C15.2 7.4 15.8 7.4 16.2 7.8C16.6 8.2 16.6 8.80002 16.2 9.20002L13.4 12L12 10.6ZM10.6 12L7.8 14.8C7.4 15.2 7.4 15.8 7.8 16.2C8 16.4 8.3 16.5 8.5 16.5C8.7 16.5 8.99999 16.4 9.19999 16.2L12 13.4L10.6 12Z" fill="currentColor" />
+												<path d="M22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2C17.5 2 22 6.5 22 12ZM13.4 12L16.2 9.20001C16.6 8.80001 16.6 8.19999 16.2 7.79999C15.8 7.39999 15.2 7.39999 14.8 7.79999L12 10.6L9.2 7.79999C8.8 7.39999 8.2 7.39999 7.8 7.79999C7.4 8.19999 7.4 8.80001 7.8 9.20001L10.6 12L7.8 14.8C7.4 15.2 7.4 15.8 7.8 16.2C8 16.4 8.3 16.5 8.5 16.5C8.7 16.5 9 16.4 9.2 16.2L12 13.4L14.8 16.2C15 16.4 15.3 16.5 15.5 16.5C15.7 16.5 16 16.4 16.2 16.2C16.6 15.8 16.6 15.2 16.2 14.8L13.4 12Z" fill="currentColor" />
+											</svg>
+										}
+										else if (subscriberStatus == SubscriberStatus.Inactive)
+										{
+											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path d="M22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2C17.5 2 22 6.5 22 12ZM18 12C18 11.4 17.6 11 17 11H7C6.4 11 6 11.4 6 12C6 12.6 6.4 13 7 13H17C17.6 13 18 12.6 18 12Z" fill="currentColor" />
+											</svg>
+										}
 									</span>
 									<!--end::Svg Icon-->
-									<div class="text-white fw-bold fs-2 mt-5">Active Subscriber</div>
+									<!--end::Svg Icon-->
+									<div class="text-white fw-bold fs-2 mt-5" id="CardStatus">@statusText</div>
 									<div class="fw-semibold text-white">Subscrber since: @Model.CreatedOn.ToString("dd MMM, yyyy")</div>
 								</div>
 								<!--end::Body-->
@@ -185,17 +233,52 @@
 					<!--begin::Card-->
 					<div class="card pt-4 mb-6 mb-xl-9">
 						<!--begin::Card header-->
-						<div class="card-header border-0">
-							<!--begin::Card title-->
-							<div class="card-title">
-								<h2>Renewal History</h2>
-							</div>
-							<!--end::Card title-->
+						<div class="card-header border-0 pt-5">
+							<h3 class="card-title align-items-start flex-column">
+								<span class="card-label fw-bold fs-3 mb-1">Renewal History</span>
+							</h3>
+							@if (!Model.IsBlackListed)
+							{
+								<div class="card-toolbar">
+									<a href="javascript:;" class="btn btn-sm btn-light-primary js-renew" data-key="@Model.Key">
+										<span class="svg-icon svg-icon-2">
+											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path d="M14.5 20.7259C14.6 21.2259 14.2 21.826 13.7 21.926C13.2 22.026 12.6 22.0259 12.1 22.0259C9.5 22.0259 6.9 21.0259 5 19.1259C1.4 15.5259 1.09998 9.72592 4.29998 5.82592L5.70001 7.22595C3.30001 10.3259 3.59999 14.8259 6.39999 17.7259C8.19999 19.5259 10.8 20.426 13.4 19.926C13.9 19.826 14.4 20.2259 14.5 20.7259ZM18.4 16.8259L19.8 18.2259C22.9 14.3259 22.7 8.52593 19 4.92593C16.7 2.62593 13.5 1.62594 10.3 2.12594C9.79998 2.22594 9.4 2.72595 9.5 3.22595C9.6 3.72595 10.1 4.12594 10.6 4.02594C13.1 3.62594 15.7 4.42595 17.6 6.22595C20.5 9.22595 20.7 13.7259 18.4 16.8259Z" fill="currentColor" />
+												<path opacity="0.3" d="M2 3.62592H7C7.6 3.62592 8 4.02592 8 4.62592V9.62589L2 3.62592ZM16 14.4259V19.4259C16 20.0259 16.4 20.4259 17 20.4259H22L16 14.4259Z" fill="currentColor" />
+											</svg>
+										</span>
+										Renew
+									</a>
+								</div>
+							}
 						</div>
 						<!--end::Card header-->
 						<!--begin::Card body-->
-						<div class="card-body pt-0 pb-5">
-							<p>Renewal History will be shown here</p>
+						<div class="card-body py-3">
+							<div class="table-responsive">
+								<!--begin::Table-->
+								<table class="table align-middle gs-0 gy-4" id="SubscriptionsTable">
+									<!--begin::Table head-->
+									<thead>
+										<tr class="fw-bold text-muted bg-light">
+											<th class="ps-4 min-w-125px rounded-start">Start Date</th>
+											<th class="min-w-125px">End Date</th>
+											<th class="min-w-150px">Status</th>
+											<th class="min-w-125px text-end rounded-end pe-4">Add On</th>
+										</tr>
+									</thead>
+									<!--end::Table head-->
+									<!--begin::Table body-->
+									<tbody>
+										@foreach (var subscription in Model.Subscriptions)
+										{
+											<partial name="_SubscriptionRow" model="@subscription" />
+										}
+									</tbody>
+									<!--end::Table body-->
+								</table>
+								<!--end::Table-->
+							</div>
 						</div>
 						<!--end::Card body-->
 					</div>
@@ -232,6 +315,10 @@
     <!--end::Container-->
 </div>
 
+@section Scripts
+{
+    <script src="~/js/renew.js" asp-append-version="true"></script>
+}
 
 @section Plugins
 {

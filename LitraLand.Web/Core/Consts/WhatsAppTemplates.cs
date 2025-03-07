@@ -4,6 +4,7 @@
     {
         public const string TestMessage = "hello_world";
         public const string WelcomeMessage = "welcome_message";
-        public const string WelcomeTolitraland = "welcome_to_litraland";
+        public const string SubscriptionRenewal = "subscription_renewal";
+        public const string WelcomeNewMember = "welcome_new_member ";
     }
 }

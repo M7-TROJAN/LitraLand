@@ -43,7 +43,6 @@ namespace LitraLand.Web.Controllers
 
         public IActionResult Index()
         {
-            // var result = await _whatsAppClient.SendMessage("+201129816608", WhatsAppLanguageCode.English_US, "hello_world");
             return View();
         }
 
@@ -166,8 +165,15 @@ namespace LitraLand.Web.Controllers
 
             subscriber.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _context.Subscribers.Add(subscriber);
+            var subscription = new Subscription
+            {
+                CreatedById = subscriber.CreatedById,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddYears(1)
+            };
+            subscriber.Subscriptions.Add(subscription);
 
+            _context.Subscribers.Add(subscriber);
             await _context.SaveChangesAsync();
 
             //Send welcome email
@@ -204,8 +210,8 @@ namespace LitraLand.Web.Controllers
                 var phoneNumber = _webHostEnvironment.IsDevelopment() ? "01129816608" : model.PhoneNumber;
 
                 //Change 2 with your country code
-                await _whatsAppClient
-                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English_US,
+               var res = await _whatsAppClient
+                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English,
                     WhatsAppTemplates.WelcomeMessage, components);
             }
 
@@ -320,6 +326,7 @@ namespace LitraLand.Web.Controllers
             var subscriber = await _context.Subscribers
                 .Include(s => s.Area)
                 .Include(s => s.Governorate)
+                .Include(s => s.Subscriptions)
                 .FirstOrDefaultAsync(s => s.Id == subscriberId);
 
             if (subscriber is null)
@@ -328,6 +335,87 @@ namespace LitraLand.Web.Controllers
             var viewModel = _mapper.Map<SubscriberViewModel>(subscriber);
             viewModel.Key = id; // keep the encrypted id to be used in the view
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenewSubscription(string sKey)
+        {
+            // check if the key is sent in the request
+            if (string.IsNullOrWhiteSpace(sKey))
+                return BadRequest("Invalid request: Key is missing.");
+
+            // decrypt the subscriber id to use it in the comparison
+            if (!int.TryParse(TryUnprotect(sKey), out var subscriberId))
+                return BadRequest("Invalid request: Subscriber Key is not valid.");
+
+            var subscriber = await _context.Subscribers
+                                    .Include(s => s.Subscriptions)
+                                    .SingleOrDefaultAsync(s => s.Id == subscriberId);
+
+            if (subscriber is null)
+                return NotFound();
+
+            if (subscriber.IsBlackListed)
+                return BadRequest("This subscriber is blacklisted.");
+
+            var lastSubscription = subscriber.Subscriptions.Last();
+
+            var startDate = lastSubscription.EndDate < DateTime.Today ? DateTime.Today : lastSubscription.EndDate.AddDays(1);
+
+            var newSubscription = new Subscription
+            {
+                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                StartDate = startDate,
+                EndDate = startDate.AddYears(1)
+            };
+            subscriber.Subscriptions.Add(newSubscription);
+            await _context.SaveChangesAsync();
+
+
+            // send email to notify the subscriber about the renewal
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
+                { "header", $"Hello {subscriber.FirstName}," },
+                { "body", $"We're happy to inform you that your subscription has been renewed for another year, " +
+                $"Beginning from {newSubscription.StartDate.ToString("dd MMM yyyy")} to {newSubscription.EndDate.ToString("dd MMM yyyy")}.🎉🎉" +
+                $"Enjoy our services and let us know if you have any questions." }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                subscriber.Email,
+                "Subscription Renewal",
+                body
+            );
+
+            // send WhatsApp message to notify the subscriber about the renewal
+            if (subscriber.HasWhatsApp)
+            {
+                var components = new List<WhatsAppComponent>()
+                {
+                    new WhatsAppComponent
+                    {
+                        Type = "body",
+                        Parameters = new List<object>()
+                        {
+                            new WhatsAppTextParameter { Text = subscriber.FirstName },
+                            new WhatsAppTextParameter { Text = newSubscription.StartDate.ToString("dd MMM yyyy") },
+                            new WhatsAppTextParameter { Text = newSubscription.EndDate.ToString("dd MMM yyyy") }
+                        }
+                    }
+                };
+                var phoneNumber = _webHostEnvironment.IsDevelopment() ? "01129816608" : subscriber.PhoneNumber;
+
+                var res = await _whatsAppClient
+                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English_US,
+                    WhatsAppTemplates.SubscriptionRenewal, components);
+            }
+
+            var subscriptionModel = _mapper.Map<SubscriptionViewModel>(newSubscription);
+            return PartialView("_SubscriptionRow", subscriptionModel);
         }
 
         [HttpGet]

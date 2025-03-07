@@ -30,6 +30,32 @@ function showErrorMessage(message = 'Something went wrong!') {
     });
 }
 
+// toast for success message
+function showSuccessToast(message = 'Success!') {
+    Swal.fire({
+        icon: 'success',
+        title: 'Done!',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+}
+
+// toast for error message 
+function showErrorToast(message = 'Something went wrong!') {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+}
+
 // Function to show a loading message using SweetAlert2 while processing a request to the server
 function showLoadingMessage(title = "Processing...", message = "Please wait...") {
     Swal.fire({

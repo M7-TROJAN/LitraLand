@@ -1,4 +1,4 @@
-﻿using LitraLand.Web.Core.ViewModels.SubscriberViews;
+﻿using LitraLand.Web.Core.ViewModels.SubscriptionViews;
 
 namespace LitraLand.Web.Core.Mapping
 {
@@ -63,6 +63,9 @@ namespace LitraLand.Web.Core.Mapping
 
             CreateMap<Subscriber, SubscriberSearchResultViewModel>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
+            // subscription
+            CreateMap<Subscription, SubscriptionViewModel>();
 
             // governorates
             CreateMap<Governorate, SelectListItem>()

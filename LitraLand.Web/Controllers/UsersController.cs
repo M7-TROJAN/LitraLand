@@ -333,6 +333,23 @@ namespace LitraLand.Web.Controllers
 
             targetUser.LastUpdatedOn = DateTime.Now;
             targetUser.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // send email notification
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" },
+                { "header", $"Hey {targetUser.UserName}," },
+                { "body", "Your account has been unlocked successfully." }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                email: targetUser.Email!,
+                subject: "Account Unlocked",
+                htmlMessage: body
+             );
+
             return Ok(new
             {
                 message = $"User {targetUser.UserName} has been unlocked.",

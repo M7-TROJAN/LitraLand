@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using System.Text;
+using Hangfire;
 
 namespace LitraLand.Web.Controllers
 {
@@ -118,11 +119,11 @@ namespace LitraLand.Web.Controllers
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
-            await _emailSender.SendEmailAsync(
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
                 model.Email,
                 "Confirm your email",
                 body
-            );
+            ));
 
             var viweModel = _mapper.Map<UserViewModel>(user);
             return PartialView("_UserRow", viweModel);
@@ -299,11 +300,11 @@ namespace LitraLand.Web.Controllers
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
 
-            await _emailSender.SendEmailAsync(
-                email: user.Email!,
-                subject: "Password Reset",
-                htmlMessage: body
-             );
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+                user.Email!,
+                "Password Reset",
+                body
+            ));
 
             var viweModel = _mapper.Map<UserViewModel>(user);
             return PartialView("_UserRow", viweModel);
@@ -344,11 +345,11 @@ namespace LitraLand.Web.Controllers
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
 
-            await _emailSender.SendEmailAsync(
-                email: targetUser.Email!,
-                subject: "Account Unlocked",
-                htmlMessage: body
-             );
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+                targetUser.Email!,
+                "Account Unlocked",
+                body
+            ));
 
             return Ok(new
             {

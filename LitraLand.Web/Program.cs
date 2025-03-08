@@ -1,11 +1,15 @@
+using Hangfire;
+using Hangfire.Dashboard;
 using LitraLand.Web.Core.Mapping;
 using LitraLand.Web.Helpers;
 using LitraLand.Web.Seeds;
+using LitraLand.Web.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 using WhatsAppCloudApi.Extensions;
+using WhatsAppCloudApi.Services;
 namespace LitraLand.Web
 {
     public class Program
@@ -90,6 +94,23 @@ namespace LitraLand.Web
             // Add WhatsApp API Client
             builder.Services.AddWhatsAppApiClient(builder.Configuration);
 
+            // Add Hangfire services
+            builder.Services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(connectionString);
+
+            });
+
+            // Add Hangfire server
+            builder.Services.AddHangfireServer();
+
+            builder.Services.Configure<AuthorizationOptions>(options =>
+            options.AddPolicy("AdminsOnly", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole(AppRoles.SuperAdmin, AppRoles.Admin);
+            }));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -122,6 +143,34 @@ namespace LitraLand.Web
             await DefaultRols.SeedRolsAsync(roleManager);
             await DefaultUsers.SeedAdminUserAsync(userManager);
             // end seed the database
+
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                DashboardTitle = "LitraLand Dashboard",
+                //IsReadOnlyFunc = (DashboardContext context) => true,
+                Authorization = new IDashboardAuthorizationFilter[]
+                {
+                    new HangfireAuthorizationFilter("AdminsOnly")
+                }
+            });
+
+            // Add Hangfire tasks (jobs that run in the background in a scheduled manner)
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var webHostEnvironment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+            var whatsAppClient = scope.ServiceProvider.GetRequiredService<IWhatsAppClient>();
+            var emailBodyBuilder = scope.ServiceProvider.GetRequiredService<IEmailBodyBuilder>();
+            var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
+
+            var hangfireTasks = new HangfireTasks(dbContext, webHostEnvironment, whatsAppClient,
+                emailBodyBuilder, emailSender);
+
+            RecurringJob.AddOrUpdate(
+                "PrepareExpirationAlerts", // Recurring Job ID (Unique Identifier)
+                () => hangfireTasks.PrepareExpirationAlerts(),
+                "0 14 * * *", // Cron Expression (Run every day at 2:00 PM)
+                new RecurringJobOptions()
+            );
+
 
             app.MapControllerRoute(
                 name: "default",

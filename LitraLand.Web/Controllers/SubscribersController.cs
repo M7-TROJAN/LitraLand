@@ -1,4 +1,5 @@
-﻿using LitraLand.Web.Views;
+﻿using Hangfire;
+using LitraLand.Web.Views;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
@@ -186,11 +187,12 @@ namespace LitraLand.Web.Controllers
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
 
-            await _emailSender.SendEmailAsync(
+            // use Hangfire to send the email in the background
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
                 model.Email,
                 "Welcome to LitraLand",
                 body
-            );
+            ));
 
             //if the subscriber has WhatsApp, Send welcome message using WhatsApp
             if (model.HasWhatsApp)
@@ -209,10 +211,13 @@ namespace LitraLand.Web.Controllers
 
                 var phoneNumber = _webHostEnvironment.IsDevelopment() ? "01129816608" : model.PhoneNumber;
 
-                //Change 2 with your country code
-               var res = await _whatsAppClient
-                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English,
-                    WhatsAppTemplates.WelcomeMessage, components);
+                // use Hangfire to send the WhatsApp message in the background
+                BackgroundJob.Enqueue(() => _whatsAppClient.SendMessage(
+                    $"2{phoneNumber}", 
+                    WhatsAppLanguageCode.English,
+                    WhatsAppTemplates.WelcomeMessage,
+                    components
+                ));
             }
 
             var subscriberId = _dataProtector.Protect(subscriber.Id.ToString()); // encrypt the subscriber id to be used in the url
@@ -385,11 +390,11 @@ namespace LitraLand.Web.Controllers
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
 
-            await _emailSender.SendEmailAsync(
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
                 subscriber.Email,
                 "Subscription Renewal",
                 body
-            );
+            ));
 
             // send WhatsApp message to notify the subscriber about the renewal
             if (subscriber.HasWhatsApp)
@@ -409,9 +414,12 @@ namespace LitraLand.Web.Controllers
                 };
                 var phoneNumber = _webHostEnvironment.IsDevelopment() ? "01129816608" : subscriber.PhoneNumber;
 
-                var res = await _whatsAppClient
-                    .SendMessage($"2{phoneNumber}", WhatsAppLanguageCode.English_US,
-                    WhatsAppTemplates.SubscriptionRenewal, components);
+                BackgroundJob.Enqueue(() => _whatsAppClient.SendMessage(
+                    $"2{phoneNumber}",
+                    WhatsAppLanguageCode.English_US,
+                    WhatsAppTemplates.SubscriptionRenewal,
+                    components
+                ));
             }
 
             var subscriptionModel = _mapper.Map<SubscriptionViewModel>(newSubscription);

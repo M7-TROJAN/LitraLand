@@ -28,7 +28,7 @@
 
             var subscribers = await _context.Subscribers
                 .Include(s => s.Subscriptions)
-                .Where(s => s.Subscriptions.Any() && s.Subscriptions.Max(x => x.EndDate) == expirationDate)
+                .Where(s => !s.IsBlackListed && s.Subscriptions.Any() && s.Subscriptions.Max(x => x.EndDate) == expirationDate)
                 .ToListAsync();
 
             var emailTasks = new List<Task>();

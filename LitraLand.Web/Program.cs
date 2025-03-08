@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 using WhatsAppCloudApi.Extensions;
-using WhatsAppCloudApi.Services;
 namespace LitraLand.Web
 {
     public class Program

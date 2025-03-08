@@ -11,6 +11,8 @@ namespace LitraLand.Web.Data
         public DbSet<BookCopy> BookCopies { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Governorate> Governorates { get; set; }
+        public DbSet<Rental> Rentals { get; set; }
+        public DbSet<RentalCopy> RentalCopies { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)

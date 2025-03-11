@@ -34,12 +34,20 @@ function showErrorMessage(message = 'Something went wrong!') {
 function showSuccessToast(message = 'Success!') {
     Swal.fire({
         icon: 'success',
-        title: 'Done!',
+        title: '<strong style="color: #28a745;">✔️ Success!</strong>',
         text: message,
         timer: 3000,
         showConfirmButton: false,
         toast: true,
-        position: 'top-end'
+        position: 'top-end',
+        timerProgressBar: true, // 
+        customClass: {
+            popup: 'custom-toast-position' // 
+        },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', () => Swal.stopTimer()); // 
+            toast.addEventListener('mouseleave', () => Swal.resumeTimer()); // 
+        }
     });
 }
 
@@ -47,12 +55,20 @@ function showSuccessToast(message = 'Success!') {
 function showErrorToast(message = 'Something went wrong!') {
     Swal.fire({
         icon: 'error',
-        title: 'Error!',
-        text: message,
+        title: '<strong style="color: #ff4c4c;">❌ Error!</strong>',
+        text: message.responseText != undefined ? message.responseText : message,
         timer: 3000,
         showConfirmButton: false,
         toast: true,
-        position: 'top-end'
+        position: 'top-end',
+        timerProgressBar: true, //
+        customClass: {
+            popup: 'custom-toast-position' // 
+        },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', () => Swal.stopTimer()); // 
+            toast.addEventListener('mouseleave', () => Swal.resumeTimer()); // 
+        }
     });
 }
 
@@ -440,7 +456,7 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                             });
 
                             // Show success message using the returned message from the server
-                            showSuccessMessage(data.message ? data.message : 'Item status has been toggled successfully');
+                            showSuccessToast(data.message ? data.message : 'Item status has been toggled successfully');
                         },
                         error: function (errorMessage) {
                             Swal.close(); // Close the loading message

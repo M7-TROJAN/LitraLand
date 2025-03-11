@@ -1,5 +1,4 @@
-﻿@using LitraLand.Web.Views
-@model SearchFormViewModel
+﻿@model SearchFormViewModel
 
 @{
 	ViewData["Title"] = "Subscribers";
@@ -63,7 +62,10 @@ data-ajax-complete="enableSubmitButton">
 	<!--end::Card-->
 </form>
 
-<div id="Result"></div>
+
+<div id="Result">
+	@* Search results will be displayed here *@
+</div> 
 
 @section Scripts 
 {

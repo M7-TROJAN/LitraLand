@@ -6,8 +6,10 @@
             @(Model.IsDeleted ? "Deleted" : "Available")
         </span>
     </td>
-    <td>@Model.CreatedOn.ToString("dd MMM yyyy hh:mm:ss tt")</td>
-    <td class="js-updated-on">@Model.LastUpdatedOn</td>
+    <td>@Model.CreatedOn.ToString("dd MMM, yyyy hh:mm:ss tt")</td>
+    <td class="js-updated-on">
+        @(Model.LastUpdatedOn.HasValue ? Model.LastUpdatedOn.Value.ToString("dd MMM, yyyy hh:mm:ss tt") : "N/A")
+    </td>
     <td class="text-end">
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
             Actions

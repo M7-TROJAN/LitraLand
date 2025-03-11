@@ -1,4 +1,4 @@
-﻿namespace LitraLand.Web.Views
+﻿namespace LitraLand.Web.Core.ViewModels
 {
     public class SearchFormViewModel
     {

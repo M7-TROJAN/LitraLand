@@ -20,7 +20,10 @@
                 else if (!ReturnDate.HasValue && DateTime.Today > EndDate)
                     delay = (int)(DateTime.Today - EndDate).TotalDays;
 
+                // delay = Math.Max((int)((ReturnDate ?? DateTime.Today) - EndDate).TotalDays, 0); // this line is the same as the previous two lines but more concise and readable
+
                 return delay;
+
             }
         }
     }

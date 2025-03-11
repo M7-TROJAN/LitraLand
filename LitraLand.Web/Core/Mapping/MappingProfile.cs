@@ -1,6 +1,4 @@
-﻿using LitraLand.Web.Core.ViewModels.SubscriptionViews;
-
-namespace LitraLand.Web.Core.Mapping
+﻿namespace LitraLand.Web.Core.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -38,7 +36,10 @@ namespace LitraLand.Web.Core.Mapping
 
             // BookCopy
             CreateMap<BookCopy, BookCopyViewModel>()
-                .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book!.Title));
+                .ForMember(dest => dest.BookId, opt => opt.MapFrom(src => src.Book!.Id))
+                .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book!.Title))
+                .ForMember(dest => dest.BookThumbnailUrl, opt => opt.MapFrom(src => src.Book!.ImageThumbnailUrl));
+
 
             CreateMap<BookCopy, BookCopyFormViewModel>();
 
@@ -76,6 +77,10 @@ namespace LitraLand.Web.Core.Mapping
             CreateMap<Area, SelectListItem>()
                 .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+            //Rentals
+            CreateMap<Rental, RentalViewModel>();
+            CreateMap<RentalCopy, RentalCopyViewModel>();
         }
     }
 }

@@ -116,7 +116,7 @@
 						<!--begin::Details item-->
 						<div class="fw-bold mt-5">Date of Birth</div>
 						<div class="text-gray-600">
-							<p class="text-gray-600 text-hover-primary">@Model.DateOfBirth.ToString("dd MMM yyyy")</p>
+							<p class="text-gray-600 text-hover-primary">@Model.DateOfBirth.ToString("dd MMM, yyyy")</p>
 						</div>
 						<!--begin::Details item-->
 						<!--begin::Details item-->
@@ -139,27 +139,29 @@
 		<div class="flex-lg-row-fluid ms-lg-15">
 			<!--begin:::Tabs-->
 			<ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8" role="tablist">
-				<!--begin:::Tab item-->
+				<!--begin:::Tab item Overview-->
 				<li class="nav-item" role="presentation">
 					<a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#Overview" aria-selected="false" role="tab" tabindex="-1">
 						Overview
 					</a>
 				</li>
-				<!--end:::Tab item-->
-				<!--begin:::Tab item-->
+				<!--end:::Tab item Overview-->
+				<!--begin:::Tab item Rentals-->
 				<li class="nav-item" role="presentation">
 					<a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#Rentals" aria-selected="true" role="tab">
 						Rentals
 					</a>
 				</li>
-				<!--end:::Tab item-->
+				<!--end:::Tab item Rentals-->
 			</ul>
 			<!--end:::Tabs-->
-			<!--begin:::Tab content-->
+			<!--begin:::Tabs content-->
 			<div class="tab-content">
-				<!--begin:::Tab pane-->
+				<!--begin:::Overview Tab pane-->
 				<div class="tab-pane fade active show" id="Overview" role="tabpanel">
+                    <!--begin:: Badges -->
 					<div class="row row-cols-1 row-cols-md-2 mb-6 mb-xl-9">
+                        <!--begin:: Total Rentals Badge -->
 						<div class="col">
 							<!--begin::Card-->
 							<div class="card pt-4 h-md-100 mb-6 mb-md-0">
@@ -167,7 +169,7 @@
 								<div class="card-header border-0">
 									<!--begin::Card title-->
 									<div class="card-title">
-										<h2 class="fw-bold">Reward Points</h2>
+										<h2 class="fw-bold"># of rentals</h2>
 									</div>
 									<!--end::Card title-->
 								</div>
@@ -183,24 +185,25 @@
 												</svg>
 											</span>
 											<!--end::Svg Icon-->
-											<div class="ms-2">
-												4,571
-												<span class="text-muted fs-4 fw-semibold">Points earned</span>
-											</div>
+											@* <div class="ms-2">
+                                                @Model.Rentals.Sum(r => r.NumberOfCopies)
+											</div> *@
+											<div class="ms-2" data-kt-countup="true" data-kt-countup-value="@Model.Rentals.Sum(r => r.NumberOfCopies))">0</div>
 										</div>
-										<div class="fs-7 fw-normal text-muted">Earn reward points with every purchase.</div>
+										<div class="fs-7 fw-normal text-muted">Total number of copies.</div>
 									</div>
 								</div>
 								<!--end::Card body-->
 							</div>
 							<!--end::Card-->
 						</div>
+                        <!--end:: Total Rentals Badge -->
+						<!--begin::subscriber status Badge-->
 						<div class="col">
-							<!--begin::Reward Tier-->
 							<div class="card bg-@statusClass hoverable h-md-100">
 								<!--begin::Body-->
 								<div class="card-body">
-									<!--begin::Svg Icon | path: icons/duotune/general/gen020.svg-->
+									<!--begin::Svg Icon-->
 									<span class="svg-icon svg-icon-white svg-icon-3x ms-n1">
 										<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="@(subscriberStatus == SubscriberStatus.Active && !Model.IsBlackListed ? string.Empty : "d-none")" id="ActiveStatusIcon">
 											<path opacity="0.3" d="M7.16973 20.95C6.26973 21.55 5.16972 20.75 5.46972 19.75L7.36973 14.05L2.46972 10.55C1.56972 9.95005 2.06973 8.55005 3.06973 8.55005H20.8697C21.9697 8.55005 22.3697 9.95005 21.4697 10.55L7.16973 20.95Z" fill="currentColor" />
@@ -221,16 +224,16 @@
 										}
 									</span>
 									<!--end::Svg Icon-->
-									<!--end::Svg Icon-->
 									<div class="text-white fw-bold fs-2 mt-5" id="CardStatus">@statusText</div>
 									<div class="fw-semibold text-white">Subscrber since: @Model.CreatedOn.ToString("dd MMM, yyyy")</div>
 								</div>
 								<!--end::Body-->
 							</div>
-							<!--end::Reward Tier-->
 						</div>
+						<!--end::subscriber status Badge-->
 					</div>
-					<!--begin::Card-->
+                    <!--end:: Badges -->
+					<!--begin::Renewal History-->
 					<div class="card pt-4 mb-6 mb-xl-9">
 						<!--begin::Card header-->
 						<div class="card-header border-0 pt-5">
@@ -258,7 +261,6 @@
 							<div class="table-responsive">
 								<!--begin::Table-->
 								<table class="table align-middle gs-0 gy-4" id="SubscriptionsTable">
-									<!--begin::Table head-->
 									<thead>
 										<tr class="fw-bold text-muted bg-light">
 											<th class="ps-4 min-w-125px rounded-start">Start Date</th>
@@ -267,48 +269,57 @@
 											<th class="min-w-125px text-end rounded-end pe-4">Add On</th>
 										</tr>
 									</thead>
-									<!--end::Table head-->
-									<!--begin::Table body-->
 									<tbody>
 										@foreach (var subscription in Model.Subscriptions)
 										{
 											<partial name="_SubscriptionRow" model="@subscription" />
 										}
 									</tbody>
-									<!--end::Table body-->
 								</table>
 								<!--end::Table-->
 							</div>
 						</div>
 						<!--end::Card body-->
 					</div>
-					<!--end::Card-->
+					<!--end::Renewal History-->
 				</div>
-				<!--end:::Tab pane-->
-				<!--begin:::Tab pane-->
+				<!--end:::Overview Tab pane-->
+				<!--begin:::Rentals Tab pane-->
 				<div class="tab-pane fade" id="Rentals" role="tabpanel">
 					<!--begin::Card-->
 					<div class="card pt-4 mb-6 mb-xl-9">
 						<!--begin::Card header-->
-						<div class="card-header border-0">
-							<!--begin::Card title-->
-							<div class="card-title">
-								<h2>Rentals</h2>
-							</div>
-							<!--end::Card title-->
+						<div class="card-header border-0 pt-5">
+							<h3 class="card-title align-items-start flex-column">
+								<span class="card-label fw-bold fs-3 mb-1">Rentals</span>
+							</h3>
+							@if (!Model.IsBlackListed && lastSubscription.EndDate >= DateTime.Today.AddDays((int)RentalsConfigurations.RentalDuration))
+							{
+								<div class="card-toolbar">
+									<a asp-controller="Rentals" asp-action="Create" asp-route-sKey="@Model.Key" class="btn btn-sm btn-light-primary">
+										<span class="svg-icon svg-icon-2">
+											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path opacity="0.3" d="M3 13V11C3 10.4 3.4 10 4 10H20C20.6 10 21 10.4 21 11V13C21 13.6 20.6 14 20 14H4C3.4 14 3 13.6 3 13Z" fill="currentColor" />
+												<path d="M13 21H11C10.4 21 10 20.6 10 20V4C10 3.4 10.4 3 11 3H13C13.6 3 14 3.4 14 4V20C14 20.6 13.6 21 13 21Z" fill="currentColor" />
+											</svg>
+										</span>
+										Add Rental
+									</a>
+								</div>
+							}
 						</div>
 						<!--end::Card header-->
 						<!--begin::Card body-->
 						<div class="card-body pt-0 pb-5">
-							Rentals will be shown here
+							<partial name="_Rentals" model="@Model.Rentals" />
 						</div>
 						<!--end::Card body-->
 					</div>
 					<!--end::Card-->
 				</div>
-				<!--end:::Tab pane-->
+				<!--end:::Rentals Tab pane-->
 			</div>
-			<!--end:::Tab content-->
+			<!--end:::Tabs content-->
 		</div>
 		<!--end::Content-->
 	</div>

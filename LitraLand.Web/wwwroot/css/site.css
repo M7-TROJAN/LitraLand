@@ -44,6 +44,10 @@ html {
 .h-70px {
     height: 70px !important;
 }
+
+.custom-toast-position {
+    margin-top: 70px !important;
+}
 /* End Custom Styles */
 
 

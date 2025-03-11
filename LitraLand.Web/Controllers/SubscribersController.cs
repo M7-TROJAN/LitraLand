@@ -1,10 +1,6 @@
 ﻿using Hangfire;
-using LitraLand.Web.Views;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
-using WhatsAppCloudApi;
-using WhatsAppCloudApi.Services;
 namespace LitraLand.Web.Controllers
 {
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Reception)]
@@ -62,7 +58,7 @@ namespace LitraLand.Web.Controllers
             if (subscriber is not null)
                 viewModel.Key = _dataProtector.Protect(subscriber.Id.ToString()); // encrypt the subscriber id to be used in the url
 
-            return PartialView("_Result", viewModel);
+            return PartialView("_SearchResult", viewModel);
         }
 
         [Authorize(Roles = AppRoles.SuperAdmin)]
@@ -115,6 +111,33 @@ namespace LitraLand.Web.Controllers
             var jsonData = new { recordsFiltered = totalRecords, recordsTotal = totalRecords, data = mappedData };
 
             return Ok(jsonData);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            // check if the key is sent in the request
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("Invalid request: Key is missing.");
+
+            // decrypt the subscriber id to use it in the comparison
+            if (!int.TryParse(TryUnprotect(id), out var subscriberId))
+                return BadRequest("Invalid request: Subscriber Key is not valid.");
+
+            var subscriber = await _context.Subscribers
+                .Include(s => s.Area)
+                .Include(s => s.Governorate)
+                .Include(s => s.Subscriptions)
+                .Include(s => s.Rentals)
+                .ThenInclude(r => r.RentalCopies)
+                .FirstOrDefaultAsync(s => s.Id == subscriberId);
+
+            if (subscriber is null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<SubscriberViewModel>(subscriber);
+            viewModel.Key = id; // keep the encrypted id to be used in the view
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -315,31 +338,6 @@ namespace LitraLand.Web.Controllers
             subscriber.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = model.Key });
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Details(string id)
-        {
-            // check if the key is sent in the request
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest("Invalid request: Key is missing.");
-
-            // decrypt the subscriber id to use it in the comparison
-            if (!int.TryParse(TryUnprotect(id), out var subscriberId))
-                return BadRequest("Invalid request: Subscriber Key is not valid.");
-
-            var subscriber = await _context.Subscribers
-                .Include(s => s.Area)
-                .Include(s => s.Governorate)
-                .Include(s => s.Subscriptions)
-                .FirstOrDefaultAsync(s => s.Id == subscriberId);
-
-            if (subscriber is null)
-                return NotFound();
-
-            var viewModel = _mapper.Map<SubscriberViewModel>(subscriber);
-            viewModel.Key = id; // keep the encrypted id to be used in the view
-            return View(viewModel);
         }
 
         [HttpPost]

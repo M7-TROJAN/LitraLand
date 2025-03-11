@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
             url: '/Subscribers/GetSubscribers',
             type: 'POST',
             data: {
-                // Calculate the starting record based on the current page and pageSize
+                // parameters that are sent to the Action method
                 start: (page - 1) * pageSize,
                 length: pageSize,
                 searchTerm: search
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Event handler for pagination link clicks
     $(document).on('click', '.pagination .page-link', (e) => {
-        e.preventDefault();
+        e.preventDefault(); // this means that the default action of the event will not be triggered (e.g. clicking a link)
         const page = $(e.currentTarget).data('page');
         if (page) {
             loadSubscribers(page, $('#kt_filter_search').val());
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
+// the old code that was replaced by the above code
 /*
 <script>
         $(document).ready(function () {

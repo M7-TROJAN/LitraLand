@@ -1,7 +1,7 @@
 ﻿function onAddCopySuccess(row)
 {
      $('#Modal').modal('hide'); // Hide the modal
-     showSuccessMessage("Copy added successfully!"); // Show the success message
+    showSuccessToast("Copy added successfully!"); // Show the success message
 
      $('tbody').prepend(row) // Add the new row to the table at the top
 
@@ -26,7 +26,7 @@
 function onEditCopySuccess(row)
 {
     $('#Modal').modal('hide'); // Hide the modal
-    showSuccessMessage("Copy updated successfully!"); // Show the success message
+    showSuccessToast("Copy updated successfully!"); // Show the success message
 
     $(updatedRow).replaceWith(row); // Replace the row with the updated one
 

@@ -15,10 +15,10 @@
             {
                 <input type="hidden" asp-for="Key" />
             }
+            <!--begin::Image input-->
             <div class="row mb-6">
                 <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="Image"></label>
                 <div class="col-lg-8">
-                    <!--begin::Image input-->
                     <div class="image-input image-input-empty" data-kt-image-input="true" style="background-image: url(@(string.IsNullOrEmpty(Model.ImageUrl) ? "/assets/images/avatar-blank.svg" : Model.ImageThumbnailUrl))">
                         <!--begin::Image preview wrapper-->
                         <div class="image-input-wrapper w-100px h-100px"></div>
@@ -51,9 +51,10 @@
                     </div>
                     <div class="form-text">Allowed file types: png, jpg, jpeg, webp and cannot be more that 2 MB</div>
                     <span asp-validation-for="Image" class="text-danger d-block"></span>
-                    <!--end::Image input-->
                 </div>
             </div>
+            <!--end::Image input-->
+            <!--begin::FullName input-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6">Full Name</label>
@@ -79,6 +80,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::FullName input-->
+            <!--begin::DateOfBirth input-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="DateOfBirth"></label>
@@ -98,6 +101,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::DateOfBirth input-->
+            <!--begin::NationalId input-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="NationalId"></label>
@@ -117,6 +122,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::NationalId input-->
+            <!--begin::Contacts(Email/PhoneNumber) inputs-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6">Contacts</label>
@@ -142,6 +149,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::Contacts(Email/PhoneNumber) inputs-->
+            <!--begin::Governorate/Area inputs-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6">Governorate/Area</label>
@@ -173,6 +182,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::Governorate/Area inputs-->
+            <!--begin::Address input-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Address"></label>
@@ -192,6 +203,8 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::Address input-->
+            <!--begin::HasWhatsApp input-->
             <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label fw-semibold fs-6">Has WhatsApp?</label>
@@ -214,6 +227,7 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <!--end::HasWhatsApp input-->
         </form>
     </div>
     <div class="card-footer">

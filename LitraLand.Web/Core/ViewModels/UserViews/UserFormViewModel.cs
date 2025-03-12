@@ -18,6 +18,10 @@
         [Remote("AllowEmail", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
         public string Email { get; set; } = null!;
 
+        [Display(Name = "Date of Birth")]
+        [AssertThat("DateOfBirth <= Today()", ErrorMessage = Errors.NotAllowFutureDates)]
+        public DateTime DateOfBirth { get; set; } = DateTime.Now;
+
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = Errors.MaxMinLength, MinimumLength = 8)]
         [RegularExpression(RegexPatterns.Password, ErrorMessage = Errors.PasswordComplexity)]

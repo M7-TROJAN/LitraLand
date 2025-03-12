@@ -16,18 +16,11 @@ namespace LitraLand.Web.Data.Configuration
             builder.Property(g => g.IsDeleted)
                 .HasDefaultValue(false);
 
-            builder.Property(g => g.CreatedOn)
-                .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(g => g.LastUpdatedOn)
-                .HasDefaultValue(null);
-
             builder.HasIndex(g => g.Name)
                 .IsUnique()
                 .HasDatabaseName("IX_Governorates_Name");
 
             builder.ToTable("Governorates");
-
         }
     }
 }

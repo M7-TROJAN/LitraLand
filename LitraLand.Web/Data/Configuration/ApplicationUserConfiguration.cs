@@ -14,6 +14,16 @@ namespace LitraLand.Web.Data.Configuration
             builder.HasIndex(u => u.Email).IsUnique();
             builder.HasIndex(u => u.UserName).IsUnique();
 
+            // Explicitly define foreign keys
+            builder.HasOne(u => u.Area)
+                .WithMany(a => a.Users)
+                .HasForeignKey(u => u.AreaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(u => u.Governorate)
+                .WithMany(g => g.Users)
+                .HasForeignKey(u => u.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(u => u.IsDeleted)
                 .HasDefaultValue(false);

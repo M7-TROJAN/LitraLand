@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using System.Text;
 using Hangfire;
-
 namespace LitraLand.Web.Controllers
 {
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class UsersController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -18,7 +17,8 @@ namespace LitraLand.Web.Controllers
         private readonly IEmailBodyBuilder _emailBodyBuilder;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UsersController(UserManager<ApplicationUser> userManager,
+        public UsersController(ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
@@ -33,6 +33,7 @@ namespace LitraLand.Web.Controllers
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
             _emailBodyBuilder = emailBodyBuilder;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -79,6 +80,7 @@ namespace LitraLand.Web.Controllers
                 UserName = model.UserName,
                 Email = model.Email,
                 FullName = model.FullName,
+                DateOfBirth = model.DateOfBirth,
                 CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
 
@@ -176,6 +178,7 @@ namespace LitraLand.Web.Controllers
                 UserName = targetUser.UserName!,
                 Email = targetUser.Email!,
                 FullName = targetUser.FullName,
+                DateOfBirth = targetUser.DateOfBirth,
                 Roles = roles,
                 SelectedRoles = targetUserRoles
             };
@@ -462,6 +465,18 @@ namespace LitraLand.Web.Controllers
                 : BadRequest(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
         }
         */
+
+        [HttpGet]
+        [AjaxOnly]
+        public IActionResult GetAreas(int governorateId)
+        {
+            var areas = _context.Areas
+                .Where(a => a.GovernorateId == governorateId && !a.IsDeleted)
+                .OrderBy(a => a.Name)
+                .ToList();
+
+            return Ok(_mapper.Map<IEnumerable<SelectListItem>>(areas));
+        }
 
         public async Task<IActionResult> AllowUserName(UserFormViewModel model)
         {

@@ -40,6 +40,15 @@ data-ajax-complete="onModalComplete">
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="mb-5">
+        <!--begin::Input group-->
+        <div class="form-floating mb-2">
+            <input type="text" class="form-control form-control-solid js-datepicker" placeholder="Date of Birth" asp-for="DateOfBirth" />
+            <label asp-for="DateOfBirth"></label>
+        </div>
+        <!--end::Input group-->
+        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+    </div>
+    <div class="mb-5">
         <div class="mb-2">
             <select class="form-select form-select-solid js-select2" data-placeholder="Select Roles" asp-for="SelectedRoles" asp-items="@Model.Roles">
                 <option></option>
@@ -70,3 +79,9 @@ data-ajax-complete="onModalComplete">
     }
     <partial name="_ModalFooter" />
 </form>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

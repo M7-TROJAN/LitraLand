@@ -4,6 +4,7 @@ using LitraLand.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LitraLand.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311120353_Add_DateOfBirth_ImageUrl_ImageThumbUrl_Columns_To_AppUser_Table")]
+    partial class Add_DateOfBirth_ImageUrl_ImageThumbUrl_Columns_To_AppUser_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,12 +34,6 @@ namespace LitraLand.Web.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -65,9 +62,6 @@ namespace LitraLand.Web.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("GovernorateId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ImagePublicId")
                         .HasColumnType("nvarchar(max)");
@@ -124,13 +118,9 @@ namespace LitraLand.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AreaId");
-
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
-
-                    b.HasIndex("GovernorateId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -155,6 +145,14 @@ namespace LitraLand.Web.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<int>("GovernorateId")
                         .HasColumnType("int");
 
@@ -163,6 +161,12 @@ namespace LitraLand.Web.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("LastUpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -170,7 +174,11 @@ namespace LitraLand.Web.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("GovernorateId");
+
+                    b.HasIndex("LastUpdatedById");
 
                     b.HasIndex("Name", "GovernorateId")
                         .IsUnique()
@@ -430,10 +438,24 @@ namespace LitraLand.Web.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("LastUpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -441,6 +463,10 @@ namespace LitraLand.Web.Data.Migrations
                         .HasColumnType("varchar");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("LastUpdatedById");
 
                     b.HasIndex("Name")
                         .IsUnique()
@@ -797,32 +823,27 @@ namespace LitraLand.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Web.Core.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("LitraLand.Web.Core.Models.Area", "Area")
-                        .WithMany("Users")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("LitraLand.Web.Core.Models.Governorate", "Governorate")
-                        .WithMany("Users")
-                        .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Area");
-
-                    b.Navigation("Governorate");
-                });
-
             modelBuilder.Entity("LitraLand.Web.Core.Models.Area", b =>
                 {
+                    b.HasOne("LitraLand.Web.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("LitraLand.Web.Core.Models.Governorate", "Governorate")
                         .WithMany("Areas")
                         .HasForeignKey("GovernorateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LitraLand.Web.Core.Models.ApplicationUser", "LastUpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedById");
+
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Governorate");
+
+                    b.Navigation("LastUpdatedBy");
                 });
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.Author", b =>
@@ -906,6 +927,21 @@ namespace LitraLand.Web.Data.Migrations
                 });
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.Category", b =>
+                {
+                    b.HasOne("LitraLand.Web.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("LitraLand.Web.Core.Models.ApplicationUser", "LastUpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("LastUpdatedBy");
+                });
+
+            modelBuilder.Entity("LitraLand.Web.Core.Models.Governorate", b =>
                 {
                     b.HasOne("LitraLand.Web.Core.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
@@ -1064,8 +1100,6 @@ namespace LitraLand.Web.Data.Migrations
             modelBuilder.Entity("LitraLand.Web.Core.Models.Area", b =>
                 {
                     b.Navigation("Subscribers");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.Author", b =>
@@ -1090,8 +1124,6 @@ namespace LitraLand.Web.Data.Migrations
                     b.Navigation("Areas");
 
                     b.Navigation("Subscribers");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.Rental", b =>

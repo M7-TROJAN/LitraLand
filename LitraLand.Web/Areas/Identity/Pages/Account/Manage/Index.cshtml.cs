@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -12,14 +13,20 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IImageServices _imageServices;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
         public IndexModel(
+            ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            IMapper mapper,
             IImageServices imageServices)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _mapper = mapper;
             _imageServices = imageServices;
         }
 
@@ -58,6 +65,26 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             [RegularExpression(RegexPatterns.MobileNumber, ErrorMessage = Errors.InvalidMobileNumber)]
             public string PhoneNumber { get; set; }
 
+            [Display(Name = "Date of Birth")]
+            [AssertThat("DateOfBirth <= Today()", ErrorMessage = Errors.NotAllowFutureDates)]
+            public DateTime DateOfBirth { get; set; } = DateTime.Now;
+
+            [Display(Name = "Area")]
+            [Required(ErrorMessage = Errors.Required)]
+            public int? AreaId { get; set; }
+            public IEnumerable<SelectListItem> Areas { get; set; } = new List<SelectListItem>();
+
+            [Display(Name = "Governorate")]
+            [Required(ErrorMessage = Errors.Required)]
+            public int? GovernorateId { get; set; }
+            public IEnumerable<SelectListItem> Governorates { get; set; }
+
+            [MaxLength(500, ErrorMessage = Errors.MaxLength)]
+            public string Address { get; set; } = null!;
+
+            public string ImageUrl { get; set; } = null!;
+            public string ImageThumbnailUrl { get; set; } = null!;
+
             public IFormFile Avatar { get; set; }
 
             public bool ImageRemoved { get; set; }
@@ -73,8 +100,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 FullName = user.FullName,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                DateOfBirth = user.DateOfBirth,
+                ImageUrl = user.ImageUrl,
+                ImageThumbnailUrl = user.ImageThumbnailUrl,
+                AreaId = user.AreaId,
+                GovernorateId = user.GovernorateId,
+                Address = user.Address
             };
+
+            PopulateInputModel();
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -103,9 +138,9 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            if(Input.Avatar is not null)
+            if (Input.Avatar is not null)
             {
-                var isAllowedExt = _imageServices.IsAllowedImageExtension(Input.Avatar, new[] {".png"});
+                var isAllowedExt = _imageServices.IsAllowedImageExtension(Input.Avatar, new[] { ".png" });
 
                 if (!isAllowedExt)
                 {
@@ -114,9 +149,10 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                     return Page();
                 }
 
-                _imageServices.Delete($"/images/users/{user.Id}.png");
+                _imageServices.Delete($"{user.ImageUrl}");
+                _imageServices.Delete($"{user.ImageThumbnailUrl}");
 
-                var (isUploaded, errorMessage) = await _imageServices.UploadAsync(Input.Avatar, $"{user.Id}.png", "/images/users", hasThumbnail: false);
+                var (isUploaded, errorMessage) = await _imageServices.UploadAsync(Input.Avatar, $"{user.Id}.png", "/images/users", hasThumbnail: true);
 
                 if (!isUploaded)
                 {
@@ -124,9 +160,17 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                     await LoadAsync(user);
                     return Page();
                 }
+
+                user.ImageUrl = $"/images/users/{user.Id}.png";
+                user.ImageThumbnailUrl = $"/images/users/thumb/{user.Id}.png";
             }
             else if (Input.ImageRemoved)
-                _imageServices.Delete($"/images/users/{user.Id}.png");
+            {
+                _imageServices.Delete(user.ImageUrl);
+                _imageServices.Delete(user.ImageThumbnailUrl);
+                user.ImageUrl = null!;
+                user.ImageThumbnailUrl = null!;
+            }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
@@ -139,20 +183,50 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if(Input.FullName != user.FullName)
+            if (Input.FullName != user.FullName)
+                user.FullName = Input.FullName.Trim();
+
+            if (Input.DateOfBirth != user.DateOfBirth)
+                user.DateOfBirth = Input.DateOfBirth;
+
+            if (Input.AreaId != user.AreaId)
+                user.AreaId = Input.AreaId.Value;
+
+            if (Input.GovernorateId != user.GovernorateId)
+                user.GovernorateId = Input.GovernorateId.Value;
+
+            if (Input.Address != user.Address)
+                user.Address = Input.Address.Trim();
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
             {
-                user.FullName = Input.FullName;
-                var result = await _userManager.UpdateAsync(user);
-                if(!result.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set FullName.";
-                    return RedirectToPage();
-                }
+                StatusMessage = "Unexpected error when updating user information.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Your profile has been updated successfully.";
             return RedirectToPage();
+        }
+
+        // a helper method to populate the InputModel with the governorates and areas dropdown lists
+        void PopulateInputModel()
+        {
+            var governorates = _context.Governorates.Where(a => !a.IsDeleted).OrderBy(a => a.Name).ToList();
+
+            Input.Governorates = _mapper.Map<IEnumerable<SelectListItem>>(governorates);
+
+            // in case of editing, populate the areas dropdown list based on the selected governorate
+            if (Input?.GovernorateId > 0)
+            {
+                var areas = _context.Areas
+                    .Where(a => a.GovernorateId == Input.GovernorateId && !a.IsDeleted)
+                    .OrderBy(a => a.Name)
+                    .ToList();
+
+                Input.Areas = _mapper.Map<IEnumerable<SelectListItem>>(areas);
+            }
         }
     }
 }

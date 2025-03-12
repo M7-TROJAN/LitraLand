@@ -5,11 +5,11 @@
     ViewData["Title"] = "Account Settings";
     Layout = "/Views/Shared/_Layout.cshtml";
 
-    var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
+    // var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
 
-    avatarUrl = System.IO.File.Exists(avatarUrl)
-        ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
-        : "/assets/images/avatar2.webp";
+    // avatarUrl = System.IO.File.Exists(avatarUrl)
+    //     ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
+    //     : "/assets/images/avatar2.webp";
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -25,10 +25,9 @@
                     <!--begin: Pic-->
                     <div class="me-7 mb-4">
                         <div class="symbol symbol-50px symbol-lg-60px symbol-fixed position-relative">
-                            <a data-fslightbox href="@avatarUrl">
-                                <img class="mw-50px mw-lg-75px" src="@avatarUrl" alt="user image" />
+                            <a data-fslightbox href="@(string.IsNullOrEmpty(Model.Input.ImageUrl)? "/assets/images/avatar2.webp" : Model.Input.ImageUrl)">
+                                <img class="mw-50px mw-lg-75px" src="@(string.IsNullOrEmpty(Model.Input.ImageThumbnailUrl)? "/assets/images/avatar2.webp" : Model.Input.ImageThumbnailUrl)" alt="@Model.Input.FullName" />
                             </a>
-                            @* <img src="@avatarUrl" alt="image"> *@
                             <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
                         </div>
                     </div>
@@ -44,21 +43,19 @@
                                     <a href="#" class="text-gray-900 text-hover-primary fs-2 fw-bold me-1">@User.FindFirstValue(ClaimTypes.GivenName)</a>
                                 </div>
                                 <!--end::Name-->
-                                <!--begin::Info-->
+                                <!--begin::Email Info-->
                                 <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
                                     <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary mb-2">
-                                        <!--begin::Svg Icon | path: icons/duotune/communication/com011.svg-->
                                         <span class="svg-icon svg-icon-4 me-1">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path opacity="0.3" d="M21 19H3C2.4 19 2 18.6 2 18V6C2 5.4 2.4 5 3 5H21C21.6 5 22 5.4 22 6V18C22 18.6 21.6 19 21 19Z" fill="currentColor"></path>
                                                 <path d="M21 5H2.99999C2.69999 5 2.49999 5.10005 2.29999 5.30005L11.2 13.3C11.7 13.7 12.4 13.7 12.8 13.3L21.7 5.30005C21.5 5.10005 21.3 5 21 5Z" fill="currentColor"></path>
                                             </svg>
                                         </span>
-                                        <!--end::Svg Icon-->
                                         @User.FindFirstValue(ClaimTypes.Email)
                                     </a>
                                 </div>
-                                <!--end::Info-->
+                                <!--end::Email Info-->
                             </div>
                             <!--end::User-->
                         </div>
@@ -88,7 +85,7 @@
                     <!--begin::Card body-->
                     <div class="card-body border-top p-9">
                         <partial name="_StatusMessage" for="StatusMessage" />
-                        <!--begin::Input group-->
+                        <!--begin::Input group Avatar-->
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label fw-semibold fs-6">Avatar</label>
@@ -98,7 +95,7 @@
                                 <!--begin::Image input-->
                                 <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url('/assets/images/avatar-blank.svg')">
                                     <!--begin::Preview existing avatar-->
-                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(@avatarUrl)"></div>
+                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url(@(string.IsNullOrEmpty(Model.Input.ImageThumbnailUrl)? "/assets/images/avatar2.webp" : Model.Input.ImageThumbnailUrl))"></div>
                                     <!--end::Preview existing avatar-->
                                     <!--begin::Label-->
                                     <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
@@ -119,7 +116,9 @@
                                         <i class="bi bi-x fs-2"></i>
                                     </span>
                                     <!--end::Remove-->
-                                    <input type="hidden" asp-for="Input.ImageRemoved" /> @*it's id will be 'Input_ImageRemoved' because in page model it's name is 'Input.ImageRemoved'*@
+                                    <input type="hidden" asp-for="Input.ImageRemoved" />
+                                    @* The generated id of the above input will be 'Input_ImageRemoved' instead of 'ImageRemoved' (as in MVC views)  
+                                    because Razor Pages use a PageModel, and 'Input' is part of the model hierarchy. *@
                                 </div>
                                 <!--end::Image input-->
                                 <!--begin::Hint-->
@@ -129,8 +128,8 @@
                             </div>
                             <!--end::Col-->
                         </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
+                        <!--end::Input group Avatar-->
+                        <!--begin::Input group FullName-->
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Input.FullName"></label>
@@ -150,8 +149,8 @@
                             </div>
                             <!--end::Col-->
                         </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
+                        <!--end::Input group FullName-->
+                        <!--begin::Input group PhoneNumber-->
                         <div class="row mb-6">
                             <!--begin::Label-->
                             <label asp-for="Input.PhoneNumber" class="col-lg-4 col-form-label fw-semibold fs-6 required"></label>
@@ -163,7 +162,82 @@
                             </div>
                             <!--end::Col-->
                         </div>
-                        <!--end::Input group-->
+                        <!--end::Input group PhoneNumber-->
+                        <!--begin::Input group DateOfBirth-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Input.DateOfBirth"></label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                        <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 js-datepicker" placeholder="Date of Birth" asp-for="Input.DateOfBirth">
+                                        <span asp-validation-for="Input.DateOfBirth" class="fv-plugins-message-container invalid-feedback"></span>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group DateOfBirth-->
+                        <!--begin::Input group Governorate and Area-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-semibold fs-6">Governorate/Area</label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                        <select aria-label="Select a Country" data-control="select2" data-placeholder="Select a governorate..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                asp-for="Input.GovernorateId" asp-items="Model.Input.Governorates">
+                                            <option value="">Select a governorate...</option>
+                                        </select>
+                                        <span asp-validation-for="Input.GovernorateId" class="fv-plugins-message-container invalid-feedback"></span>
+                                    </div>
+                                    <!--end::Col-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                        <select aria-label="Select a Country" data-control="select2" data-placeholder="Select an area..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                asp-for="Input.AreaId" asp-items="Model.Input.Areas">
+                                            <option value="">Select an area...</option>
+                                        </select>
+                                        <span asp-validation-for="Input.AreaId" class="fv-plugins-message-container invalid-feedback"></span>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group Governorate and Area-->
+                        <!--begin::Input group Address-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Input.Address"></label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                        <textarea class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Address" asp-for="Input.Address"></textarea>
+                                        <span asp-validation-for="Input.Address" class="fv-plugins-message-container invalid-feedback"></span>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group Address-->
                     </div>
                     <!--end::Card body-->
                     <!--begin::Actions-->

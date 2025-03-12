@@ -44,12 +44,15 @@
             CreateMap<BookCopy, BookCopyFormViewModel>();
 
             // User
-            CreateMap<ApplicationUser, UserViewModel>();
+            CreateMap<ApplicationUser, UserViewModel>()
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area!.Name))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
 
             CreateMap<UserFormViewModel, ApplicationUser>()
                 .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))
                 .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
                 .ReverseMap();
+
 
             // subscriber
             CreateMap<SubscriberFormViewModel, Subscriber>()

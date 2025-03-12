@@ -122,6 +122,16 @@ function applySelect2() {
     });
 }
 
+// Function to reinitialize datepicker
+function applyDatepicker() {
+    $('.js-datepicker').daterangepicker({
+        singleDatePicker: true, // to show only one calendar
+        autoApply: true, // to close the calendar when a date is selected
+        maxDate: new Date(), // to disable future dates
+        drops: 'up', // to show the calendar above the input field
+    });
+}
+
 // end Global functions
 
 // start Modal functions
@@ -388,6 +398,7 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
                 $.validator.unobtrusive.parse(modal); // Reinitialize unobtrusive validation on the modal form elements (this is needed because the form is loaded dynamically and the validation needs to be reinitialized)
                 modal.modal('show');// Show the modal
                 applySelect2(); // Reinitialize select2
+                applyDatepicker(); // Reinitialize datepicker
             },
             error: function (error) {
                 showErrorMessage(error ? error : 'An error occurred while loading the form');
@@ -580,12 +591,7 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
     // end select2
 
     // Datepicker
-    $('.js-datepicker').daterangepicker({
-        singleDatePicker: true, // to show only one calendar
-        autoApply: true, // to close the calendar when a date is selected
-        maxDate: new Date(), // to disable future dates
-        drops: 'up', // to show the calendar above the input field
-    });
+    applyDatepicker();
     // end Datepicker
 
     // TinyMCE

@@ -1,9 +1,9 @@
 ﻿@inject IWebHostEnvironment WebHostEnvironment
 @{
-	var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
+	var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png";
 
 	avatarUrl = System.IO.File.Exists(avatarUrl)
-		? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
+		? $"/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png"
 		: "/assets/images/avatar2.webp";
 }
 

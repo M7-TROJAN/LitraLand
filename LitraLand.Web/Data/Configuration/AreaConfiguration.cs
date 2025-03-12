@@ -16,12 +16,6 @@ namespace LitraLand.Web.Data.Configuration
             builder.Property(a => a.IsDeleted)
                 .HasDefaultValue(false);
 
-            builder.Property(a => a.CreatedOn)
-                .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(a => a.LastUpdatedOn)
-                .HasDefaultValue(null);
-
             builder.HasIndex( a => new { a.Name, a.GovernorateId })
                 .IsUnique()
                 .HasDatabaseName("IX_Areas_Name_GovernorateId");

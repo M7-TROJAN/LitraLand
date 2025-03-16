@@ -1,5 +1,4 @@
-﻿using LitraLand.Web.Core.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LitraLand.Web.Data.Configuration
 {
@@ -45,6 +44,9 @@ namespace LitraLand.Web.Data.Configuration
 
             builder.HasIndex(s => s.Email)
                 .IsUnique();
+
+            builder.Property(s => s.DateOfBirth)
+                .HasColumnType("date");
 
             builder.Property(s => s.ImageUrl)
                 .HasColumnType("varchar(500)")

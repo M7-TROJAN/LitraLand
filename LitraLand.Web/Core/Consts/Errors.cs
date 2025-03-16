@@ -1,6 +1,6 @@
 ﻿namespace LitraLand.Web.Core.Consts
 {
-    public class Errors
+    public static class Errors
     {
         public const string MaxLength = "Length cannot be more than {1} characters";
         public const string MaxMinLength = "The {0} must be at least {2} and at max {1} characters long.";
@@ -25,6 +25,7 @@
         public const string EmptyImage = "Please select an image.";
         public const string BlackListedSubscriber = "This subscriber is blacklisted.";
         public const string InactiveSubscriber = "This subscriber is inactive.";
+        public const string InvalidCopiesCount = "The selected copies count is more than the allowed count.";
         public const string MaxCopiesReached = "This subscriber has reached the max number for rentals.";
         public const string CopyIsInRental = "This copy is already rentaled.";
         public const string RentalNotAllowedForBlacklisted = "Rental cannot be extended for blacklisted subscribers.";

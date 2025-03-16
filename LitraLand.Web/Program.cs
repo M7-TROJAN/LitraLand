@@ -170,6 +170,12 @@ namespace LitraLand.Web
                 new RecurringJobOptions()
             );
 
+            RecurringJob.AddOrUpdate(
+                "RentalsExpirationAlert",
+                () => hangfireTasks.RentalsExpirationAlert(),
+                "0 14 * * *", // Cron Expression (Run every day at 2:00 PM)
+                new RecurringJobOptions()
+            );
 
             app.MapControllerRoute(
                 name: "default",

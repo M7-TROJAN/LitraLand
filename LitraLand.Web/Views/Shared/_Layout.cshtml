@@ -24,20 +24,19 @@
         var defaultThemeMode = "light";
         var themeMode;
         if (document.documentElement) {
-        if (document.documentElement.hasAttribute("data-theme-mode")) {
-        themeMode = document.documentElement.getAttribute("data-theme-mode");
-        } 
-        else {
-        if (localStorage.getItem("data-theme") !== null) {
-        themeMode = localStorage.getItem("data-theme");
-        } else {
-        themeMode = defaultThemeMode;
-        }
-        }
-        if (themeMode === "system") {
-        themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
-        document.documentElement.setAttribute("data-theme", themeMode);
+            if (document.documentElement.hasAttribute("data-theme-mode"))
+                themeMode = document.documentElement.getAttribute("data-theme-mode");
+            else 
+            {
+                if (localStorage.getItem("data-theme") !== null)
+                    themeMode = localStorage.getItem("data-theme");
+                else
+                    themeMode = defaultThemeMode;
+            }
+            if (themeMode === "system")
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+            document.documentElement.setAttribute("data-theme", themeMode);
         }
     </script>
     <!--end::Theme mode setup on page load-->
@@ -118,8 +117,11 @@
     <!--end::Global Javascript Bundle-->
     <script src="~/lib/bootbox.js/bootbox.min.js"></script>
     @await RenderSectionAsync("Plugins", required: false)
+    <script src="~/js/global.js" asp-append-version="true"></script>
+    <script src="~/js/global-datatables.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <!--end::Javascript-->
+    <!-- Note: don't change the order of scripts; otherwise, it will break the functionality -->
 </body>
 </html>

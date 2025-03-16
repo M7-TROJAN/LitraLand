@@ -1,10 +1,34 @@
 ﻿@inject IWebHostEnvironment WebHostEnvironment
 @{
-	var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png";
+	// code ver.1 hust png images 
+	 @*
+	 var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png";
 
 	avatarUrl = System.IO.File.Exists(avatarUrl)
-		? $"/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png"
+	 	? $"/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png"
+	 	: "/assets/images/avatar2.webp";
+
+	var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+	var userImagesPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "users", "thumb");
+	*@
+
+    // code ver.2 work with All images extensions
+	@*
+	// الامتدادات المحتملة
+	var possibleExtensions = AppConstants.AllowedImageExtensions;
+
+	// البحث عن الصورة المتاحة داخل المجلد
+	var avatarFile = Directory.GetFiles(userImagesPath, $"{userId}.*")
+									.FirstOrDefault(file => possibleExtensions.Contains(System.IO.Path.GetExtension(file).ToLower()));
+
+	// تحديد رابط الصورة المناسبة
+	var avatarUrl = avatarFile != null
+		? $"/images/users/thumb/{System.IO.Path.GetFileName(avatarFile)}"
 		: "/assets/images/avatar2.webp";
+	*@
+
+    // code ver.3 get the image from the custom claim that we made
+    var avatarUrl = User.FindFirstValue(CustomClaimTypes.ImageThumbnailUrl);
 }
 
 
@@ -174,7 +198,7 @@
 					<!--end::Menu separator-->
 					<!--begin::Menu item-->
 					<div class="menu-item px-5">
-						<a href="../../demo14/dist/account/overview.html" class="menu-link px-5">My Profile</a>
+						<a href="../../TODO/MahmoudMattar" class="menu-link px-5">My Profile</a>
 					</div>
 					<!--end::Menu item-->
 					<!--begin::Menu separator-->

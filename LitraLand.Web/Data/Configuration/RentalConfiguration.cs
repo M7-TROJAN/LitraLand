@@ -28,6 +28,8 @@ namespace LitraLand.Web.Data.Configuration
                 .HasForeignKey(rc => rc.RentalId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasQueryFilter(r => !r.IsDeleted);
+
             builder.ToTable("Rentals");
         }
     }

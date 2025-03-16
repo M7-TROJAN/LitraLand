@@ -205,7 +205,8 @@ namespace LitraLand.Web.Controllers
             {
                 { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" },
                 { "header", $"Welcome {model.FirstName}," },
-                { "body", "thanks for joining LitraLand! We're excited to have you 🤩\nFeel free to explore our features and let us know if you have any questions👌." }
+                { "body", "thanks for joining LitraLand! We're excited to have you 🤩<br>" +
+                "Feel free to explore our features and let us know if you have any questions👌." }
             };
 
             var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
@@ -236,7 +237,7 @@ namespace LitraLand.Web.Controllers
 
                 // use Hangfire to send the WhatsApp message in the background
                 BackgroundJob.Enqueue(() => _whatsAppClient.SendMessage(
-                    $"2{phoneNumber}", 
+                    $"2{phoneNumber}",
                     WhatsAppLanguageCode.English,
                     WhatsAppTemplates.WelcomeMessage,
                     components
@@ -245,7 +246,7 @@ namespace LitraLand.Web.Controllers
 
             var subscriberId = _dataProtector.Protect(subscriber.Id.ToString()); // encrypt the subscriber id to be used in the url
 
-            return RedirectToAction(nameof(Details), new {id = subscriberId});
+            return RedirectToAction(nameof(Details), new { id = subscriberId });
         }
 
         [HttpGet]
@@ -381,8 +382,8 @@ namespace LitraLand.Web.Controllers
             {
                 { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
                 { "header", $"Hello {subscriber.FirstName}," },
-                { "body", $"We're happy to inform you that your subscription has been renewed for another year, " +
-                $"Beginning from {newSubscription.StartDate.ToString("dd MMM yyyy")} to {newSubscription.EndDate.ToString("dd MMM yyyy")}.🎉🎉" +
+                { "body", $"We're happy to inform you that your subscription has been renewed for another year, <br>" +
+                $"Beginning from {newSubscription.StartDate.ToString("dd MMM, yyyy")} to {newSubscription.EndDate.ToString("dd MMM, yyyy")}.🎉🎉<br>" +
                 $"Enjoy our services and let us know if you have any questions." }
             };
 
@@ -405,8 +406,8 @@ namespace LitraLand.Web.Controllers
                         Parameters = new List<object>()
                         {
                             new WhatsAppTextParameter { Text = subscriber.FirstName },
-                            new WhatsAppTextParameter { Text = newSubscription.StartDate.ToString("dd MMM yyyy") },
-                            new WhatsAppTextParameter { Text = newSubscription.EndDate.ToString("dd MMM yyyy") }
+                            new WhatsAppTextParameter { Text = newSubscription.StartDate.ToString("dd MMM, yyyy") },
+                            new WhatsAppTextParameter { Text = newSubscription.EndDate.ToString("dd MMM, yyyy") }
                         }
                     }
                 };

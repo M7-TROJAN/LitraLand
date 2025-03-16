@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-
-namespace LitraLand.Web.Core.ViewModels.BookViews
+﻿namespace LitraLand.Web.Core.ViewModels.BookViews
 {
     public class BookCopyViewModel
     {

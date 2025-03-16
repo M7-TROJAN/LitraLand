@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -140,19 +139,14 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
 
             if (Input.Avatar is not null)
             {
-                var isAllowedExt = _imageServices.IsAllowedImageExtension(Input.Avatar, new[] { ".png" });
-
-                if (!isAllowedExt)
-                {
-                    ModelState.AddModelError("Input.Avatar", "Invalid Image format. Only .png is allowed.");
-                    await LoadAsync(user);
-                    return Page();
-                }
-
+                // delete the old image and thumbnail
                 _imageServices.Delete($"{user.ImageUrl}");
                 _imageServices.Delete($"{user.ImageThumbnailUrl}");
 
-                var (isUploaded, errorMessage) = await _imageServices.UploadAsync(Input.Avatar, $"{user.Id}.png", "/images/users", hasThumbnail: true);
+                // upload the new image and thumbnail
+                // generate a unique name for the image file 
+                var imageName = $"{user.Id}{Path.GetExtension(Input.Avatar!.FileName)}";
+                var (isUploaded, errorMessage) = await _imageServices.UploadAsync(Input.Avatar, imageName, "/images/users", hasThumbnail: true);
 
                 if (!isUploaded)
                 {
@@ -161,8 +155,8 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                     return Page();
                 }
 
-                user.ImageUrl = $"/images/users/{user.Id}.png";
-                user.ImageThumbnailUrl = $"/images/users/thumb/{user.Id}.png";
+                user.ImageUrl = $"/images/users/{imageName}";
+                user.ImageThumbnailUrl = $"/images/users/thumb/{imageName}";
             }
             else if (Input.ImageRemoved)
             {
@@ -211,7 +205,7 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
         }
 
         // a helper method to populate the InputModel with the governorates and areas dropdown lists
-        void PopulateInputModel()
+        private void PopulateInputModel()
         {
             var governorates = _context.Governorates.Where(a => !a.IsDeleted).OrderBy(a => a.Name).ToList();
 

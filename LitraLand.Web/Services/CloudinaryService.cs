@@ -21,7 +21,7 @@ namespace LitraLand.Web.Services
             _cloudinary = new Cloudinary(account);
         }
 
-        public async Task<(bool isUploaded, string? imageUrl, string? thumbnailUrl, string? publicId, string? errorMessage)> 
+        public async Task<(bool isUploaded, string? imageUrl, string? thumbnailUrl, string? publicId, string? errorMessage)>
             UploadImageAsync(IFormFile image, bool hasThumbnail = true)
         {
             try

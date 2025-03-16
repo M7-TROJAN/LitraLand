@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Text.Encodings.Web;
 using System.Text;
-using Hangfire;
+using System.Text.Encodings.Web;
 namespace LitraLand.Web.Controllers
 {
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
@@ -102,11 +102,11 @@ namespace LitraLand.Web.Controllers
             // start send email confirmation
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            
+
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { area = "Identity", userId = user.Id, code = code},
+                values: new { area = "Identity", userId = user.Id, code = code },
                 protocol: Request.Scheme);
 
 
@@ -399,7 +399,7 @@ namespace LitraLand.Web.Controllers
             // If update succeeds, return the new status update time
             if (result.Succeeded)
             {
-                if(targetUser.IsDeleted)
+                if (targetUser.IsDeleted)
                     await _userManager.UpdateSecurityStampAsync(targetUser);
 
                 return Ok(new

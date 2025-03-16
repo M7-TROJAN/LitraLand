@@ -58,12 +58,16 @@
             }
         }
 
-        public bool IsAllowedImageExtension(IFormFile image, string[] allowedExtensions)
+        public bool IsAllowedImageExtension(IFormFile image, string[]? allowedExtensions = null)
         {
             if (image is null)
                 return false;
 
             var imageExtension = Path.GetExtension(image.FileName);
+
+            if (allowedExtensions is null)
+                return _allowedImageExtensions.Contains(imageExtension);
+
             return allowedExtensions.Contains(imageExtension);
         }
 

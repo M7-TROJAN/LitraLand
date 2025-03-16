@@ -14,7 +14,9 @@ namespace LitraLand.Web.Data.Configuration
             builder.HasIndex(u => u.Email).IsUnique();
             builder.HasIndex(u => u.UserName).IsUnique();
 
-            // Explicitly define foreign keys
+            builder.Property(u => u.DateOfBirth)
+                .HasColumnType("date");
+
             builder.HasOne(u => u.Area)
                 .WithMany(a => a.Users)
                 .HasForeignKey(u => u.AreaId)

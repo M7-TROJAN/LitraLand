@@ -1,5 +1,35 @@
 ﻿let selectedCopies = []; // Array to store the selected copies
 
+function updateSubmitButtonState() {
+    const submitButton = document.getElementById("btnSubmit");
+    if (selectedCopies.length === 0) {
+        submitButton.classList.add("d-none");
+        submitButton.disabled = true;
+    } else {
+        submitButton.classList.remove("d-none");
+        submitButton.disabled = false;
+    }
+}
+
+// helper function to update the selectedCopies array after adding or removing a copy
+function updateSelectedCopies() {
+    selectedCopies = []; // Clear the array before updating it to avoid duplicates
+
+    let copies = $('.js-copy'); // Get all the copies in the form
+
+    // Loop through all the copies and update the name and id attributes to match the index in the array (to make it work with the model binding)
+    copies.each(function (index, input) {
+        let $input = $(input); // Convert the input to a jQuery object to use the attr method
+        $input.attr('name', `selectedCopies[${index}]`); // selectedCopies[0], selectedCopies[1], selectedCopies[2], ... (to match the model binding)
+        $input.attr('id', `selectedCopies_${index}_`); // selectedCopies_0_, selectedCopies_1_, selectedCopies_2_, ...
+        selectedCopies.push({ serial: $input.val(), bookId: $input.data('book-id') });
+        // note: (ممكن نكتفي بالاتربيوت الي اسمه "نيم" بس لان هو ده الي بيحصل بيه ربط لما بنبعت الفورم للاكشن)
+    });
+
+    // Update the submit button state
+    updateSubmitButtonState();
+}
+
 // the function that will be called when the search request to the server is successful
 function onAddCopySuccess(copy) {
     $('.js-book-copy-search-input').val(''); // Clear the search input
@@ -19,23 +49,6 @@ function onAddCopySuccess(copy) {
     updateSelectedCopies();
 }
 
-// helper function to update the selectedCopies array after adding or removing a copy
-function updateSelectedCopies() {
-    selectedCopies = []; // Clear the array before updating it to avoid duplicates
-
-    let copies = $('.js-copy'); // Get all the copies in the form
-
-    // Loop through all the copies and update the name and id attributes to match the index in the array (to make it work with the model binding)
-    copies.each(function (index, input) {
-        let $input = $(input); // Convert the input to a jQuery object to use the attr method
-        $input.attr('name', `selectedCopies[${index}]`); // selectedCopies[0], selectedCopies[1], selectedCopies[2], ... (to match the model binding)
-        $input.attr('id', `selectedCopies_${index}_`); // selectedCopies_0_, selectedCopies_1_, selectedCopies_2_, ...
-        selectedCopies.push({ serial: $input.val(), bookId: $input.data('book-id') });
-        // note: (ممكن نكتفي بالاتربيوت الي اسمه "نيم" بس لان هو ده الي بيحصل بيه ربط لما بنبعت الفورم للاكشن)
-    });
-
-    console.log("Updated selectedCopies:", selectedCopies);
-}
 
 // events to handle the search and remove copy buttons
 document.addEventListener("DOMContentLoaded", function () {
@@ -43,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // check if the user has selected the maximum allowed copies 
         if (selectedCopies.length >= maxAllowedCopies) {
             e.preventDefault();
-            showErrorToast(`You can only Add ${maxAllowedCopies} copies`);
+            showErrorToast(`You can only Add ${maxAllowedCopies} Book(s)`);
             return;
         }
 
@@ -72,4 +85,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // prevent the form from submitting if there are no selected copies
+    $(document).on('submit', '#CopiesForm', function (e) {
+        if (selectedCopies.length === 0) {
+            e.preventDefault();
+            showErrorToast('Please select at least one copy');
+        }
+    });
+
+    // Update the selectedCopies array after loading the page
+    updateSelectedCopies();
 });

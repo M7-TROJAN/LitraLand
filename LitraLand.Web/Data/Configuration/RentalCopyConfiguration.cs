@@ -9,6 +9,8 @@ namespace LitraLand.Web.Data.Configuration
 
             builder.HasKey(rc => new { rc.RentalId, rc.BookCopyId }); // Composite key of RentalId and BookCopyId
 
+            builder.HasQueryFilter(rc => !rc.Rental!.IsDeleted);
+
             builder.ToTable("RentalCopies");
         }
     }

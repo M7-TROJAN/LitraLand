@@ -65,7 +65,7 @@ const renderPagination = (totalRecords, currentPage) => {
 
     // Previous button
     pagination.append(`
-            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <li class="paginate_button page-item previous  ${currentPage === 1 ? 'disabled' : ''}">
                 <a href="#" class="page-link" data-page="${currentPage - 1}">«</a>
             </li>
         `);

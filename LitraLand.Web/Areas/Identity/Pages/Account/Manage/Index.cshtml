@@ -5,11 +5,7 @@
     ViewData["Title"] = "Account Settings";
     Layout = "/Views/Shared/_Layout.cshtml";
 
-    // var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png";
-
-    // avatarUrl = System.IO.File.Exists(avatarUrl)
-    //     ? $"/images/users/{User.FindFirst(ClaimTypes.NameIdentifier)!.Value}.png"
-    //     : "/assets/images/avatar2.webp";
+    var avatarUrl = User.FindFirstValue(CustomClaimTypes.ImageThumbnailUrl);
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -101,7 +97,7 @@
                                     <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change avatar" data-bs-original-title="Change avatar" data-kt-initialized="1">
                                         <i class="bi bi-pencil-fill fs-7"></i>
                                         <!--begin::Inputs-->
-                                        <input type="file" asp-for="Input.Avatar" accept=".png">
+                                        <input type="file" asp-for="Input.Avatar" accept=".png, .jpg, .jpeg, .webp" />
                                         <input type="hidden" name="avatar_remove">
                                         <!--end::Inputs-->
                                     </label>
@@ -122,7 +118,7 @@
                                 </div>
                                 <!--end::Image input-->
                                 <!--begin::Hint-->
-                                <div class="form-text">Allowed file types: png</div>
+                                <div class="form-text">Allowed file types: png, jpg, jpeg and webp</div>
                                 <span class="text-danger" asp-validation-for="Input.Avatar" ></span>
                                 <!--end::Hint-->
                             </div>
@@ -417,6 +413,9 @@
  *@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
     <script src="~/js/profile.js" asp-append-version="true"></script>
+}
+
+@section Plugins {
+    <script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
 }

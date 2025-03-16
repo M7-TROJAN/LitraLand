@@ -13,6 +13,8 @@ namespace LitraLand.Web.Helpers
         {
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim(ClaimTypes.GivenName, user.FullName));
+            identity.AddClaim(new Claim(CustomClaimTypes.ImageThumbnailUrl, user.ImageThumbnailUrl ?? AppConstants.DefaultAvatarUrl));
+            // Add more custom claims here if needed
             return identity;
         }
     }

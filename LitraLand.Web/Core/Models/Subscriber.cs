@@ -1,7 +1,7 @@
 ﻿namespace LitraLand.Web.Core.Models
 {
     public class Subscriber : BaseModel
-    { 
+    {
         public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

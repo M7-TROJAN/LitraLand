@@ -1,5 +1,4 @@
-﻿using LitraLand.Web.Core.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace LitraLand.Web.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

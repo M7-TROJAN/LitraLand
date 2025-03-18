@@ -34,5 +34,6 @@
         public const string PenaltyShouldBePaid = "Penalty should be paid.";
         public const string InvalidStartDate = "Invalid start date.";
         public const string InvalidEndDate = "Invalid end date.";
+        public const string NoRentalHistory = "This book has no rental history.";
     }
 }

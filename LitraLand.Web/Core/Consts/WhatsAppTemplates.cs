@@ -9,6 +9,7 @@
         public const string SubscriptionExpirationReminder = "subscription_expiration_reminder";
         public const string RentalSuccess = "rental_success";
         public const string RentalExpirationAlert = "rental_expiration_alert";
-
+        public const string RentalCanceled = "rental_canceled";
+        public const string RentalUpdated = "rental_updated";
     }
 }

@@ -109,7 +109,7 @@
                         beforeSend: function () {
                             showLoadingMessage("Processing...", "Canceling Rental, please wait...");
                         },
-                        success: function (copiesCount) {
+                        success: function () {
                             Swal.close(); // Close the loading message
 
                             let rentalsCountElement = $('.number-of-rentals-count');
@@ -132,8 +132,10 @@
                                 let rows = $('#RentalsTable tbody tr'); // '#RentalsTable tbody tr' means all rows in the table body of the 'RentalsTable' table
 
                                 if (rows.length === 0) {
-                                    $('#RentalsTable').fadeOut(); // Hide the table
-                                    $('#Alert').fadeIn(); // Show the Alert div
+                                    $('#RentalsTable').fadeOut(300, function () { // إخفاء الجدول
+                                        $('#Alert').removeClass('d-none').hide().fadeIn(); // إزالة d-none ثم تنفيذ fadeIn
+                                    });
+                                    
                                     rentalsCountElement.text(0);
                                 }
                             });

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<RentalViewModel>
 
 
-<div class="alert bg-light-info border border-info border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mt-10" style="display: @(Model.Any() ? "none !important" : "unset")" id="Alert">
+<div class="alert bg-light-info border border-info border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mt-10 @(Model.Any()? "d-none" : "")" id="Alert">
     <!--begin::Icon-->
     <span class="svg-icon svg-icon-2hx svg-icon-info me-4 mb-5 mb-sm-0">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -17,7 +17,7 @@
     <!--end::Content-->
 </div>
 
-<div class="table-responsive" style="display: @(!Model.Any() ? "none !important" : "unset")" id="RentalsTable">
+<div class="table-responsive @(Model.Any()? "" : "d-none")" id="RentalsTable">
     <!--begin::Table-->
     <table class="table align-middle gs-0 gy-4">
         <!--begin::Table head-->
@@ -27,7 +27,7 @@
                 <th class="min-w-100px"># of Copies</th>
                 <th class="min-w-150px">Total Delay (Days)</th>
                 <th class="min-w-150px">Added On</th>
-                <th class="min-w-125px text-end rounded-end pe-4"></th>
+                <th class="min-w-150px text-end rounded-end pe-4"></th>
             </tr>
         </thead>
         <!--end::Table head-->

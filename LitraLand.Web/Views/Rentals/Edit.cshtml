@@ -1,24 +1,24 @@
 ﻿@model RentalFormViewModel
 
 @{
-    ViewData["Title"] = "Add Rental";
+    ViewData["Title"] = "Edit Rental";
 }
 
 <!--begin::outer Card-->
 <div class="card mb-7">
     <!--begin::outer Card header-->
-	<div class="card-header border-0 pt-6 d-flex justify-content-between align-items-center">
-		<!--begin::title-->
-		<div class="card-title">
-			<h3 class="fw-bolder">Add Rental</h3>
-		</div>
-		<!--end::title-->
-	</div>
+    <div class="card-header border-0 pt-6 d-flex justify-content-between align-items-center">
+        <!--begin::title-->
+        <div class="card-title">
+            <h3 class="fw-bolder">Edit Rental</h3>
+        </div>
+        <!--end::title-->
+    </div>
     <!--end::outer Card header-->
     <!--begin::outer Card body-->
-	<div class="card-body">
-		<partial name="_SearchForm" model="new SearchFormViewModel()" />
-	</div>
+    <div class="card-body">
+        <partial name="_SearchForm" model="new SearchFormViewModel()" />
+    </div>
     <!--end::outer Card body-->
     <!--begin::inner card-->
     <div class="card mb-5 mb-xl-8">
@@ -32,9 +32,14 @@
         <!--end::inner card Header-->
         <!--begin::inner card Body-->
         <div class="card-body pt-5">
-            <form asp-action="Create" id="CopiesForm">
+            <form asp-controller="Rentals" asp-action="Edit" id="CopiesForm">
                 <input type="hidden" asp-for="SubscriberKey" />
-                @* Copies will be added here *@
+
+                @foreach(var bookCopy in Model.CurrentCopies)
+                {
+                    <partial name="_CopyDetails" model="bookCopy" />
+                }
+
                 <button id="btnSubmit" type="submit" class="btn btn-primary">
                     <span class="indicator-label">
                         Save
@@ -52,9 +57,9 @@
 <!--end::outer Card-->
 @section Scripts
 {
-	<partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
     <script>
         let maxAllowedCopies = @Model.MaxAllowedCopies
     </script>
-    <script src="~/js/rental/add-rental-form.js" asp-append-version="true"></script>
+    <script src="~/js/rental/edit-rental-form.js" asp-append-version="true"></script>
 }

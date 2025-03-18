@@ -4,6 +4,7 @@ using LitraLand.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LitraLand.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250316213318_alterRentalCopies")]
+    partial class alterRentalCopies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -498,8 +501,11 @@ namespace LitraLand.Web.Data.Migrations
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.RentalCopy", b =>
                 {
-                    b.Property<int>("RentalId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BookCopyId")
                         .HasColumnType("int");
@@ -513,12 +519,17 @@ namespace LitraLand.Web.Data.Migrations
                     b.Property<DateTime>("RentalDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("RentalId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("RentalId", "BookCopyId");
+                    b.HasKey("Id");
 
                     b.HasIndex("BookCopyId");
+
+                    b.HasIndex("RentalId");
 
                     b.ToTable("RentalCopies", (string)null);
                 });

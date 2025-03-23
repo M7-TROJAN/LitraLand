@@ -6,20 +6,21 @@
 		<div class="hover-scroll-overlay-y my-5 pe-4 me-n4" id="kt_aside_menu_wrapper" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="{default: '#kt_aside_footer', lg: '#kt_header, #kt_aside_footer'}" data-kt-scroll-wrappers="#kt_aside, #kt_aside_menu" data-kt-scroll-offset="{default: '5px', lg: '75px'}">
 			<!--begin::Menu-->
 			<div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="#kt_aside_menu" data-kt-menu="true">
-				<!--begin:Menu item Home-->
+				<!--begin:Menu item Dashboard-->
 				<div class="menu-item">
-					<a class="menu-link" asp-controller="Home" asp-action="Index"  active-when="Home">
+					<a class="menu-link" asp-controller="Dashboard" asp-action="Index" active-when="Dashboard">
 						<span class="menu-icon">
 							<span class="svg-icon svg-icon-2">
 								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M11 2.375L2 9.575V20.575C2 21.175 2.4 21.575 3 21.575H9C9.6 21.575 10 21.175 10 20.575V14.575C10 13.975 10.4 13.575 11 13.575H13C13.6 13.575 14 13.975 14 14.575V20.575C14 21.175 14.4 21.575 15 21.575H21C21.6 21.575 22 21.175 22 20.575V9.575L13 2.375C12.4 1.875 11.6 1.875 11 2.375Z" fill="currentColor" />
+									<path opacity="0.3" d="M10.9607 12.9128H18.8607C19.4607 12.9128 19.9607 13.4128 19.8607 14.0128C19.2607 19.0128 14.4607 22.7128 9.26068 21.7128C5.66068 21.0128 2.86071 18.2128 2.16071 14.6128C1.16071 9.31284 4.96069 4.61281 9.86069 4.01281C10.4607 3.91281 10.9607 4.41281 10.9607 5.01281V12.9128Z" fill="currentColor" />
+									<path d="M12.9607 10.9128V3.01281C12.9607 2.41281 13.4607 1.91281 14.0607 2.01281C16.0607 2.21281 17.8607 3.11284 19.2607 4.61284C20.6607 6.01284 21.5607 7.91285 21.8607 9.81285C21.9607 10.4129 21.4607 10.9128 20.8607 10.9128H12.9607Z" fill="currentColor" />
 								</svg>
 							</span>
 						</span>
-						<span class="menu-title">Home</span>
+						<span class="menu-title">Dashboard</span>
 					</a>
 				</div>
-				<!--end:Menu item Home-->
+				<!--end:Menu item Dashboard-->
 				@if (User.IsInRole(AppRoles.Archive))
 				{
 					<!--begin:Menu item Categories-->
@@ -101,10 +102,35 @@
 					</div>
 					<!--end:Menu item Users-->
 				}
+				<!--begin:Menu item Search-->
+				<div class="menu-item">
+					<a class="menu-link" asp-controller="Search" asp-action="Index" active-when="Search">
+						<span class="menu-icon">
+							<span class="svg-icon svg-icon-2">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor"></rect>
+									<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor"></path>
+								</svg>
+							</span>
+						</span>
+						<span class="menu-title">Search</span>
+					</a>
+				</div>
+				<!--end:Menu item Search-->
 			</div>
 			<!--end::Menu-->
 		</div>
 	</div>
 	<!--end::Aside menu-->
+	<!--begin::Aside Footer-->
+	<div class="aside-footer flex-column-auto pt-3 pb-5 px-6" id="kt_aside_footer">
+		<a href="#" class="btn btn-flex flex-center btn-light text-hover-primary overflow-hidden text-nowrap px-0 h-45px w-100 shadow-lg rounded">
+			<span class="btn-label fw-bold fs-6">Go to the Community</span>
+			<span class="btn-icon ms-3">
+				<i class="fa-solid fa-users"></i>
+			</span>
+		</a>
+	</div>
+	<!--end::Aside Footer-->
 </div>
 <!--end::Aside-->

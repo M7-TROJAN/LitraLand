@@ -39,6 +39,20 @@
     {
       "library": "expressive-annotations-validate@2.7.0",
       "destination": "wwwroot/lib/expressive-annotations-validate/"
+    },
+    {
+      "library": "typeahead.js@0.11.1",
+      "destination": "wwwroot/lib/typeahead.js/",
+      "files": [
+        "typeahead.bundle.min.js"
+      ]
+    },
+    {
+      "library": "handlebars.js@4.7.8",
+      "destination": "wwwroot/lib/handlebars.js/",
+      "files": [
+        "handlebars.min.js"
+      ]
     }
   ]
 }

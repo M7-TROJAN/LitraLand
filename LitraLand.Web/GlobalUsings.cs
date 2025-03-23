@@ -2,6 +2,7 @@
 global using LitraLand.Web.Core.Consts;
 global using LitraLand.Web.Core.Enums;
 global using LitraLand.Web.Core.Models;
+global using LitraLand.Web.Core.Consts.DTO;
 global using LitraLand.Web.Core.ViewModels;
 global using LitraLand.Web.Core.ViewModels.AuthorViews;
 global using LitraLand.Web.Core.ViewModels.BookViews;

@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.Dashboard;
+using HashidsNet;
 using LitraLand.Web.Core.Mapping;
 using LitraLand.Web.Helpers;
 using LitraLand.Web.Seeds;
@@ -22,6 +23,14 @@ namespace LitraLand.Web
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(connectionString, sqlOptions =>
+            //    {
+            //        sqlOptions.CommandTimeout(60);
+            //        sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+            //    }));
+
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -53,6 +62,8 @@ namespace LitraLand.Web
             // This ensures that if a user updates their password or role, they must re-authenticate immediately. 
             builder.Services.Configure<SecurityStampValidatorOptions>(option => option.ValidationInterval = TimeSpan.Zero);
 
+            // Add HashIdes services to the container
+            builder.Services.AddSingleton<IHashids>(new Hashids("my_unique_salt_value_mahmoud", 11));
 
             // Add DataProtection services to the container
             builder.Services.AddDataProtection()

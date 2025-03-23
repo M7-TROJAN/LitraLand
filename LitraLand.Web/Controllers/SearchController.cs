@@ -1,0 +1,57 @@
+﻿using HashidsNet;
+namespace LitraLand.Web.Controllers
+{
+    public class SearchController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IHashids _hashids;
+
+        public SearchController(ApplicationDbContext context, IMapper mapper, IHashids hashids)
+        {
+            _context = context;
+            _mapper = mapper;
+            _hashids = hashids;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Find(string query)
+        {
+            var books = _context.Books
+                .Include(b => b.Author)
+                .Where(b => !b.IsDeleted && (b.Title.Contains(query) || b.Author!.Name.Contains(query)))
+                .Select(b => new { b.Title, Author = b.Author!.Name, Key = _hashids.Encode(b.Id) })
+                .ToList();
+
+            return Ok(books);
+        }
+
+        public IActionResult Details(string bKey)
+        {
+            var decodedIds = _hashids.Decode(bKey);
+
+            if (decodedIds.Length == 0)
+                return NotFound();
+
+            var bookId = decodedIds[0];
+
+            var book = _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Copies)
+                .Include(b => b.Categories)
+                .ThenInclude(c => c.Category)
+                .FirstOrDefault(b => b.Id == bookId && !b.IsDeleted);
+
+            if (book is null)
+                return NotFound();
+
+            var viewModel = _mapper.Map<BookViewModel>(book);
+
+            return View(viewModel);
+        }
+    }
+}

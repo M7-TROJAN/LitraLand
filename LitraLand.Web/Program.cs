@@ -1,4 +1,4 @@
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.Dashboard;
 using HashidsNet;
 using LitraLand.Web.Core.Mapping;
@@ -7,9 +7,12 @@ using LitraLand.Web.Seeds;
 using LitraLand.Web.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
+using Serilog.Context;
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 using WhatsAppCloudApi.Extensions;
+using static System.Net.Mime.MediaTypeNames;
 namespace LitraLand.Web
 {
     public class Program
@@ -51,7 +54,7 @@ namespace LitraLand.Web
 
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-                options.Lockout.MaxFailedAccessAttempts = 2;
+                options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
 
                 // visit the below link for more information about Identity configuration
@@ -121,6 +124,16 @@ namespace LitraLand.Web
                 policy.RequireRole(AppRoles.SuperAdmin, AppRoles.Admin);
             }));
 
+            builder.Services.AddMvc(options =>
+            {
+                // Add Antiforgery token attribute to the application (will be added automatically to all POST requests)
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
+
+            // add serilog to the application
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+            builder.Host.UseSerilog();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -134,6 +147,22 @@ namespace LitraLand.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            // Add StatusCodePagesWithReExecute middleware to handle errors and show a custom error page
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
+            // make sure that all cookies are secure
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.Always
+            });
+
+            // Add middleware to prevent the application from being embedded in an iframe
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Append("X-Frame-Options", "DENY");
+                await next();
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -187,6 +216,20 @@ namespace LitraLand.Web
                 "0 14 * * *", // Cron Expression (Run every day at 2:00 PM)
                 new RecurringJobOptions()
             );
+
+            // Add middleware to log the user id and user name for each request
+            app.Use(async (context, next) =>
+            {
+                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "Unknown";
+                var userName = context.User.FindFirstValue(ClaimTypes.Name) ?? "Unknown";
+                using (LogContext.PushProperty("UserId", userId))
+                using (LogContext.PushProperty("UserName", userName))
+                {
+                    await next();
+                }
+            });
+
+            app.UseSerilogRequestLogging(); // Add Serilog to log the request
 
             app.MapControllerRoute(
                 name: "default",

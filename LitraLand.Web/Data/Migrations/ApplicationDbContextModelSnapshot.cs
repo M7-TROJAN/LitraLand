@@ -373,7 +373,7 @@ namespace LitraLand.Web.Data.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("BookCopies");
+                    b.ToTable("BookCopies", (string)null);
                 });
 
             modelBuilder.Entity("LitraLand.Web.Core.Models.Category", b =>

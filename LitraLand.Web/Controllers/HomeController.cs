@@ -1,4 +1,5 @@
 using HashidsNet;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Diagnostics;
 
 namespace LitraLand.Web.Controllers
@@ -21,7 +22,12 @@ namespace LitraLand.Web.Controllers
         public IActionResult Index()
         {
             if (User.Identity!.IsAuthenticated)
-                return RedirectToAction(nameof(Index), "Dashboard");
+            {
+                if (!User.IsInRole(AppRoles.User))
+                    return RedirectToAction(nameof(Index), "Dashboard"); // if the user is not a member of the staff or admin, redirect him to the dashboard
+                    //else
+                    // return him to the hom of the community area
+            }
 
             var lastAddedBooks = _context.Books
                 .Include(b => b.Author)
@@ -44,9 +50,9 @@ namespace LitraLand.Web.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(int statusCode = 500)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { ErrorCode = statusCode, ErrorDescription = ReasonPhrases.GetReasonPhrase(statusCode) });
         }
     }
 }

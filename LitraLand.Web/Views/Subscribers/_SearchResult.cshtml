@@ -1,0 +1,97 @@
+﻿@using LitraLand.Web.Core.ViewModels.SubscriberViews
+@model SubscriberSearchResultViewModel
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model is null)
+        {
+            <!--begin::Alert-->
+            <div class="alert bg-light-warning border border-warning border-3 border-dashed d-flex flex-column flex-sm-row align-items-center justify-content-between w-100 p-5">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column">
+                    <!--begin::Content-->
+                    <span>No Subscribers were found!</span>
+                    <!--end::Content-->
+                </div>
+                <!--end::Wrapper-->
+                <!--begin::Button-->
+                <a asp-action="Create" class="btn btn-primary ms-sm-auto mt-5 mt-sm-0">Add Subscriber</a>
+                <!--end::Button-->
+            </div>
+            <!--end::Alert-->
+        }
+        else
+        {
+            @*  <div class="d-flex justify-content-between"> 
+                 <div class="d-flex flex-column justify-content-center"> 
+                     <h4>@Model.FullName</h4> 
+                     <div class="mt-3"> 
+                         <a class="btn btn-primary" asp-action="Details" asp-route-id="@Model.Id"> 
+                             Details 
+                         </a> 
+                     </div> 
+                 </div> 
+                 <div> 
+                     <div class="symbol symbol-100px"> 
+                         <img src="@Model.ImageThumbnailUrl" alt="" /> 
+                     </div> 
+                 </div> 
+             </div>
+
+
+             <div class="card-body d-flex flex-center flex-column pt-12 p-9">
+                <!--begin::Avatar-->
+                <div class="symbol symbol-150px mb-5">
+                    <img src="@Model.ImageThumbnailUrl" alt="Subscriber image" />
+                </div>
+                <!--end::Avatar-->
+                <!--begin::Name-->
+                <span href="#" class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">@Model.FullName</span>
+                <!--end::Name-->
+                <!--begin::Email-->
+                <div class="fw-semibold text-gray-500 mb-3">@Model.Email</div>
+                <!--end::Email-->
+                <!--begin::Action-->
+                <div class="">
+                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@Model.Id">
+                        Details
+                    </a>
+                </div>
+                <!--end::Action-->
+            </div> *@
+
+            <div class="row g-6 g-xl-9">
+                <!--begin::Col-->
+                <div class="col-md-6 col-xxl-4">
+                    <!--begin::Card-->
+                    <div class="card ">
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex flex-center flex-column pt-12 p-9">
+                            <!--begin::Avatar-->
+                            <div class="symbol symbol-150px mb-5">
+                                <img src="@Model.ImageThumbnailUrl" alt="Subscriber image" />
+                            </div>
+                            <!--end::Avatar-->
+                            <!--begin::Name-->
+                            <span class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">@Model.FullName</span>
+                            <!--end::Name-->
+                            <!--begin::Email-->
+                            <div class="fw-semibold text-gray-500 mb-3">@Model.Email</div>
+                            <!--end::Email-->
+                            <!--begin::Action-->
+                            <div class="">
+                                <a class="btn btn-primary" asp-action="Details" asp-route-id="@Model.Key">
+                                    Details
+                                </a>
+                            </div>
+                            <!--end::Action-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Col-->
+            </div>
+        }
+    </div>
+</div>

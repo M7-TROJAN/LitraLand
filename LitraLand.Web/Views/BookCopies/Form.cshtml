@@ -16,7 +16,7 @@
     <div class="mb-5">
         <!--begin::Input group-->
         <div class="form-floating mb-2">
-            <input type="text" class="form-control" placeholder="Edition" asp-for="EditionNumber" value="@(Model?.Id > 0 ? Model.EditionNumber : string.Empty)" />
+            <input type="text" class="form-control form-control-solid" placeholder="Edition" asp-for="EditionNumber" value="@(Model?.Id > 0 ? Model.EditionNumber : string.Empty)" />
             <label asp-for="EditionNumber"></label>
         </div>
         <!--end::Input group-->

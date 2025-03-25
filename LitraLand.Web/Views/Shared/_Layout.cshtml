@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject SignInManager<ApplicationUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,6 +8,7 @@
     <title>@ViewData["Title"] - LitraLand</title>
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap">
     <!--end::Fonts-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     <link rel="stylesheet" href="~/assets/css/plugins.bundle.css" type="text/css" />
@@ -22,24 +25,30 @@
         var defaultThemeMode = "light";
         var themeMode;
         if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-theme-mode")) {
+            if (document.documentElement.hasAttribute("data-theme-mode"))
                 themeMode = document.documentElement.getAttribute("data-theme-mode");
-            } else {
-                if (localStorage.getItem("data-theme") !== null) {
+            else 
+            {
+                if (localStorage.getItem("data-theme") !== null)
                     themeMode = localStorage.getItem("data-theme");
-                } else {
+                else
                     themeMode = defaultThemeMode;
-                }
             }
-            if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "dark"
-                    : "light";
-            }
+            if (themeMode === "system")
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
             document.documentElement.setAttribute("data-theme", themeMode);
         }
     </script>
     <!--end::Theme mode setup on page load-->
+    <!--begin:: no script-->
+    <noscript>
+        <div class="position-fixed h-100 w-100 bg-white text-center pt-20" style="z-index: 30000000000;">
+            <h1 class="text-danger">Javascript is disabled</h1>
+            <p class="pt-3 text-muted">Please enable javascript and refresh the page</p>
+        </div>
+    </noscript>
+    <!--end:: no script-->
 
     <!--begin::Page loader-->
     <div class="page-loader">
@@ -49,36 +58,45 @@
     </div>
     <!--end::Page Loader-->
 
-	<!--begin::Main-->
-	<!--begin::Root-->
-	<div class="d-flex flex-column flex-root">
-		<!--begin::Page-->
-		<div class="page d-flex flex-row flex-column-fluid">
-			<!--begin::Wrapper-->
-			<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
-                <!--begin::Header-->
-				<partial name="_Header" />
-                <!--end::Header-->
-				<!--begin::Content wrapper-->
-				<div class="d-flex flex-column-fluid">
-					<!--begin::Aside-->
-                    <partial name="_Aside" />
-					<!--end::Aside-->
-					<!--begin::Container-->
-					<div class="d-flex flex-column flex-column-fluid container-fluid"> 
-						<div class="content flex-column-fluid" id="kt_content">
-							@RenderBody()
-						</div>
-					</div>
-					<!--end::Container-->
-				</div>
-				<!--end::Content wrapper-->
-			</div>
-			<!--end::Wrapper-->
-		</div>
-		<!--end::Page-->
-	</div>
-	<!--end::Root-->
+    <!--begin::Main-->
+    <!--begin::Root-->
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="d-flex flex-column flex-root">
+            <!--begin::Page-->
+            <div class="page d-flex flex-row flex-column-fluid">
+                <!--begin::Wrapper-->
+                <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                    <!--begin::Header-->
+                    <partial name="_Header" />
+                    <!--end::Header-->
+                    <!--begin::Content wrapper-->
+                    <div class="d-flex flex-column-fluid">
+                        <!--begin::Aside-->
+                        <partial name="_Aside" />
+                        <!--end::Aside-->
+                        <!--begin::Container-->
+                        <div class="d-flex flex-column flex-column-fluid container-fluid">
+                            <div class="content flex-column-fluid" id="kt_content">
+                                @RenderBody()
+                            </div>
+                            <!--begin::Footer-->
+                            <partial name="_Footer" />
+                            <!--end::Footer-->
+                        </div>
+                        <!--end::Container-->
+                    </div>
+                    <!--end::Content wrapper-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Page-->
+        </div>
+    }
+    else {
+        @RenderBody()
+    }
+    <!--end::Root-->
 	<!--end::Main-->
 
 	<!--begin::Scrolltop Button-->
@@ -93,18 +111,7 @@
 		<!--end::Svg Icon-->
 	</div>
     <!--end::Scrolltop Button-->
-    <!-- Footer -->
-    <footer class="text-center text-lg-start text-white">
-        <!-- Copyright -->
-        <div class="text-center p-3"
-             style="background-color: rgba(0, 0, 0, 0.2)">
-            © 2025 Copyright:
-            <a class="text-white" href="Home">LitraLand</a>
-        </div>
-        <!-- Copyright -->
-    </footer>
-    <!-- Footer -->
-
+    
     <span id="Message" class="d-none">@TempData["Message"]</span>
     
     <!--begin::Modals-->
@@ -119,7 +126,11 @@
     <!--end::Global Javascript Bundle-->
     <script src="~/lib/bootbox.js/bootbox.min.js"></script>
     @await RenderSectionAsync("Plugins", required: false)
+    <script src="~/js/global.js" asp-append-version="true"></script>
+    <script src="~/js/global-datatables.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <!--end::Javascript-->
+    <!-- Note: don't change the order of scripts; otherwise, it will break the functionality -->
 </body>
 </html>

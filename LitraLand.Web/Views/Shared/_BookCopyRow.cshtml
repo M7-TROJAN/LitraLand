@@ -14,6 +14,9 @@
         </span>
     </td>
     <td>@Model.CreatedOn.ToString("dd MMM, yyyy")</td>
+    <td>
+        <a class="btn btn-light-primary btn-sm" asp-controller="BookCopies" asp-action="RentalHistory" asp-route-id="@Model.Id">History</a>
+    </td>
     <td class="text-end">
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
             Actions

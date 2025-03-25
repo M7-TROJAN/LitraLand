@@ -8,7 +8,6 @@
       data-ajax-success="onModalSuccess"
       data-ajax-failure="onModalError"
       data-ajax-complete="onModalComplete">
-      
 
     @if (Model?.Id > 0)
     {
@@ -17,7 +16,7 @@
     <div class="mb-5">
         <!--begin::Input group-->
         <div class="form-floating mb-2">
-            <input type="text" class="form-control" placeholder="Name" asp-for="Name" />
+            <input type="text" class="form-control form-control-solid" placeholder="Name" asp-for="Name" />
             <label asp-for="Name">Author Name</label>
         </div>
         <!--end::Input group-->

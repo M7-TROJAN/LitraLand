@@ -14,9 +14,9 @@ namespace LitraLand.Web.Helpers
         public string ActiveWhen { get; set; }
 
         // 3. we need to know the view context (the current controller, action, etc.)
-        [ViewContext] 
+        [ViewContext]
         [HtmlAttributeNotBound] // this attribute is not bound to any html attribute meaning the value of this property will not be assigned by any html attribute but by the view context itself
-        public ViewContext? ViewContextData { get; set; } 
+        public ViewContext? ViewContextData { get; set; }
 
         // 4. we need to override the Process method
         public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -29,7 +29,7 @@ namespace LitraLand.Web.Helpers
                 return;
 
             // 6. we need to check if the current controller is the same as the ActiveWhen property
-            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString();
+            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString() ?? string.Empty;
 
             if (ActiveWhen == currentController)
             {

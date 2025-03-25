@@ -36,9 +36,58 @@
 
             // BookCopy
             CreateMap<BookCopy, BookCopyViewModel>()
-                .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book!.Title));
+                .ForMember(dest => dest.BookId, opt => opt.MapFrom(src => src.Book!.Id))
+                .ForMember(dest => dest.BookTitle, opt => opt.MapFrom(src => src.Book!.Title))
+                .ForMember(dest => dest.BookThumbnailUrl, opt => opt.MapFrom(src => src.Book!.ImageThumbnailUrl));
+
 
             CreateMap<BookCopy, BookCopyFormViewModel>();
+
+            // User
+            CreateMap<ApplicationUser, UserViewModel>()
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area!.Name))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
+
+            CreateMap<UserFormViewModel, ApplicationUser>()
+                .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.UserName.ToUpper()))
+                .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpper()))
+                .ReverseMap();
+
+
+            // subscriber
+            CreateMap<SubscriberFormViewModel, Subscriber>()
+                .ReverseMap()
+                .ForMember(dest => dest.Areas, opt => opt.Ignore())
+                .ForMember(dest => dest.Governorates, opt => opt.Ignore());
+
+            CreateMap<Subscriber, SubscriberViewModel>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area!.Name))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
+
+            CreateMap<Subscriber, SubscriberSearchResultViewModel>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
+            // subscription
+            CreateMap<Subscription, SubscriptionViewModel>();
+
+            // governorates
+            CreateMap<Governorate, SelectListItem>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+            // areas
+            CreateMap<Area, SelectListItem>()
+                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+
+            //Rentals
+            CreateMap<Rental, RentalViewModel>();
+            CreateMap<RentalCopy, RentalCopyViewModel>();
+
+            CreateMap<RentalCopy, CopyHistoryViewModel>()
+                .ForMember(dest => dest.SubscriberName, opt => opt.MapFrom(src => src.Rental!.Subscriber!.FirstName + " " + src.Rental!.Subscriber!.LastName))
+                .ForMember(dest => dest.SubscriberMobile, opt => opt.MapFrom(src => src.Rental!.Subscriber!.PhoneNumber));
         }
     }
 }

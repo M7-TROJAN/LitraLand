@@ -1,8 +1,157 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<BookViewModel>
+
+@{
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex flex-column flex-root page-bg">
+	<div class="page launcher sidebar-enabled d-flex flex-row flex-column-fluid me-lg-5" id="kt_page">
+		<!--begin::Content-->
+		<div class="d-flex flex-row-fluid">
+			<!--begin::Container-->
+			<div class="d-flex flex-column flex-row-fluid align-items-center">
+				<!--begin::Menu-->
+				<div class="d-flex flex-column flex-column-fluid mb-5 mb-lg-10">
+					<!--begin::Logo-->
+					<div class="d-flex flex-center pt-10 pt-lg-0 mb-10 mb-lg-0 h-lg-225px">
+						<a href="/">
+							<img alt="Logo" src="~/assets/images/logo1.png" class="h-70px" />
+						</a>
+					</div>
+					<!--end::Logo-->
+					<!--begin::Row (the three cards)-->
+					<div class="row g-7 w-xxl-850px">
+						<!--begin::Staff Col-->
+						<div class="col">
+							<!--begin::Card-->
+							<div class="card border-0 shadow-none h-lg-100 min-h-470" style="background-color: #A838FF">
+								<!--begin::Card body-->
+								<div class="card-body d-flex flex-column flex-center pb-0 pt-15">
+									<!--begin::Wrapper-->
+									<div class="px-10 mb-10">
+										<!--begin::Heading-->
+										<h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">LitraLand Staff</h3>
+										<!--end::Heading-->
+										<!--begin::Link-->
+										<a asp-controller="Dashboard" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Dashboard</a>
+										<!--end::Link-->
+									</div>
+									<!--end::Wrapper-->
+									<!--begin::Illustrations-->
+									<img class="mw-100 h-225px mx-auto mb-lg-n18" src="~/assets/images/staff.png" />
+									<!--end::Illustrations-->
+								</div>
+								<!--end::Card body-->
+							</div>
+							<!--end::Card-->
+						</div>
+						<!--end::Staff Col-->
+						<!--begin::Books Finder Col-->
+						<div class="col">
+							<!--begin::Card-->
+							<div class="card border-0 shadow-none h-lg-100 bg-primary min-h-470">
+								<!--begin::Card body-->
+								<div class="card-body d-flex flex-column flex-center pb-0 pt-15">
+									<!--begin::Wrapper-->
+									<div class="px-10 mb-10">
+										<!--begin::Heading-->
+										<h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">Find a book</h3>
+										<!--end::Heading-->
+										<!--begin::Link-->
+										<a asp-controller="Search" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Books Finder</a>
+										<!--end::Link-->
+									</div>
+									<!--end::Wrapper-->
+									<!--begin::Illustration-->
+									<img class="mw-100 h-225px mx-auto mb-lg-n18" src="~/assets/images/search.png" />
+									<!--end::Illustration-->
+								</div>
+								<!--end::Card body-->
+							</div>
+							<!--end::Card-->
+						</div>
+						<!--end::Books Finder Col-->
+						<!--begin::Community Col-->
+						<div class="col">
+							<!--begin::Card-->
+							<div class="card border-0 shadow-none h-lg-100 min-h-470" style="background-color: #D5D83D">
+								<!--begin::Card body-->
+								<div class="card-body d-flex flex-column flex-center pb-0 pt-15">
+									<!--begin::Wrapper-->
+									<div class="px-10 mb-10">
+										<!--begin::Heading-->
+										<h3 class="text-gray-900 fw-bolder text-uppercase mb-2 text-center mb-6">Marketplace</h3>
+										<!--end::Heading-->
+										<!--begin::Link-->
+										<a asp-area="Marketplace" asp-controller="MarketplaceHome" asp-action="Index" class="btn btn-hover-rise text-gray-900 text-uppercase fs-7 fw-bold" style="background-color: #EBEE51">Go to Book Marketplace</a>
+										<!--end::Link-->
+									</div>
+									<!--end::Wrapper-->
+									<!--begin::Illustration-->
+									<img class="mw-100 h-225px mx-auto mb-lg-n18" src="~/assets/images/marketplace.png" />
+									<!--end::Illustration-->
+								</div>
+								<!--end::Card body-->
+							</div>
+							<!--end::Card-->
+						</div>
+						<!--end::Community Col-->
+					</div>
+					<!--end::Row (the three cards)-->
+				</div>
+				<!--end::Menu-->
+			</div>
+			<!--end::Container-->
+		</div>
+		<!--end::Content-->
+		<!--begin::Newly Added Books Sidebar-->
+@* 		<div id="kt_sidebar" class="sidebar px-5 py-5 py-lg-8 px-lg-11" data-kt-drawer="true" data-kt-drawer-name="sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="375px" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_sidebar_toggle">
+			<!--begin::Header-->
+			<div class="d-flex flex-stack mb-5 mb-lg-8" id="kt_sidebar_header">
+				<!--begin::Title-->
+				<h2 class="text-white">Newly Added Books</h2>
+				<!--end::Title-->
+			</div>
+			<!--end::Header-->
+			<!--begin::Body-->
+			<div class="mb-5 mb-lg-8" id="kt_sidebar_body">
+				<!--begin::Scroll-->
+				<div class="hover-scroll-y me-n6 pe-6" id="kt_sidebar_body" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_sidebar_header, #kt_sidebar_footer" data-kt-scroll-wrappers="#kt_page, #kt_sidebar, #kt_sidebar_body" data-kt-scroll-offset="0">
+					<div class="pb-20">
+						@foreach (var book in Model)
+						{
+							<!--begin::Item-->
+							<a class="d-flex flex-stack" asp-controller="Search" asp-action="Details" asp-route-bKey="@book.Key">
+								<!--begin::Symbol-->
+								<div class="symbol symbol-60px me-4">
+									<img src="@book.ImageThumbnailUrl" class="" alt="@book.Title" />
+								</div>
+								<!--end::Symbol-->
+								<!--begin::Section-->
+								<div class="d-flex align-items-center flex-row-fluid flex-wrap">
+									<!--begin:Author-->
+									<div class="flex-grow-1 me-2">
+										<h5 class="text-white text-hover-primary fs-5 fw-bolder">@book.Title</h5>
+										<span class="text-gray-400 fw-semibold d-block fs-6">@book.Author</span>
+									</div>
+									<!--end:Author-->
+								</div>
+								<!--end::Section-->
+							</a>
+							<!--end::Item-->
+							@if (book != Model.Last())
+							{
+								<!--begin::Separator-->
+								<div class="separator separator-dashed my-5"></div>
+								<!--end::Separator-->
+							}
+						}
+					</div>
+				</div>
+				<!--end::Scroll-->
+			</div>
+			<!--end::Body-->
+		</div>*@
+		<!--end::Newly Added Books Sidebar-->
+	</div>
 </div>

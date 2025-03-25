@@ -1,5 +1,6 @@
 ﻿namespace LitraLand.Web.Controllers
 {
+    [Authorize(Roles = AppRoles.Archive)]
     public class AuthorsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -37,12 +38,14 @@
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var Author = _mapper.Map<Author>(model);
+            var author = _mapper.Map<Author>(model);
 
-            _context.Authors.Add(Author);
+            author.CreatedById = User.GetUserId();
+
+            _context.Authors.Add(author);
             _context.SaveChanges();
 
-            var viewModel = _mapper.Map<AuthorViewModel>(Author);
+            var viewModel = _mapper.Map<AuthorViewModel>(author);
 
             return PartialView("_AuthorRow", viewModel);
         }
@@ -75,6 +78,7 @@
 
             _mapper.Map(model, author);
             author.LastUpdatedOn = DateTime.Now;
+            author.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 
@@ -90,14 +94,19 @@
             var author = _context.Authors.Find(id);
 
             if (author is null)
-                return NotFound();
+                return NotFound("Author not found.");
 
             author.IsDeleted = !author.IsDeleted;
             author.LastUpdatedOn = DateTime.Now;
+            author.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 
-            return Ok(author.LastUpdatedOn.ToString());
+            return Ok(new
+            {
+                message = "User status updated successfully.",
+                lastUpdatedOn = author.LastUpdatedOn?.ToString("dd MMM yyyy hh:mm:ss tt")
+            });
         }
 
         public IActionResult AllowItem(AuthorFormViewModel model)

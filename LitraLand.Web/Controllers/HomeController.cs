@@ -1,6 +1,5 @@
 using HashidsNet;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Diagnostics;
 
 namespace LitraLand.Web.Controllers
 {
@@ -25,8 +24,8 @@ namespace LitraLand.Web.Controllers
             {
                 if (!User.IsInRole(AppRoles.User))
                     return RedirectToAction(nameof(Index), "Dashboard"); // if the user is not a member of the staff or admin, redirect him to the dashboard
-                    //else
-                    // return him to the hom of the community area
+                                                                         //else
+                                                                         // return him to the hom of the community area
             }
 
             var lastAddedBooks = _context.Books

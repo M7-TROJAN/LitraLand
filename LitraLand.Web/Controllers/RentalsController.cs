@@ -337,14 +337,14 @@ namespace LitraLand.Web.Controllers
 
             foreach (var copy in model.SelectedCopies)
             {
-                if (!copy.IsReturned.HasValue) 
+                if (!copy.IsReturned.HasValue)
                     continue; // skip the copy if the user didn't select any action (return or extend)
 
                 var currentCopyInDb = rental.RentalCopies.FirstOrDefault(c => c.BookCopyId == copy.Id); // get the current copy from the rental copies to update it
 
-                if (currentCopyInDb is null) 
-                    continue; 
-                 
+                if (currentCopyInDb is null)
+                    continue;
+
                 if (copy.IsReturned.HasValue && copy.IsReturned.Value) // check if the user wants to return the copy (isReturned = true)
                 {
                     if (currentCopyInDb.ReturnDate.HasValue)
@@ -356,7 +356,7 @@ namespace LitraLand.Web.Controllers
 
                 if (copy.IsReturned.HasValue && !copy.IsReturned.Value) // check if the user wants to extend the rental (isReturned = false)
                 {
-                    if (currentCopyInDb.ExtendedOn.HasValue) 
+                    if (currentCopyInDb.ExtendedOn.HasValue)
                         continue;
 
                     currentCopyInDb.ExtendedOn = DateTime.Now;

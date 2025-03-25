@@ -1,9 +1,7 @@
 ﻿global using AutoMapper;
 global using LitraLand.Web.Core.Consts;
 global using LitraLand.Web.Core.Enums;
-global using LitraLand.Web.Extensions;
 global using LitraLand.Web.Core.Models;
-global using LitraLand.Web.Core.Consts.DTO;
 global using LitraLand.Web.Core.ViewModels;
 global using LitraLand.Web.Core.ViewModels.AuthorViews;
 global using LitraLand.Web.Core.ViewModels.BookViews;
@@ -13,6 +11,7 @@ global using LitraLand.Web.Core.ViewModels.SubscriberViews;
 global using LitraLand.Web.Core.ViewModels.SubscriptionViews;
 global using LitraLand.Web.Core.ViewModels.UserViews;
 global using LitraLand.Web.Data;
+global using LitraLand.Web.Extensions;
 global using LitraLand.Web.filters;
 global using LitraLand.Web.Services;
 global using LitraLand.Web.Settings;

@@ -1,6 +1,4 @@
-﻿using AspNetCoreGeneratedDocument;
-
-namespace LitraLand.Web.Core.Mapping
+﻿namespace LitraLand.Web.Core.Mapping
 {
     public class MappingProfile : Profile
     {

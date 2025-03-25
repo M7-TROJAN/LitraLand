@@ -47,7 +47,7 @@
                 })
                 .OrderByDescending(b => b.Count)
                 .Take(8)
-                .Select (b => new BookViewModel
+                .Select(b => new BookViewModel
                 {
                     Id = b.BookId,
                     Title = b.Title,

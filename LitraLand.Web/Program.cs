@@ -1,18 +1,11 @@
 ﻿using Hangfire;
 using Hangfire.Dashboard;
 using HashidsNet;
-using LitraLand.Web.Core.Mapping;
-using LitraLand.Web.Helpers;
 using LitraLand.Web.Seeds;
 using LitraLand.Web.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 using Serilog.Context;
-using System.Reflection;
-using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
-using WhatsAppCloudApi.Extensions;
-using static System.Net.Mime.MediaTypeNames;
 namespace LitraLand.Web
 {
     public class Program
@@ -21,120 +14,21 @@ namespace LitraLand.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Begin Add services to the container.
-            // Add DbContext
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(connectionString, sqlOptions =>
-            //    {
-            //        sqlOptions.CommandTimeout(60);
-            //        sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
-            //    }));
-
-
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            // Add Identity services
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders();
-
-            builder.Services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequiredLength = 8;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
-                options.User.RequireUniqueEmail = true;
-
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // visit the below link for more information about Identity configuration
-                // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-10.0
-            });
-
-            // Force immediate re-validation of the security stamp upon any user-related changes (e.g., password change, role update).
-            // This ensures that if a user updates their password or role, they must re-authenticate immediately. 
-            builder.Services.Configure<SecurityStampValidatorOptions>(option => option.ValidationInterval = TimeSpan.Zero);
-
-            // Add HashIdes services to the container
-            builder.Services.AddSingleton<IHashids>(new Hashids("my_unique_salt_value_mahmoud", 11));
-
-            // Add DataProtection services to the container
-            builder.Services.AddDataProtection()
-                .SetApplicationName(nameof(LitraLand));
-
-            // Add Cloudinary settings
-            var cloudinarySettings = builder.Configuration.GetSection(nameof(CloudinarySettings)) ?? throw new InvalidOperationException("CloudinarySettings section not found.");
-            builder.Services.Configure<CloudinarySettings>(cloudinarySettings);
-
-            // Add Mail settings
-            var mailSettings = builder.Configuration.GetSection(nameof(MailSettings)) ?? throw new InvalidOperationException("MailSettings section not found.");
-            builder.Services.Configure<MailSettings>(mailSettings);
-            // End Add services to the container.
-
-            // Add ClaimsPrincipalFactory to add custom claims to the user (e.g. FullName)
-            builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
-
-            // Add ImageService to the container of services
-            builder.Services.AddTransient<IImageServices, ImageService>();
-
-            // Add CloudinaryService to the container of services
-            builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
-
-            // Add EmailSender to the container of services
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
-
-            // Add EmailBodyBuilder to the container of services
-            builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
-
-            builder.Services.AddControllersWithViews();
-
-            // Add AutoMapper
-            builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
-
-            // Add ExpressiveAnnotations
-            builder.Services.AddExpressiveAnnotations();
-
-            // Add WhatsApp API Client
-            builder.Services.AddWhatsAppApiClient(builder.Configuration);
-
-            // Add Hangfire services
-            builder.Services.AddHangfire(config =>
-            {
-                config.UseSqlServerStorage(connectionString);
-
-            });
-
-            // Add Hangfire server
-            builder.Services.AddHangfireServer();
-
-            builder.Services.Configure<AuthorizationOptions>(options =>
-            options.AddPolicy("AdminsOnly", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireRole(AppRoles.SuperAdmin, AppRoles.Admin);
-            }));
-
-            builder.Services.AddMvc(options =>
-            {
-                // Add Antiforgery token attribute to the application (will be added automatically to all POST requests)
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            });
+            // Add services to the container.
+            builder.Services.AddLitraLandServices(builder);
 
             // add serilog to the application
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
             builder.Host.UseSerilog();
 
             var app = builder.Build();
+
+            // Add middleware to prevent the application from being embedded in an iframe
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Append("X-Frame-Options", "DENY");
+                await next();
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -143,13 +37,11 @@ namespace LitraLand.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                // Add StatusCodePagesWithReExecute middleware to handle errors and show a custom error page
+                app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
-            // Add StatusCodePagesWithReExecute middleware to handle errors and show a custom error page
-            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
             // make sure that all cookies are secure
             app.UseCookiePolicy(new CookiePolicyOptions
@@ -157,12 +49,6 @@ namespace LitraLand.Web
                 Secure = CookieSecurePolicy.Always
             });
 
-            // Add middleware to prevent the application from being embedded in an iframe
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Append("X-Frame-Options", "DENY");
-                await next();
-            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

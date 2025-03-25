@@ -132,7 +132,7 @@ namespace LitraLand.Web.Controllers
             var rental = new Rental
             {
                 RentalCopies = copies!,
-                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                CreatedById = User.GetUserId()
             };
 
             subscriber.Rentals.Add(rental);
@@ -245,7 +245,7 @@ namespace LitraLand.Web.Controllers
                 return View("NotAllowedRental", rentalsError);
 
             rental.RentalCopies = copies!;
-            rental.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            rental.LastUpdatedById = User.GetUserId();
             rental.LastUpdatedOn = DateTime.Now;
 
             _context.SaveChanges();
@@ -368,7 +368,7 @@ namespace LitraLand.Web.Controllers
             if (isUpdated)
             {
                 rental.LastUpdatedOn = DateTime.Now;
-                rental.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                rental.LastUpdatedById = User.GetUserId();
                 rental.PenaltyPaid = model.PenaltyPaid;
 
                 _context.SaveChanges();
@@ -426,7 +426,7 @@ namespace LitraLand.Web.Controllers
             rental.IsDeleted = true;
 
             rental.LastUpdatedOn = DateTime.Now;
-            rental.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            rental.LastUpdatedById = User.GetUserId();
 
             // delete the rental copies
             // uncomment the below line if you want to delete the rental copies when the rental is deleted

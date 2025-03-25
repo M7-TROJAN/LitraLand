@@ -45,7 +45,7 @@
             {
                 EditionNumber = model.EditionNumber,
                 IsAvailableForRental = book.IsAvailableForRental ? model.IsAvailableForRental : false, // if book is not available for rental, copy should not be available for rental
-                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                CreatedById = User.GetUserId()
             };
 
             book.Copies.Add(copy);
@@ -87,7 +87,7 @@
             copy.EditionNumber = model.EditionNumber;
             copy.IsAvailableForRental = copy.Book!.IsAvailableForRental ? model.IsAvailableForRental : false; // if book is not available for rental, copy should not be available for rental
             copy.LastUpdatedOn = DateTime.Now;
-            copy.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            copy.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 
@@ -127,7 +127,7 @@
             copy.IsAvailableForRental = !copy.IsDeleted ? copy.IsAvailableForRental : false; // if book copy is deleted, it should not be available for rental
 
             copy.LastUpdatedOn = DateTime.Now;
-            copy.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            copy.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 

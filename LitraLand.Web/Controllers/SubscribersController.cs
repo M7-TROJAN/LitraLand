@@ -104,7 +104,7 @@ namespace LitraLand.Web.Controllers
                 Email = subscriber.Email
             });
 
-            // make empty iEnumerable to avoid null reference exception in the view
+            // make empty iEnumerable to avoid null reference exception in the view if no data found
             if (!mappedData.Any())
                 mappedData = new List<SubscriberSearchResultViewModel>();
 
@@ -187,7 +187,7 @@ namespace LitraLand.Web.Controllers
             //subscriber.ImagePublicId = uploadResult.publicId;
             // end upload the image to Cloudinary
 
-            subscriber.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            subscriber.CreatedById = User.GetUserId();
 
             var subscription = new Subscription
             {
@@ -336,7 +336,7 @@ namespace LitraLand.Web.Controllers
             _mapper.Map(model, subscriber);
 
             subscriber.LastUpdatedOn = DateTime.Now;
-            subscriber.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            subscriber.LastUpdatedById = User.GetUserId();
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = model.Key });
         }
@@ -369,7 +369,7 @@ namespace LitraLand.Web.Controllers
 
             var newSubscription = new Subscription
             {
-                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                CreatedById = User.GetUserId(),
                 StartDate = startDate,
                 EndDate = startDate.AddYears(1)
             };

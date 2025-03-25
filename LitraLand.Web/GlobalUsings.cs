@@ -1,6 +1,7 @@
 ﻿global using AutoMapper;
 global using LitraLand.Web.Core.Consts;
 global using LitraLand.Web.Core.Enums;
+global using LitraLand.Web.Extensions;
 global using LitraLand.Web.Core.Models;
 global using LitraLand.Web.Core.Consts.DTO;
 global using LitraLand.Web.Core.ViewModels;

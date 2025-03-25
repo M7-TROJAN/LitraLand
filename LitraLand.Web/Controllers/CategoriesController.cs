@@ -40,7 +40,7 @@
 
             var category = _mapper.Map<Category>(model);
 
-            category.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            category.CreatedById = User.GetUserId();
 
             _context.Categories.Add(category);
             _context.SaveChanges();
@@ -78,7 +78,7 @@
 
             category = _mapper.Map(model, category); // this overload of Map will map the properties of model to the existing category object and not create a new one
             category.LastUpdatedOn = DateTime.Now;
-            category.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            category.LastUpdatedById = User.GetUserId();
             _context.SaveChanges();
 
             var viewModel = _mapper.Map<CategoryViewModel>(category);
@@ -97,7 +97,7 @@
 
             category.IsDeleted = !category.IsDeleted;
             category.LastUpdatedOn = DateTime.Now;
-            category.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            category.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 

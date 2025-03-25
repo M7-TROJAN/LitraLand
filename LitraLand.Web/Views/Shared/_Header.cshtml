@@ -1,7 +1,8 @@
-﻿@inject IWebHostEnvironment WebHostEnvironment
+﻿@using LitraLand.Web.Extensions
+@inject IWebHostEnvironment WebHostEnvironment
 @{
 	// code ver.1 hust png images 
-	 @*
+	@*
 	 var avatarUrl = $"{WebHostEnvironment.WebRootPath}/images/users/thumb/{User.FindFirstValue(ClaimTypes.NameIdentifier)}.png";
 
 	avatarUrl = System.IO.File.Exists(avatarUrl)
@@ -12,7 +13,7 @@
 	var userImagesPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, "images", "users", "thumb");
 	*@
 
-    // code ver.2 work with All images extensions
+	// code ver.2 work with All images extensions
 	@*
 	// الامتدادات المحتملة
 	var possibleExtensions = AppConstants.AllowedImageExtensions;
@@ -27,8 +28,8 @@
 		: "/assets/images/avatar2.webp";
 	*@
 
-    // code ver.3 get the image from the custom claim that we made
-    var avatarUrl = User.FindFirstValue(CustomClaimTypes.ImageThumbnailUrl);
+	// code ver.3 get the image from the custom claim that we made
+	var avatarUrl = User.GetImageThumbnail();
 }
 
 
@@ -162,7 +163,7 @@
 					<!--begin::Name-->
 					<div class="d-none d-md-flex flex-column align-items-end justify-content-center me-2 me-md-4">
 						<span class="text-muted fs-8 fw-semibold lh-1 mb-1">Welcome</span>
-						<span class="text-white fs-8 fw-bold lh-1">@User.FindFirstValue(ClaimTypes.GivenName)</span>
+						<span class="text-white fs-8 fw-bold lh-1">@User.GetFullName()</span>
 					</div>
 					<!--end::Name-->
 					<!--begin::Symbol-->
@@ -185,9 +186,9 @@
 							<!--begin::Username-->
 							<div class="d-flex flex-column">
 								<div class="fw-bold d-flex align-items-center fs-5">
-									@User.FindFirstValue(ClaimTypes.Name)
+									@User.GetUserName()
 								</div>
-								<a asp-area="Identity" asp-page="/Account/Manage/Index" class="fw-semibold text-muted text-hover-primary fs-7">@User.FindFirstValue(ClaimTypes.Email)</a>
+								<a asp-area="Identity" asp-page="/Account/Manage/Index" class="fw-semibold text-muted text-hover-primary fs-7">@User.GetEmail()</a>
 							</div>
 							<!--end::Username-->
 						</div>

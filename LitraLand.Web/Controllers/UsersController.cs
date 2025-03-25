@@ -81,7 +81,7 @@ namespace LitraLand.Web.Controllers
                 Email = model.Email,
                 FullName = model.FullName,
                 DateOfBirth = model.DateOfBirth,
-                CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                CreatedById = User.GetUserId()
             };
 
             var result = await _userManager.CreateAsync(user, model.Password!);
@@ -200,7 +200,7 @@ namespace LitraLand.Web.Controllers
 
             user = _mapper.Map(model, user);
             user.LastUpdatedOn = DateTime.Now;
-            user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            user.LastUpdatedById = User.GetUserId();
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -289,7 +289,7 @@ namespace LitraLand.Web.Controllers
             }
 
             user.LastUpdatedOn = DateTime.Now;
-            user.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            user.LastUpdatedById = User.GetUserId();
 
             await _userManager.UpdateAsync(user);
 
@@ -336,7 +336,7 @@ namespace LitraLand.Web.Controllers
             }
 
             targetUser.LastUpdatedOn = DateTime.Now;
-            targetUser.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            targetUser.LastUpdatedById = User.GetUserId();
 
             // send email notification
             var placeholders = new Dictionary<string, string>()
@@ -373,7 +373,7 @@ namespace LitraLand.Web.Controllers
                 return NotFound("User not found.");
 
             // Get the current logged-in user's ID and roles
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.GetUserId();
             var isCurrentUserSuperAdmin = User.IsInRole(AppRoles.SuperAdmin);
 
             // Prevent users from changing their own status

@@ -40,7 +40,7 @@
 
             var author = _mapper.Map<Author>(model);
 
-            author.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            author.CreatedById = User.GetUserId();
 
             _context.Authors.Add(author);
             _context.SaveChanges();
@@ -78,7 +78,7 @@
 
             _mapper.Map(model, author);
             author.LastUpdatedOn = DateTime.Now;
-            author.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            author.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 
@@ -98,7 +98,7 @@
 
             author.IsDeleted = !author.IsDeleted;
             author.LastUpdatedOn = DateTime.Now;
-            author.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            author.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 

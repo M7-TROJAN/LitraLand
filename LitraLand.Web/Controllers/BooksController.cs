@@ -127,7 +127,7 @@ namespace LitraLand.Web.Controllers
                 // End upload the image to Cloudinary
             }
 
-            book.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            book.CreatedById = User.GetUserId();
 
             _context.Books.Add(book);
 
@@ -229,7 +229,7 @@ namespace LitraLand.Web.Controllers
 
             // update the LastUpdatedOn property and the LastUpdatedById property
             book.LastUpdatedOn = DateTime.Now;
-            book.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            book.LastUpdatedById = User.GetUserId();
 
             // update the book categories (note: BookCategories records related to the bookId will be deleted and re-inserted)
             foreach (var categoryId in model.SelectedCategories)
@@ -267,7 +267,7 @@ namespace LitraLand.Web.Controllers
             book.IsAvailableForRental = !book.IsDeleted ? book.IsAvailableForRental : false; // if the book is deleted, then it should not be available for rental
 
             book.LastUpdatedOn = DateTime.Now;
-            book.LastUpdatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            book.LastUpdatedById = User.GetUserId();
 
             _context.SaveChanges();
 

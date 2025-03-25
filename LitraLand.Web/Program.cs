@@ -12,6 +12,7 @@ namespace LitraLand.Web
     {
         public static async Task Main(string[] args)
         {
+            Console.Title = "LitraLand";
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

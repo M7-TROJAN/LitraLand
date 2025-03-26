@@ -5,11 +5,11 @@ namespace LitraLand.Web.Controllers
     public class BooksController : Controller
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IImageServices _imageServices;
         private readonly ICloudinaryService _cloudinaryService;
-        public BooksController(ApplicationDbContext context, IMapper mapper,
+        public BooksController(IApplicationDbContext context, IMapper mapper,
             IWebHostEnvironment hostingEnvironment, IImageServices imageServices, ICloudinaryService cloudinaryService)
         {
             _context = context;

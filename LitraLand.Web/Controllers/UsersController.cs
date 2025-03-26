@@ -8,7 +8,7 @@ namespace LitraLand.Web.Controllers
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class UsersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -17,7 +17,7 @@ namespace LitraLand.Web.Controllers
         private readonly IEmailBodyBuilder _emailBodyBuilder;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UsersController(ApplicationDbContext context,
+        public UsersController(IApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,

@@ -5,12 +5,12 @@ namespace LitraLand.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<HomeController> _logger;
         private readonly IHashids _hashids;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IMapper mapper, IHashids hashids)
+        public HomeController(ILogger<HomeController> logger, IApplicationDbContext context, IMapper mapper, IHashids hashids)
         {
             _logger = logger;
             _context = context;

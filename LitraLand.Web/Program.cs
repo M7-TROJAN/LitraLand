@@ -1,11 +1,13 @@
 ﻿using Hangfire;
 using Hangfire.Dashboard;
 using HashidsNet;
+using LitraLand.Infrastructure;
 using LitraLand.Web.Seeds;
 using LitraLand.Web.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 using Serilog.Context;
+
 namespace LitraLand.Web
 {
     public class Program
@@ -15,7 +17,8 @@ namespace LitraLand.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddLitraLandServices(builder);
+            builder.Services.AddInfrastructureServices(builder.Configuration); // from LitraLand.Infrastructure layer
+            builder.Services.AddWebServices(builder); // from LitraLand.Web layer (this project)
 
             // add serilog to the application
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();

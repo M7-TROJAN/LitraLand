@@ -6,7 +6,7 @@ namespace LitraLand.Web.Controllers
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Reception)]
     public class RentalsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IDataProtector _dataProtector;
         private readonly IWhatsAppClient _whatsAppClient;
@@ -14,7 +14,7 @@ namespace LitraLand.Web.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IEmailBodyBuilder _emailBodyBuilder;
 
-        public RentalsController(ApplicationDbContext context,
+        public RentalsController(IApplicationDbContext context,
             IMapper mapper,
             IDataProtectionProvider dataProtector,
             IWebHostEnvironment webHostEnvironment,

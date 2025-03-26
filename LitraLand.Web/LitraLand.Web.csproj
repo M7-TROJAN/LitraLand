@@ -13,11 +13,12 @@
     <PackageReference Include="Hangfire" Version="1.8.18" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
@@ -35,6 +36,11 @@
 	<ItemGroup>
 		<Folder Include="wwwroot\images\books\" />
 		<Folder Include="wwwroot\images\Users\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\LitraLand.Application\LitraLand.Application.csproj" />
+	  <ProjectReference Include="..\LitraLand.Infrastructure\LitraLand.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

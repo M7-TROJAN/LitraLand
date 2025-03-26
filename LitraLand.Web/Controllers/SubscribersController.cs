@@ -6,7 +6,7 @@ namespace LitraLand.Web.Controllers
     [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Reception)]
     public class SubscribersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IImageServices _imageServices;
         private readonly ICloudinaryService _cloudinaryService;
@@ -17,7 +17,7 @@ namespace LitraLand.Web.Controllers
         private readonly IEmailBodyBuilder _emailBodyBuilder;
 
         public SubscribersController(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             IDataProtectionProvider dataProtector,
             IMapper mapper,
             IWhatsAppClient whatsAppClient,

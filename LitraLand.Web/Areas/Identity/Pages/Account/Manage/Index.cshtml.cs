@@ -12,11 +12,11 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IImageServices _imageServices;
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
         public IndexModel(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IMapper mapper,

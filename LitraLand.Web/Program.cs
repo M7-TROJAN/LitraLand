@@ -17,8 +17,9 @@ namespace LitraLand.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddInfrastructureServices(builder.Configuration); // from LitraLand.Infrastructure layer
-            builder.Services.AddWebServices(builder); // from LitraLand.Web layer (this project)
+            builder.Services
+                .AddInfrastructureServices(builder.Configuration) // from LitraLand.Infrastructure layer
+                .AddWebServices(builder); // from LitraLand.Web layer (this project)
 
             // add serilog to the application
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();

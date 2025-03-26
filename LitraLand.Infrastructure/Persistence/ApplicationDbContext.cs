@@ -27,7 +27,7 @@ namespace LitraLand.Infrastructure.Persistence
                 .StartsAt(1000001)
                 .IncrementsBy(1);
 
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); // Applies all configurations in the assembly
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); // Applies all configurations in the assembly (LitraLand.Infrastructure)
 
             // Change cascade delete behavior to restrict for all relationships 
             var cascadeFKs = builder.Model.GetEntityTypes()

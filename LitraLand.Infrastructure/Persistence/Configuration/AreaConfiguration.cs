@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class AreaConfiguration : IEntityTypeConfiguration<Area>
+    internal class AreaConfiguration : IEntityTypeConfiguration<Area>
     {
         public void Configure(EntityTypeBuilder<Area> builder)
         {
@@ -10,9 +10,6 @@
                 .HasColumnType("varchar")
                 .HasMaxLength(100)
                 .IsRequired();
-
-            builder.Property(a => a.IsDeleted)
-                .HasDefaultValue(false);
 
             builder.HasIndex(a => new { a.Name, a.GovernorateId })
                 .IsUnique()

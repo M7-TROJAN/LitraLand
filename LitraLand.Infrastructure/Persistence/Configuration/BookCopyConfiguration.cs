@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class BookCopyConfiguration : IEntityTypeConfiguration<BookCopy>
+    internal class BookCopyConfiguration : IEntityTypeConfiguration<BookCopy>
     {
         public void Configure(EntityTypeBuilder<BookCopy> builder)
         {

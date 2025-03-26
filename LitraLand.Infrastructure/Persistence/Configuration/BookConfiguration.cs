@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class BookConfiguration : IEntityTypeConfiguration<Book>
+    internal class BookConfiguration : IEntityTypeConfiguration<Book>
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
@@ -45,14 +45,8 @@
                 .HasMaxLength(2000)
                 .IsRequired();
 
-            builder.Property(c => c.IsDeleted)
-                .HasDefaultValue(false);
-
             builder.Property(c => c.CreatedOn)
                 .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(c => c.LastUpdatedOn)
-                .HasDefaultValue(null);
 
             builder.HasOne(b => b.Author)
                 .WithMany(a => a.Books)

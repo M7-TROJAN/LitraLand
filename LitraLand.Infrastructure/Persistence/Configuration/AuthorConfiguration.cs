@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class AuthorConfiguration : IEntityTypeConfiguration<Author>
+    internal class AuthorConfiguration : IEntityTypeConfiguration<Author>
     {
         public void Configure(EntityTypeBuilder<Author> builder)
         {
@@ -14,18 +14,12 @@
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Property(a => a.IsDeleted)
-                .HasDefaultValue(false);
-
-            builder.Property(a => a.CreatedOn)
-                .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(a => a.LastUpdatedOn)
-                .HasDefaultValue(null);
-
             builder.HasIndex(a => a.Name)
                 .IsUnique()
                 .HasDatabaseName("IX_Authors_Name");
+
+            builder.Property(a => a.CreatedOn)
+                .HasDefaultValueSql("GETDATE()");
 
             builder.ToTable("Authors");
         }

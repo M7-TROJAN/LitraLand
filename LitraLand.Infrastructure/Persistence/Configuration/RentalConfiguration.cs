@@ -1,20 +1,17 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class RentalConfiguration : IEntityTypeConfiguration<Rental>
+    internal class RentalConfiguration : IEntityTypeConfiguration<Rental>
     {
         public void Configure(EntityTypeBuilder<Rental> builder)
         {
             builder.HasKey(r => r.Id);
             builder.Property(r => r.Id).ValueGeneratedOnAdd();
 
-            builder.Property(c => c.IsDeleted)
-                .HasDefaultValue(false);
-
-            builder.Property(c => c.CreatedOn)
+            builder.Property(r => r.CreatedOn)
                 .HasDefaultValueSql("GETDATE()");
 
-            builder.Property(c => c.LastUpdatedOn)
-                .HasDefaultValue(null);
+            builder.Property(r => r.StartDate)
+                .HasDefaultValueSql("CAST(GETDATE() AS DATE)");
 
             builder.HasOne(r => r.Subscriber)
                 .WithMany(s => s.Rentals)

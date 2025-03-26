@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+    internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
@@ -11,19 +11,12 @@
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Property(c => c.IsDeleted)
-                .HasDefaultValue(false);
+            builder.HasIndex(c => c.Name)
+               .IsUnique()
+               .HasDatabaseName("IX_Categories_Name");
 
             builder.Property(c => c.CreatedOn)
                 .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(c => c.LastUpdatedOn)
-                .HasDefaultValue(null);
-
-            builder.HasIndex(c => c.Name)
-                .IsUnique()
-                .HasFilter("[IsDeleted] = 0")
-                .HasDatabaseName("IX_Categories_Name");
 
             builder.ToTable("Categories");
         }

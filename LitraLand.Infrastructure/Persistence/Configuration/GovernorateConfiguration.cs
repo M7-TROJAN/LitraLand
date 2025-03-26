@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class GovernorateConfiguration : IEntityTypeConfiguration<Governorate>
+    internal class GovernorateConfiguration : IEntityTypeConfiguration<Governorate>
     {
         public void Configure(EntityTypeBuilder<Governorate> builder)
         {
@@ -10,9 +10,6 @@
                 .HasColumnType("varchar")
                 .HasMaxLength(100)
                 .IsRequired();
-
-            builder.Property(g => g.IsDeleted)
-                .HasDefaultValue(false);
 
             builder.HasIndex(g => g.Name)
                 .IsUnique()

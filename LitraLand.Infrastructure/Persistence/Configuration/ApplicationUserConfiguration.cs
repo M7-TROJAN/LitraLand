@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
+    internal class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
@@ -25,14 +25,8 @@
                 .HasForeignKey(u => u.GovernorateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(u => u.IsDeleted)
-                .HasDefaultValue(false);
-
             builder.Property(u => u.CreatedOn)
                 .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(u => u.LastUpdatedOn)
-                .HasDefaultValue(null);
 
         }
     }

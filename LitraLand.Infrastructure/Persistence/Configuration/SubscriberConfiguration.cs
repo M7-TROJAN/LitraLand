@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class SubscriberConfiguration : IEntityTypeConfiguration<Subscriber>
+    internal class SubscriberConfiguration : IEntityTypeConfiguration<Subscriber>
     {
         public void Configure(EntityTypeBuilder<Subscriber> builder)
         {
@@ -66,9 +66,6 @@
 
             builder.Property(s => s.CreatedOn)
                 .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(s => s.LastUpdatedOn)
-                .HasDefaultValue(null);
 
             builder.HasOne(s => s.Area)
                 .WithMany(a => a.Subscribers)

@@ -1,6 +1,6 @@
-﻿namespace LitraLand.Web.Data.Configuration
+﻿namespace LitraLand.Infrastructure.Persistence.Configuration
 {
-    public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
+    internal class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
     {
         public void Configure(EntityTypeBuilder<Subscription> builder)
         {

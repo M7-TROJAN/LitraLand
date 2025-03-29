@@ -67,7 +67,13 @@ html {
     margin-top: 70px !important;
 }
 
-.glass {
+.hero-sec-dashboard {
+    background-color: #020202;
+    background-image: url('/assets/images/books-bg.webp');
+    background-size: cover;
+}
+
+.glass-effect {
     /* From https://css.glass */
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
@@ -81,7 +87,7 @@ html {
     width: fit-content;
 }
 
-.custom-header {
+.custom-header-satisfy {
     font-family: "Satisfy", cursive;
 }
 
@@ -97,17 +103,19 @@ html {
     min-height: 470px;
 }
 
-.launcher .sidebar {
-    position: fixed;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    width: 425px;
-    top: 50px;
-    right: 50px;
-    bottom: 50px;
-    background-color: rgba(19,0,97,.3);
-    border-radius: 1.75rem;
+@media only screen and (min-width: 1600px) {
+    .launcher .sidebar {
+        position: fixed;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        width: 425px;
+        top: 50px;
+        right: 50px;
+        bottom: 50px;
+        background-color: rgba(19,0,97,.3);
+        border-radius: 1.75rem;
+    }
 }
 
 .transform-x {

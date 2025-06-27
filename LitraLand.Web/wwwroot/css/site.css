@@ -1,5 +1,40 @@
-﻿html {
-  font-size: 14px;
+﻿/* Start Variables */
+:root {
+    --body-bg: #f3f6f9;
+    --main-color: #033b4a;
+    --secondary-color: #20c997;
+    --gray: #4a4a4d;
+    --main-background: #ecf0f3;
+    --section-padding: 5rem 0;
+    --color-white: #ffffff;
+    --color-white-bg-rgb: 255, 255, 255;
+    --color-black: #000000;
+    --color-black-bg-rgb: 0, 0, 0;
+    --color-text-muted: #A1A5B7;
+    --color-gray: #f5f8fa;
+    --color-white: #ffffff;
+    --color-light: #f5f8fa;
+    --color-primary: #009ef7;
+    --color-secondary: #E4E6EF;
+    --color-success: #50cd89;
+    --color-info: #7239ea;
+    --color-warning: #ffc700;
+    --color-danger: #f1416c;
+    --color-dark: #181C32;
+    --color-primary-light: #f1faff;
+    --color-secondary-light: #f5f8fa;
+    --color-success-light: #e8fff3;
+    --color-info-light: #f8f5ff;
+    --color-warning-light: #fff8dd;
+    --color-danger-light: #fff5f8;
+    --color-dark-light: #eff2f5;
+}
+/* End Variables */
+
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -12,16 +47,15 @@
     .hidden-on-mobile {
         display: none !important;
     }
+
+    .hide-in-small-screens {
+        display: none !important;
+    }
 }
 
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
 }
 
 /* start ovveride the Theme */
@@ -55,6 +89,15 @@ html {
 }*/
 
 /* Start Custom Styles */
+
+.card {
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
 .dt-spinner + div {
     display: none !important;
 }
@@ -103,25 +146,88 @@ html {
     min-height: 470px;
 }
 
-@media only screen and (min-width: 1600px) {
-    .launcher .sidebar {
-        position: fixed;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        width: 425px;
-        top: 50px;
-        right: 50px;
-        bottom: 50px;
-        background-color: rgba(19,0,97,.3);
-        border-radius: 1.75rem;
+/* Start landing page Style*/
+
+.launcher .sidebar {
+    position: fixed;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 425px;
+    top: 90px;
+    right: 50px;
+    bottom: 50px;
+    background-color: rgba(19, 0, 97, .3);
+    border-radius: 1.75rem;
+}
+
+@media (min-width: 992px) {
+    .cards-container-offset {
+        margin-right: 130px;
     }
 }
 
-.transform-x {
+@media (max-width: 991.98px) {
+    .launcher .sidebar {
+        display: none ;
+        background-color: rgba(19, 0, 97, .75);
+        top: 15px !important;
+        right: 15px !important;
+        bottom: 15px !important;
+    }
+}
+
+/* لما الشاشة تكون كبيرة، نقرّب السايدبار أكتر من اليمين */
+@media (min-width: 1200px) {
+    .launcher .sidebar {
+        right: 30px !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .launcher .sidebar {
+        right: 30px !important;
+    }
+}
+/* end landing page Style*/
+
+.transform-x, .flipped {
     transform: scaleX(-1); /*علشان اقلب صورة البنت بتاعت فورم السيرش*/
 }
 
+.custom-outline-btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    border: 2px solid #0d6efd; /* نفس لون Bootstrap Primary */
+    background-color: transparent;
+    color: #0d6efd;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.custom-outline-btn:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.custom-outline-link {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 2px solid #0d6efd;
+    background-color: transparent;
+    color: #0d6efd;
+    border-radius: 0.375rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+}
+
+.custom-outline-link:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
 /* End Custom Styles */
 
 
@@ -142,3 +248,138 @@ html {
     color: #258cfb;
 }
 /* end custom footer */
+
+/*start community Home Page*/
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    background-size: 60% 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.modern-card {
+    padding: 1rem !important;
+    text-align: center !important;
+    border: 1px solid #ddd !important;
+    border-radius: 10px !important;
+    cursor: default !important;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.3s ease !important;
+}
+
+.modern-card:hover {
+    border: 1px solid var(--bs-primary) !important;
+    transform: scale(1.03) !important;
+    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.2) !important;
+}
+
+.description-truncate {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+/*end community Home Page*/
+
+/* start community members profile */
+.book-card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.book-card-body {
+    padding: 0 2.25rem 2rem !important;
+}
+
+
+.book-card-img {
+    object-fit: cover;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.book-card-img img {
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.book-card-badges {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0.75rem 0 0 0.75rem;
+}
+
+.book-card-badges .badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.375rem;
+}
+
+.book-card-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+}
+
+.book-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    line-height: 1.2rem;
+    max-height: 2.4rem;
+    overflow: hidden;
+}
+
+.book-card-author {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.book-card-date {
+    font-size: 0.75rem;
+    color: #adb5bd;
+    margin-bottom: 0.5rem;
+}
+
+.book-card-price {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.book-card-price-icon {
+    font-size: 1rem;
+}
+
+/* end community members profile */
+
+
+/* start community book details page */
+.owner-contact-link {
+    color: #181C32;
+}
+
+.owner-contact-link:hover {
+    color: #258cfb;
+}
+
+/* end community book details page */

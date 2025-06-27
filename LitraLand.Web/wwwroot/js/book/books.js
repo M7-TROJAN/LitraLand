@@ -16,7 +16,7 @@
             processing: '<div class="d-flex justify-content-center text-primary align-items-center dt-spinner"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div><span class="text-muted ps-2">Loading...</span></div>'
         },
         ajax: { 
-            url: '/Books/GetBooks', // The URL to fetch the data from the server
+            url: '/Library/Books/GetBooks', // The URL to fetch the data from the server
             type: 'POST', // why post not get? because we will sending a lot of data to the server in the request body (e.g. search term, pagination, sorting, etc.)
             headers: {
                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Send the anti-forgery token to the server 
@@ -60,7 +60,7 @@
                                 </a>
                             </div>
                             <div class="d-flex flex-column">
-                                <a href="/Books/Details/${row.id}" class="text-primary fw-bolder mb-1">${row.title}</a>
+                                <a href="/Library/Books/Details/${row.id}" class="text-primary fw-bolder mb-1">${row.title}</a>
                                 <span>${row.author}</span>
                             </div>`;
                 }
@@ -104,12 +104,12 @@
                             </a>
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
                                 <div class="menu-item px-3">
-                                    <a href="/Books/Edit/${row.id}" class="menu-link px-3 justify-content-between text-hover-primary">
+                                    <a href="/Library/Books/Edit/${row.id}" class="menu-link px-3 justify-content-between text-hover-primary">
                                         Edit <i class="fa fa-edit text-secondary fs-5 me-2"></i>
                                     </a>
                                 </div>
                                 <div class="menu-item px-3">
-                                    <a href="javascript:;" class="menu-link flex-stack px-3 justify-content-between text-hover-primary js-toggle-status" data-name="Book" data-url="/Books/ToggleStatus/${row.id}">
+                                    <a href="javascript:;" class="menu-link flex-stack px-3 justify-content-between text-hover-primary js-toggle-status" data-name="Book" data-url="/Library/Books/ToggleStatus/${row.id}">
                                         Toggle Status <i class="fa fa-sync-alt text-secondary fs-5 me-2"></i>
                                     </a>
                                 </div>

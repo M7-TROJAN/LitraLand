@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -59,7 +60,7 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
             //}
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Thank you for confirming your email change.";
+            StatusMessage = "Success Thank you for confirming your email change.";
             return Page();
         }
     }

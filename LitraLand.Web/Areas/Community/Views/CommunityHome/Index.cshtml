@@ -1,0 +1,168 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+@model CommunityHomeViewModel
+@{
+    ViewData["Title"] = "Community Home";
+}
+
+@section Styles
+{
+    <link href="~/lib/aos/aos.css" rel="stylesheet" />
+}
+
+<!-- Hero Section -->
+<div class="row g-5 g-xl-10 mb-4 mb-xl-7">
+    <div class="col">
+        <div class="card flex-grow-1 bgi-no-repeat bgi-size-contain bgi-position-x-end h-xl-100 hero-sec-dashboard">
+            <!--begin::Body-->
+            <div class="card-body d-flex justify-content-between flex-column ps-xl-18">
+                <!--begin::Heading-->
+                <div class="mb-20 p-8 w-fit-content glass glass-effect">
+                    <!--begin::Title-->
+                    <h3 class="fw-bold text-white fs-5x mb-5 ms-n1 custom-header-satisfy satisfy-font">Litra Land</h3>
+                    <!--end::Title-->
+                    <!--begin::Description-->
+                    <span class="fw-bold text-white fs-4 mb-8 d-block lh-0">Books are the best friends you’ll never meet</span>
+                    <!--end::Description-->
+                    <!--begin::Items-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Item-->
+                        <div class="d-flex align-items-center me-6">
+                            <!--begin::Icon-->
+                            <i class="las la-book-reader fs-3 text-white me-2"></i>
+                            <!--end::Icon-->
+                            <!--begin::Info-->
+                            <span class="fw-semibold text-white fs-6">@Model.NumberOfBooks+ books</span>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Icon-->
+                            <i class="las la-user-friends fs-3 text-white me-2"></i>
+                            <!--end::Icon-->
+                            <!--begin::Info-->
+                            <span class="fw-semibold text-white fs-6">@Model.NumberOfMembers Members</span>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Item-->
+                    </div>
+                    <!--end::Items-->
+                </div>
+                <!--end::Heading-->
+            </div>
+            <!--end::Body-->
+        </div>
+    </div>
+</div>
+
+<!-- Books and Top Members Section -->
+<div class="row mb-5 mb-xl-10">
+    <!--begin::Books Col-->
+    <div class="col-xl-8">
+        <div class="card card-flush h-xl-100">
+            <!--begin::Card body-->
+            <div class="card-body pt-7">
+                <!-- Header section for Latest Books -->
+                <div class="mb-4">
+                    <!-- Title + Add Book -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                        <h2 class="fw-semibold text-dark m-0">📖 Latest Books</h2>
+                        <a asp-controller="CommunityBooks" asp-action="Create" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-square-dotted me-1"></i>
+                            Add a Book
+                        </a>
+                    </div>
+
+                    <!-- Search + Filter -->
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input id="booksSearchInput" type="text" class="form-control" placeholder="Search by title, author, or price" />
+                                <button id="booksSearchBtn" class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="FilterType" class="form-select">
+                                <option value="">All</option>
+                                <option value="Exchange">For Exchange</option>
+                                @*Add here more options*@
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noBooksMessage" class="alert alert-warning text-center d-none" data-aos="fade-up">
+                    No books found for your search.
+                </div>
+
+                <!--begin::Row-->
+                <div id="booksContainer" class="row g-5 g-xl-9 mb-5 mb-xl-9">
+                    @*here we will render books*@
+                </div>
+                <!-- Loader spinner -->
+                <div id="loader" class="text-center my-5" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Scroll sentinel -->
+                <div id="scrollSentinel"></div>
+            </div>
+            <!--end::Card body-->
+        </div>
+    </div>
+    <!--end::Books Col-->
+    <!--begin::Top Members col-->
+    <div class="col-xl-4">
+        <div class="card h-xl-100">
+            <div class="card-header border-0 pt-5">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">🏆 Top Members</span>
+                </h3>
+            </div>
+            <div class="card-body pt-6">
+                <div id="topMembersCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.TopMembers.Count(); i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="d-flex justify-content-center modern-card">
+                                    <div class="card shadow-sm border-0 text-center p-4 modern-card" style="width: 300px;">
+                                        <img src="@(Model.TopMembers[i].ImageUrl ?? AppConstants.DefaultAvatarUrl)"
+                                             class="rounded-circle mx-auto mb-3 shadow-sm"
+                                             style="width: 80px; height: 80px; object-fit: cover; border: 1.5px solid var(--bs-primary); 
+                                                    box-shadow: 0 0 6px rgba(13, 110, 253, 0.25);" />
+                                        <h5 class="fw-bold text-hover-primary">@Model.TopMembers[i].UserName</h5>
+                                        <p class="text-muted">@Model.TopMembers[i].NumberOfBooks Book(s) Shared</p>
+                                        <a asp-controller="Members" asp-action="Profile" asp-route-id="@Model.TopMembers[i].UserId" class="custom-outline-link w-100">
+                                            View Profile
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#topMembersCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#topMembersCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Top Members col-->
+</div>
+
+<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+@section Scripts
+{
+    <script src="~/js/community/community-home.js" asp-append-version="true"></script>
+    <script src="~/lib/aos/aos.js"></script>
+}

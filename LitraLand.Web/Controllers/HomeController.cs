@@ -22,10 +22,10 @@ namespace LitraLand.Web.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                if (!User.IsInRole(AppRoles.User))
-                    return RedirectToAction(nameof(Index), "Dashboard"); // if the user is not a member of the staff or admin, redirect him to the dashboard
-                                                                         //else
-                                                                         // return him to the hom of the community area
+                if (User.IsCommunityMember() || User.IsCommunityAdmin())
+                    return RedirectToAction(nameof(Index), "CommunityHome", new { area = "Community" });
+                else
+                    return RedirectToAction(nameof(Index), "Dashboard", new { area = "Library" });
             }
 
             var lastAddedBooks = _context.Books

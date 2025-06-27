@@ -1,25 +1,159 @@
 ﻿@page
 @model Disable2faModel
 @{
+    Layout = "/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Disable two-factor authentication (2FA)";
-    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
+<div class="card">
+    <div class="card-header bg-danger text-white py-3 rounded-top">
+        <h3 class="mb-0 text-center">@ViewData["Title"]</h3>
+    </div>
+    <div class="card-body">
+        <div class="row d-flex justify-content-center align-items-center flex-column-reverse flex-md-row">
+            <!-- Form Column -->
+            <div class="col-md-6 mt-4">
+                <form method="post">
+                    <div class="mb-5">
+                        <!-- Warning Header -->
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="flex-shrink-0 text-danger">
+                                <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                            </div>
+                            <div class="ms-4">
+                                <h4 class="mb-2" style="font-size: 1.5rem;">Security Warning</h4>
+                                <p class="text-muted mb-0" style="font-size: 1.1rem;">You're about to reduce your account protection</p>
+                            </div>
+                        </div>
+
+                        <!-- Warning Alert -->
+                        <div class="alert alert-danger border-start border-4 border-danger text-start p-4 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt fa-lg me-3"></i>
+                                <div>
+                                    <p class="mb-1" style="font-size: 1.1rem; font-weight: 500;">
+                                        Disabling 2FA will make your account less secure
+                                    </p>
+                                    <p class="mb-0" style="font-size: 1rem;">
+                                        This action is not recommended for most users
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Impact List -->
+                        <ul class="list-unstyled mb-5" style="font-size: 1.1rem;">
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-times-circle text-danger me-3 fa-lg"></i>
+                                <span>Single-factor authentication only</span>
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <i class="fas fa-times-circle text-danger me-3 fa-lg"></i>
+                                <span>Easier for attackers to gain access</span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle text-warning me-3 fa-lg"></i>
+                                <span>Not recommended for accounts with sensitive data</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-danger py-3" style="font-size: 1.25rem;">
+                            <span class="indicator-label">
+                                <i class="fas fa-lock me-2"></i>Disable Two-Factor Authentication
+                            </span>
+                            <span class="indicator-progress">
+                                Processing...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+
+                        <a asp-page="Index" class="btn btn-outline-secondary py-2" style="font-size: 1rem;">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel and Keep 2FA Enabled
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Image Column -->
+            <div class="col-md-5 offset-md-1 mt-4 mt-md-0 text-center hide-in-small-screens">
+                <img src="~/assets/images/attention-please-red.svg" alt="Disable 2FA Warning" class="img-fluid animated-img" style="max-height: 450px;" />
+                <div class="mt-3">
+                    <span class="badge bg-danger text-white">Security Risk</span>
+                    <span class="badge bg-warning text-dark mx-2">Not Recommended</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-footer bg-light py-3 text-center small text-muted">
+        <i class="fas fa-info-circle me-1"></i> For maximum security, we recommend keeping two-factor authentication enabled
+    </div>
+</div>
+
+<style>
+    .animated-img {
+        transition: transform 0.3s ease;
+    }
+    .animated-img:hover {
+        transform: scale(1.05);
+    }
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
+
+
+@*old code*@
+
+@*
 <h3>@ViewData["Title"]</h3>
+<div class="card">
+    <div class="card-body">
+        <div class="row d-flex justify-content-center align-items-center flex-column-reverse flex-md-row">
+            <div class="col-md-6 mt-4">
+                <form method="post" class="text-center">
+                    <<div class="fv-row mb-4">
+                        <p class="lead mb-3 text-muted" style="font-size: 1.125rem;">
+                            Attnention! You are about to disable two-factor authentication (2FA) for your account.
+                        </p>
+                        <p class="lead mb-4 text-muted" style="font-size: 1.125rem;">
+                            Disabling two-factor authentication will make your account less secure. Are you sure you want to disable it?
+                        </p>
+                    </div>
+                    <!--begin::Submit button-->
+                    <div class="d-grid mb-10">
+                        <button type="submit" id="kt_sign_in_submit" class="btn btn-sm btn-danger w-50 mx-auto d-block" style="font-size: 1.25rem;">
+                            <!--begin::Indicator label-->
+                            <span class="indicator-label">Disable 2FA</span>
+                            <!--end::Indicator label-->
+                            <!--begin::Indicator progress-->
+                            <span class="indicator-progress">
+                                Processing...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                            <!--end::Indicator progress-->
+                        </button>
+                    </div>
+                    <!--end::Submit button-->
+                </form>
+                <div class="text-center mt-4">
+                    <a asp-page="Index" class="btn btn-sm btn-secondary">Cancel</a>
+                </div>
+            </div>
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>This action only disables 2FA.</strong>
-    </p>
-    <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a asp-page="./ResetAuthenticator">reset your authenticator keys.</a>
-    </p>
+            <div class="col-md-5 offset-md-1 mt-4 mt-md-0">
+                <img src="~/assets/images/Warning.svg" alt="Disable 2FA" class="img-fluid" />
+            </div>
+        </div>
+    </div>
 </div>
-
-<div>
-    <form method="post">
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
-    </form>
-</div>
+*@

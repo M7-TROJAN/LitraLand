@@ -12,7 +12,7 @@
         if (governorateId != '')
         {
             $.ajax({
-                url: '/Subscribers/GetAreas?governorateId=' + governorateId,
+                url: '/Library/Subscribers/GetAreas?governorateId=' + governorateId,
                 type: 'GET',
                 success: function (areas) {
                     $.each(areas, function (i, area) {

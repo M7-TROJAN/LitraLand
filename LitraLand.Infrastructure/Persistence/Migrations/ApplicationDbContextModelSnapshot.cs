@@ -25,6 +25,52 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
             modelBuilder.HasSequence<int>("SerialNumber", "shared")
                 .StartsAt(1000001L);
 
+            modelBuilder.Entity("LitraLand.Domain.Consts.DTO.MostPopularBookDTO", b =>
+                {
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageThumbnailUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RentalCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Consts.DTO.TopMemberDto", b =>
+                {
+                    b.Property<int>("BookCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageThumbnailUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
+                });
+
             modelBuilder.Entity("LitraLand.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -34,6 +80,9 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AppllicationArea")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("AreaId")
@@ -105,7 +154,8 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -137,6 +187,11 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ApplicationUser_PhoneNumber")
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
 
                     b.HasIndex("UserName")
                         .IsUnique()
@@ -175,7 +230,91 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("Areas", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Author", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Community.CommunityBook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<string>("ImagePublicId")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<string>("ImageThumbnailUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<bool>("IsForExchange")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("CommunityBooks", (string)null);
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Governorate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Governorates_Name");
+
+                    b.ToTable("Governorates", (string)null);
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +357,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("Authors", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Book", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -303,7 +442,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.BookCategory", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.BookCategory", b =>
                 {
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -318,7 +457,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("BookCategories", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.BookCopy", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.BookCopy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -368,7 +507,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("BookCopies");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Category", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -411,32 +550,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Governorate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Governorates_Name");
-
-                    b.ToTable("Governorates", (string)null);
-                });
-
-            modelBuilder.Entity("LitraLand.Domain.Entities.Rental", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Rental", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -483,7 +597,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("Rentals", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.RentalCopy", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.RentalCopy", b =>
                 {
                     b.Property<int>("RentalId")
                         .HasColumnType("int");
@@ -512,7 +626,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("RentalCopies", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Subscriber", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Subscriber", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -619,7 +733,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.ToTable("Subscribers", (string)null);
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Subscription", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -814,7 +928,18 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("Governorate");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Author", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Community.CommunityBook", b =>
+                {
+                    b.HasOne("LitraLand.Domain.Entities.ApplicationUser", "Owner")
+                        .WithMany("CommunityBooks")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Author", b =>
                 {
                     b.HasOne("LitraLand.Domain.Entities.ApplicationUser", "CreatedBy")
                         .WithMany()
@@ -829,9 +954,9 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Book", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Book", b =>
                 {
-                    b.HasOne("LitraLand.Domain.Entities.Author", "Author")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -852,15 +977,15 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.BookCategory", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.BookCategory", b =>
                 {
-                    b.HasOne("LitraLand.Domain.Entities.Book", "Book")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Book", "Book")
                         .WithMany("Categories")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LitraLand.Domain.Entities.Category", "Category")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Category", "Category")
                         .WithMany("Books")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -871,9 +996,9 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.BookCopy", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.BookCopy", b =>
                 {
-                    b.HasOne("LitraLand.Domain.Entities.Book", "Book")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Book", "Book")
                         .WithMany("Copies")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -894,7 +1019,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Category", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Category", b =>
                 {
                     b.HasOne("LitraLand.Domain.Entities.ApplicationUser", "CreatedBy")
                         .WithMany()
@@ -909,7 +1034,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Rental", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Rental", b =>
                 {
                     b.HasOne("LitraLand.Domain.Entities.ApplicationUser", "CreatedBy")
                         .WithMany()
@@ -919,7 +1044,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("LastUpdatedById");
 
-                    b.HasOne("LitraLand.Domain.Entities.Subscriber", "Subscriber")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Subscriber", "Subscriber")
                         .WithMany("Rentals")
                         .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -932,15 +1057,15 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("Subscriber");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.RentalCopy", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.RentalCopy", b =>
                 {
-                    b.HasOne("LitraLand.Domain.Entities.BookCopy", "BookCopy")
+                    b.HasOne("LitraLand.Domain.Entities.Library.BookCopy", "BookCopy")
                         .WithMany("Rentals")
                         .HasForeignKey("BookCopyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LitraLand.Domain.Entities.Rental", "Rental")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Rental", "Rental")
                         .WithMany("RentalCopies")
                         .HasForeignKey("RentalId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -951,7 +1076,7 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("Rental");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Subscriber", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Subscriber", b =>
                 {
                     b.HasOne("LitraLand.Domain.Entities.Area", "Area")
                         .WithMany("Subscribers")
@@ -982,13 +1107,13 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("LastUpdatedBy");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Subscription", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Subscription", b =>
                 {
                     b.HasOne("LitraLand.Domain.Entities.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("LitraLand.Domain.Entities.Subscriber", "Subscriber")
+                    b.HasOne("LitraLand.Domain.Entities.Library.Subscriber", "Subscriber")
                         .WithMany("Subscriptions")
                         .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1050,33 +1175,16 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LitraLand.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("CommunityBooks");
+                });
+
             modelBuilder.Entity("LitraLand.Domain.Entities.Area", b =>
                 {
                     b.Navigation("Subscribers");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("LitraLand.Domain.Entities.Author", b =>
-                {
-                    b.Navigation("Books");
-                });
-
-            modelBuilder.Entity("LitraLand.Domain.Entities.Book", b =>
-                {
-                    b.Navigation("Categories");
-
-                    b.Navigation("Copies");
-                });
-
-            modelBuilder.Entity("LitraLand.Domain.Entities.BookCopy", b =>
-                {
-                    b.Navigation("Rentals");
-                });
-
-            modelBuilder.Entity("LitraLand.Domain.Entities.Category", b =>
-                {
-                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("LitraLand.Domain.Entities.Governorate", b =>
@@ -1088,12 +1196,34 @@ namespace LitraLand.Infrastructure.Persistence.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Rental", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Author", b =>
+                {
+                    b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Book", b =>
+                {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Copies");
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.BookCopy", b =>
+                {
+                    b.Navigation("Rentals");
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Category", b =>
+                {
+                    b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Rental", b =>
                 {
                     b.Navigation("RentalCopies");
                 });
 
-            modelBuilder.Entity("LitraLand.Domain.Entities.Subscriber", b =>
+            modelBuilder.Entity("LitraLand.Domain.Entities.Library.Subscriber", b =>
                 {
                     b.Navigation("Rentals");
 

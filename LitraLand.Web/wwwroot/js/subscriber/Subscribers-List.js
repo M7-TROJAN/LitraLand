@@ -45,7 +45,7 @@ const renderSubscribers = (subscribers) => {
                             <div class="fw-semibold text-gray-500 mb-6">${subscriber.email}</div>
                             <div>
                                 <!-- Link to subscriber details page using the encrypted key -->
-                                <a href="/Subscribers/Details/${subscriber.key}" class="btn btn-primary">
+                                <a href="/Library/Subscribers/Details/${subscriber.key}" class="btn btn-primary">
                                     Details
                                 </a>
                             </div>
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to load subscribers via AJAX
     const loadSubscribers = (page = 1, search = '') => {
         $.ajax({
-            url: '/Subscribers/GetSubscribers',
+            url: '/Library/Subscribers/GetSubscribers',
             type: 'POST',
             data: {
                 // parameters that are sent to the Action method

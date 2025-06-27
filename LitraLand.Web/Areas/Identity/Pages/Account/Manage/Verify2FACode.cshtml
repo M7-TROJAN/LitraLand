@@ -1,0 +1,93 @@
+﻿@page
+@model Verify2FACodeModel
+@{
+    ViewData["Title"] = "Verify Two-Factor Authentication Code";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3>@ViewData["Title"]</h3>
+<div class="card">
+    <div class="card-body">
+        <partial name="_StatusMessage" for="StatusMessage" />
+        <div class="row flex-column-reverse flex-md-row">
+            <div class="col-md-6 mt-10">
+                <form class="form w-100 mb-13" method="post">
+                    <!--begin::Icon-->
+                    <div class="text-center mb-10">
+                        <img alt="Logo" class="mh-125px" src="~/assets/images/smartphone-2.svg">
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Heading-->
+                    <div class="text-center mb-10">
+                        <!--begin::Title-->
+                        <h1 class="text-gray-900 mb-3">
+                            Two-Factor Verification
+                        </h1>
+                        <!--end::Title-->
+                        <!--begin::Sub-title-->
+                        <div class="text-muted fw-semibold fs-5 mb-5">Enter the verification code we sent to</div>
+                        <!--end::Sub-title-->
+                        <!--begin::Mobile no-->
+                        <div class="fw-bold text-gray-900 fs-3">@Model.MaskedEmail</div> @******oud@gmail.com*@
+                        <!--end::Mobile no-->
+                    </div>
+                    <!--end::Heading-->
+                    <!--begin::Section-->
+                    <div class="mb-10">
+                        <!--begin::Label-->
+                        <div class="text-center mb-4">
+                            <div class="fw-bold text-gray-900 fs-4">Type your 6-digit security code</div>
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Input group-->
+                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-3">
+                            <input type="text" asp-for="Input.Code1" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text" id="firstInput">
+                            <input type="text" asp-for="Input.Code2" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text">
+                            <input type="text" asp-for="Input.Code3" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text">
+                            <input type="text" asp-for="Input.Code4" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text">
+                            <input type="text" asp-for="Input.Code5" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text">
+                            <input type="text" asp-for="Input.Code6" maxlength="1" required class="form-control form-control-solid h-60px w-60px fs-2qx text-center mx-1 my-2" inputmode="text">
+                        </div>
+                        <!--end:Input group-->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    </div>
+                    <!--end::Section-->
+                    <!--begin::Submit-->
+                    <div class="d-flex flex-center">
+                        <button type="submit" id="kt_sing_in_two_factor_submit" class="btn btn-lg btn-primary fw-bold">
+                            <span class="indicator-label">
+                                Submit
+                            </span>
+                            <span class="indicator-progress">
+                                Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <!--end::Submit-->
+                </form>
+                <!--begin::Notice-->
+                <div class="text-center fw-semibold fs-5">
+                    <span class="text-muted me-1">Didn’t get the code ?</span>
+
+                    @* <a href="#" class="link-primary fs-5 me-1">Resend</a> *@
+                    <a asp-page="./Enable2FA" class="link-primary fs-5 me-1">Retry</a>
+
+                    <span class="text-muted me-1">or</span>
+
+                    <a href="#" class="link-primary fs-5">Call Us</a>
+                </div>
+                <!--end::Notice-->
+            </div>
+            <div class="col-md-5 offset-md-1">
+                <img src="~/assets/images/Authentication-amico.svg" alt="Authentication" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/user/verify2fa.js" asp-append-version="true"></script>
+}

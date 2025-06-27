@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LitraLand.Domain.Entities.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace LitraLand.Web.Helpers
@@ -14,6 +15,7 @@ namespace LitraLand.Web.Helpers
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim(ClaimTypes.GivenName, user.FullName));
             identity.AddClaim(new Claim(CustomClaimTypes.ImageThumbnailUrl, user.ImageThumbnailUrl ?? AppConstants.DefaultAvatarUrl));
+            identity.AddClaim(new Claim(CustomClaimTypes.UserAppllicationArea, user.AppllicationArea!));
             // Add more custom claims here if needed
             return identity;
         }

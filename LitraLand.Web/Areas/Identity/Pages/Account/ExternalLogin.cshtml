@@ -1,6 +1,90 @@
 ﻿@page
 @model ExternalLoginModel
 @{
+    ViewData["Title"] = "Complete Registration";
+    Layout = null;
+}
+
+
+@*
+@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Complete Registration";
+}
+
+<div class="d-flex flex-column flex-root">
+    <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+        <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center p-12">
+            <div class="bg-body d-flex flex-center rounded-4 w-md-600px p-10">
+                <div class="w-md-400px">
+                    <!--begin::Heading-->
+                    <div class="text-center mb-10">
+                        <h1 class="text-gray-900 fw-bolder mb-3">Complete Registration</h1>
+                        <div class="text-gray-600 fw-semibold fs-6">
+                            You have successfully signed in with
+                            <span class="fw-bold text-primary">@Model.ProviderDisplayName</span>.
+                            <br />
+                            Please confirm your email address to complete the process.
+                        </div>
+                    </div>
+                    <!--end::Heading-->
+
+                    <form asp-page-handler="Confirmation"
+                          asp-route-returnUrl="@Model.ReturnUrl"
+                          method="post"
+                          class="form w-100">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!--begin::Email input-->
+                        <div class="fv-row mb-8">
+                            <input asp-for="Input.Email"
+                                   class="form-control bg-transparent"
+                                   autocomplete="email"
+                                   placeholder="Enter your email address" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <!--end::Email input-->
+                        <!--begin::Full Name input-->
+                        <div class="fv-row mb-8">
+                            <input asp-for="Input.FullName"
+                                   class="form-control bg-transparent"
+                                   autocomplete="name"
+                                   placeholder="Enter your full name" />
+                            <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                        </div>
+                        <!--end::Full Name input-->
+                        <!--begin::Submit-->
+                        <div class="d-grid mb-10">
+                            <button type="submit" class="btn btn-primary">
+                                Confirm & Register
+                            </button>
+                        </div>
+                        <!--end::Submit-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+*@
+
+
+
+
+
+
+
+
+@*
+@page
+@model ExternalLoginModel
+@{
     ViewData["Title"] = "Register";
 }
 
@@ -31,3 +115,5 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+*@

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -31,14 +32,20 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            var is2FAEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            if (!is2FAEnabled)
+            {
+                StatusMessage = "2fa is already disabled for your account!";
+                return RedirectToPage("./Index"); // Redirect to the index page if 2FA is already disabled
             }
 
-            if (!await _userManager.GetTwoFactorEnabledAsync(user))
-            {
-                throw new InvalidOperationException($"Cannot disable 2FA for user as it's not currently enabled.");
-            }
+            //// you can remove this line now because we are already checking if 2FA is enabled in the above line
+            //if (!await _userManager.GetTwoFactorEnabledAsync(user))
+            //{
+            //    throw new InvalidOperationException($"Cannot disable 2FA for user as it's not currently enabled.");
+            //}
 
             return Page();
         }
@@ -58,8 +65,8 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
-            return RedirectToPage("./TwoFactorAuthentication");
+            StatusMessage = "2fa has been disabled for your account.";
+            return RedirectToPage("./Index");
         }
     }
 }

@@ -22,7 +22,7 @@
             callback: function (result) {
                 if (result) {
                     $.ajax({
-                        url: `/Subscribers/RenewSubscription?sKey=${subscriberkey}`,
+                        url: `/Library/Subscribers/RenewSubscription?sKey=${subscriberkey}`,
                         type: "POST",
                         data: { // Send anti-forgery token
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
@@ -101,7 +101,7 @@
             callback: function (result) {
                 if (result) {
                     $.ajax({
-                        url: `/Rentals/MarkAsDeleted/${rentalId}`,
+                        url: `/Library/Rentals/MarkAsDeleted/${rentalId}`,
                         type: "POST",
                         data: { // Send anti-forgery token
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()

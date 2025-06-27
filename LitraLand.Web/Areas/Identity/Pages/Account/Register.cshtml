@@ -4,6 +4,239 @@
     ViewData["Title"] = "Register";
 }
 
+<div class="d-flex flex-column flex-root">
+    <!--begin::Page bg image-->
+    <style>
+        body {
+            background-image: url('/assets/images/bg10.jpeg');
+        }
+
+        [data-theme="dark"] body {
+            background-image: url('/assets/images/bg10-dark.jpeg');
+        }
+    </style>
+    <!--end::Page bg image-->
+    <!--begin::Authentication - Sign-in -->
+    <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+        <!--begin::Aside-->
+        <div class="d-flex flex-lg-row-fluid hidden-on-mobile">
+            <!--begin::Content-->
+            <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
+                <!--begin::Image-->
+                <img class=" mx-auto mw-100 w-150px w-lg-500px mb-10" src="~/assets/images/agency.png" alt="" />
+                <!--end::Image-->
+                <!--begin::Title-->
+                <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">LitraLand, by FGSSR</h1>
+                <!--end::Title-->
+                <!--begin::Text-->
+                <div class="text-gray-600 fs-base text-center fw-semibold">
+                    Welcome to <span class="fw-bold text-primary">LitraLand</span>, your gateway to a world of books!
+                    Whether you're looking to buy, sell, or exchange books, our platform connects readers and book lovers in one place.
+                    <br />Explore a vast collection of titles, discover hidden gems, and share your literary passion with a vibrant community.
+                </div>
+                <!--end::Text-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--begin::Aside-->
+        <!--begin::Body-->
+        <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-12">
+            <!--begin::Wrapper-->
+            <div class="bg-body d-flex flex-center rounded-4 w-md-600px p-10">
+                <!--begin::Content-->
+                <div class="w-md-400px">
+                    <!--begin::Form-->
+                    <!--begin::Heading-->
+                    <div class="text-center mb-11">
+                        <!--begin::Title-->
+                        <h1 class="text-gray-900 fw-bolder mb-3">
+                            Sign Up
+                        </h1>
+                        <!--end::Title-->
+                        <!--begin::Subtitle-->
+                        <div class="text-gray-500 fw-semibold fs-6">
+                            Your Social Campaigns
+                        </div>
+                        <!--end::Subtitle--->
+                    </div>
+                    <!--begin::Heading-->
+                    <!--begin::Login options-->
+                    <div class="row g-3 mb-9">
+                        <!--begin::Col-->
+                        <div class="col-md-6">
+                            <!--begin::Google login form-->
+                            <form asp-page="./ExternalLogin"
+                                  asp-route-returnUrl="@Model.ReturnUrl"
+                                  method="post"
+                                  class="d-inline w-100">
+                                <button type="submit"
+                                        name="provider"
+                                        value="Google"
+                                        class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
+                                    <img alt="Logo" src="~/assets/images/google-icon.svg" class="h-15px me-3">
+                                    Sign in with Google
+                                </button>
+                            </form>
+                            <!--end::Google login form-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-md-6">
+                            <!--begin::Facebook login form-->
+                            <form asp-page="./ExternalLogin"
+                                  asp-route-returnUrl="@Model.ReturnUrl"
+                                  method="post"
+                                  class="d-inline w-100">
+                                <button type="submit"
+                                        name="provider"
+                                        value="Facebook"
+                                        class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
+                                    <img alt="Logo" src="~/assets/images/facebook-3.svg" class="h-15px me-3">
+                                    Sign in with Facebook
+                                </button>
+                            </form>
+                            <!--end::Facebook login form-->
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Login options-->
+                    <!--begin::Separator-->
+                    <div class="separator separator-content my-14"><span class="w-125px text-gray-500 fw-semibold fs-7">Or with email</span></div>
+                    <!--end::Separator-->
+                    <!--begin::Form-->
+                    <form id="registerForm" class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <!--begin::FullName Input group--->
+                        <div class="row fv-row mb-7 fv-plugins-icon-container">
+                            <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <input type="text" asp-for="Input.FirstName" class="form-control form-control-lg form-control-solid" placeholder="First Name" autocomplete="off">
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                            <!--end::Col-->
+                            <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <input type="text" asp-for="Input.LastName" class="form-control form-control-lg form-control-solid" placeholder="Last Name" autocomplete="off">
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::FullName Input group--->
+                        <!--begin::Username Input group-->
+                        <div class="fv-row mb-8">
+                            <input type="text" placeholder="Username" asp-for="Input.Username" autocomplete="off" class="form-control form-control-solid" />
+                            <span asp-validation-for="Input.Username" class="text-danger"></span>
+                        </div>
+                        <!--end::Username Input group-->
+                        <!--begin::Email Input group--->
+                        <div class="fv-row mb-8 fv-plugins-icon-container">
+                            <input type="text" asp-for="Input.Email" placeholder="Email" autocomplete="off" class="form-control form-control-solid">
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <!--end::Email Input group--->
+                        <!--begin::Password Input group-->
+                        <div class="fv-row mb-8 fv-plugins-icon-container">
+                            <!--begin::Wrapper-->
+                            <div class="mb-1">
+                                <div class="position-relative mb-3">
+                                    <input type="password" id="passwordField" asp-for="Input.Password" class="form-control form-control-solid enhanced-password-input" placeholder="Password" autocomplete="off">
+                                    <!--begin::Visibility toggle-->
+                                    <button type="button" id="togglePasswordSignUpForm" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2">
+                                        <i class="bi bi-eye-slash fs-2"></i>
+                                    </button>
+                                    <!--end::Visibility toggle-->
+                                </div>
+                                <!--end::Input-->
+                                <!--begin::Meter-->
+                                <div class="d-flex align-items-center mb-3">
+                                    <div data-meter-segment class="flex-grow-1 bg-secondary rounded h-5px me-2"></div>
+                                    <div data-meter-segment class="flex-grow-1 bg-secondary rounded h-5px me-2"></div>
+                                    <div data-meter-segment class="flex-grow-1 bg-secondary rounded h-5px me-2"></div>
+                                    <div data-meter-segment class="flex-grow-1 bg-secondary rounded h-5px"></div>
+                                </div>
+                                <!--end::Meter-->
+                            </div>
+                            <!--end::Wrapper-->
+                            <!--begin::Hint-->
+                            <div class="text-muted">
+                                Use 8 or more characters with a mix of letters, numbers &amp; symbols.
+                            </div>
+                            <!--end::Hint-->
+                            <span asp-validation-for="Input.Password" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></span>
+                        </div>
+                        <!--end::Password Input group--->
+                        <!--begin::ConfirmPassword Input group--->
+                        <div class="fv-row mb-8 fv-plugins-icon-container">
+                            <!--begin::Repeat Password-->
+                            <input type="password" asp-for="Input.ConfirmPassword" placeholder="Repeat Password" autocomplete="off" class="form-control form-control-solid">
+                            <!--end::Repeat Password-->
+                            <span asp-validation-for="Input.ConfirmPassword" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></span>
+                        </div>
+                        <!--end::ConfirmPassword Input group--->
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <!--begin::Submit button-->
+                        <div class="d-grid mb-10">
+                            <button type="submit" id="kt_sign_up_submit" class="btn btn-primary">
+                                <!--begin::Indicator label-->
+                                <span class="indicator-label">Sign up</span>
+                                <!--end::Indicator label-->
+                                <!--begin::Indicator progress-->
+                                <span class="indicator-progress">
+                                    Please wait...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                                <!--end::Indicator progress-->
+                            </button>
+                        </div>
+                        <!--end::Submit button-->
+                        <!--begin::Sign up-->
+                        <div class="text-gray-500 text-center fw-semibold fs-6">
+                            Already have an Account?
+                            <a asp-page="./loginCommunity" asp-route-returnUrl="@Model.ReturnUrl" class="link-primary fw-semibold">Sign in</a>
+                        </div>
+                        <!--end::Sign up-->
+                    </form>
+                    <!--end::Form-->
+                </div>
+                <!--end::Content-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Body-->
+    </div>
+    <!--end::Authentication - Sign-in-->
+</div>
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById("togglePasswordSignUpForm").addEventListener("click", function () {
+            var passwordField = document.getElementById("passwordField");
+            var eyeIcon = this.querySelector("i");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("bi-eye-slash");
+                eyeIcon.classList.add("bi-eye");
+
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("bi-eye");
+                eyeIcon.classList.add("bi-eye-slash");
+            }
+        });
+    </script>
+}
+
+
+
+
+@* the old code by default is commented out, but it's still here for reference *@
+
+@*
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
@@ -65,3 +298,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+*@

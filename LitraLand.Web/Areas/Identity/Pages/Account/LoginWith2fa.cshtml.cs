@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Hangfire;
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -12,56 +14,58 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
+        private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
 
         public LoginWith2faModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            ILogger<LoginWith2faModel> logger)
+            ILogger<LoginWith2faModel> logger,
+            IEmailBodyBuilder emailBodyBuilder,
+            IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _emailBodyBuilder = emailBodyBuilder;
+            _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        public string MaskedEmail { get; set; } = string.Empty;
+
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public bool RememberMe { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Text)]
-            [Display(Name = "Authenticator code")]
-            public string TwoFactorCode { get; set; }
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code1 { get; set; } = string.Empty;
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code2 { get; set; } = string.Empty;
+
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code3 { get; set; } = string.Empty;
+
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code4 { get; set; } = string.Empty;
+
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code5 { get; set; } = string.Empty;
+
+            [Required, MaxLength(1)]
+            [RegularExpression(RegexPatterns.NumbersOnly, ErrorMessage = "Only numbers are allowed.")]
+            public string Code6 { get; set; } = string.Empty;
+
             [Display(Name = "Remember this machine")]
             public bool RememberMachine { get; set; }
         }
@@ -72,12 +76,23 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
 
             if (user == null)
-            {
                 throw new InvalidOperationException($"Unable to load two-factor authentication user.");
-            }
 
             ReturnUrl = returnUrl;
             RememberMe = rememberMe;
+            MaskedEmail = MaskEmail(user.Email!);
+
+            // Check if the TempData contains the "ReturnUrl" key and set it if it does (to avoid losing the return URL if the user refreshes the page)
+            if (!string.IsNullOrEmpty(ReturnUrl))
+                TempData["ReturnUrl"] = ReturnUrl;
+
+            // this workaround is to check if the code was sent before or not
+            // (if the code was sent, we don't need to send it again in the OnGetAsync method, the user can use the OnGetResendAsync method to resend the code)
+            if (TempData.Peek("CodeSent") == null)
+            {
+                await GenerateAndSendTwoFactorCodeAsync(user);
+                TempData["CodeSent"] = true;
+            }
 
             return Page();
         }
@@ -89,7 +104,8 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/");
+            //returnUrl ??= Url.Content("~/");
+            returnUrl ??= ReturnUrl ?? Url.Content("~/");
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
@@ -97,14 +113,19 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 throw new InvalidOperationException($"Unable to load two-factor authentication user.");
             }
 
-            var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var verificationCode = GetFullCode();
 
-            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
+            if (string.IsNullOrWhiteSpace(verificationCode) || verificationCode.Length != 6 || !verificationCode.All(char.IsDigit))
+            {
+                ModelState.AddModelError(string.Empty, "Please enter a valid 6-digit code.");
+                return Page();
+            }
 
-            var userId = await _userManager.GetUserIdAsync(user);
+            var result = await _signInManager.TwoFactorSignInAsync("Email", verificationCode, rememberMe, Input.RememberMachine);
 
             if (result.Succeeded)
             {
+                TempData.Remove("CodeSent"); // 
                 _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
                 return LocalRedirect(returnUrl);
             }
@@ -120,5 +141,60 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 return Page();
             }
         }
+
+
+        public async Task<IActionResult> OnGetResendAsync()
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+                throw new InvalidOperationException("Unable to load two-factor authentication user.");
+
+            // Generate and send a new 2FA code
+            await GenerateAndSendTwoFactorCodeAsync(user);
+            TempData["CodeSent"] = true;
+            TempData["SuccessMessage"] = "A new verification code has been sent to your email address.";
+
+            return RedirectToPage(new { rememberMe = RememberMe, returnUrl = ReturnUrl });
+        }
+
+        private string MaskEmail(string email)
+        {
+            var parts = email.Split('@');
+            if (parts.Length != 2 || parts[0].Length < 4)
+                return email;
+
+            string localPart = parts[0];
+            string maskedLocal = new string('*', localPart.Length - 3) + localPart[^3..]; // آخر 3 حروف
+            return maskedLocal + "@" + parts[1];
+        }
+
+        private string GetFullCode()
+        {
+            return $"{Input?.Code1}{Input?.Code2}{Input?.Code3}{Input?.Code4}{Input?.Code5}{Input?.Code6}";
+        }
+
+        private async Task GenerateAndSendTwoFactorCodeAsync(ApplicationUser user)
+        {
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            if (string.IsNullOrEmpty(code))
+                throw new InvalidOperationException($"Unable to generate two-factor authentication code.");
+
+            var placeholders = new Dictionary<string, string>()
+            {
+                { "header", $"Hello {user.UserName}," },
+                { "body", "please enter the verification code below in the login prompt to complete the login process." },
+                { "code", code }
+            };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.TwoFactorAuthentication, placeholders);
+
+            // Send the email with the verification code
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+                user.Email!,
+                "Your 2FA Verification Code",
+                body
+            ));
+        }
+
     }
 }

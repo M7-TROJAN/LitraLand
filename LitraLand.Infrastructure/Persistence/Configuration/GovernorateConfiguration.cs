@@ -1,4 +1,6 @@
-﻿namespace LitraLand.Infrastructure.Persistence.Configuration
+﻿using LitraLand.Domain.Entities.Common;
+
+namespace LitraLand.Infrastructure.Persistence.Configuration
 {
     internal class GovernorateConfiguration : IEntityTypeConfiguration<Governorate>
     {

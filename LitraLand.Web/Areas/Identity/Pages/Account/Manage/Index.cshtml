@@ -8,11 +8,10 @@
     var avatarUrl = User.FindFirstValue(CustomClaimTypes.ImageThumbnailUrl);
 }
 
-<h3>@ViewData["Title"]</h3>
-
 <div id="kt_app_content" class="app-content  flex-column-fluid ">
     <!--begin::Content container-->
     <div id="kt_app_content_container" class="app-container  container-xxl ">
+        <h3>@ViewData["Title"]</h3>
         <!--begin::Navbar-->
         <div class="card mb-5 mb-xl-10">
             <div class="card-body pt-9 pb-0">
@@ -125,6 +124,27 @@
                             <!--end::Col-->
                         </div>
                         <!--end::Input group Avatar-->
+                        <!--begin::Input group Username-->
+                        <div class="row mb-6">
+                            <!--begin::Label-->
+                            <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Input.Username"></label>
+                            <!--end::Label-->
+                            <!--begin::Col-->
+                            <div class="col-lg-8">
+                                <!--begin::Row-->
+                                <div class="row">
+                                    <!--begin::Col-->
+                                    <div class="fv-row fv-plugins-icon-container">
+                                        <input type="text" asp-for="Input.Username" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="Username">
+                                        <span asp-validation-for="Input.Username" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></span>
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group Username-->
                         <!--begin::Input group FullName-->
                         <div class="row mb-6">
                             <!--begin::Label-->
@@ -192,7 +212,7 @@
                                     <!--begin::Col-->
                                     <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
                                         <select aria-label="Select a Country" data-control="select2" data-placeholder="Select a governorate..." class="form-select form-select-solid form-select-lg fw-semibold"
-                                                asp-for="Input.GovernorateId" asp-items="Model.Input.Governorates">
+                                        asp-for="Input.GovernorateId" asp-items="Model.Input.Governorates">
                                             <option value="">Select a governorate...</option>
                                         </select>
                                         <span asp-validation-for="Input.GovernorateId" class="fv-plugins-message-container invalid-feedback"></span>
@@ -201,7 +221,7 @@
                                     <!--begin::Col-->
                                     <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
                                         <select aria-label="Select a Country" data-control="select2" data-placeholder="Select an area..." class="form-select form-select-solid form-select-lg fw-semibold"
-                                                asp-for="Input.AreaId" asp-items="Model.Input.Areas">
+                                        asp-for="Input.AreaId" asp-items="Model.Input.Areas">
                                             <option value="">Select an area...</option>
                                         </select>
                                         <span asp-validation-for="Input.AreaId" class="fv-plugins-message-container invalid-feedback"></span>
@@ -302,26 +322,62 @@
                     </div>
                     <!--end::Password-->
                     <!--begin::Two-factor authentication-->
-                    <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed  p-6">
-                        <!--begin::Icon-->
-                        <i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4"><span class="path1"></span><span class="path2"></span></i>        <!--end::Icon-->
-                        <!--begin::Wrapper-->
-                        <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
-                            <!--begin::Content-->
-                            <div class="mb-3 mb-md-0 fw-semibold">
-                                <h4 class="text-gray-900 fw-bold">Secure Your Account</h4>
-
-                                <div class="fs-6 text-gray-700 pe-7">Two-factor authentication adds an extra layer of security to your account. To log in, in addition you'll need to provide a 6 digit code</div>
+                    @if (!Model.Is2FAEnabled)
+                    {
+                        <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
+                            <!--begin::Icon-->
+                            <i class="fas fa-shield-alt fa-3x fs-2tx text-primary me-4"></i>
+                            <!--end::Icon-->
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+                                <!--begin::Content-->
+                                <div class="mb-3 mb-md-0 fw-semibold">
+                                    <h4 class="text-gray-900 fw-bold">Secure Your Account</h4>
+                                    <div class="fs-6 text-gray-700 pe-7">Two-factor authentication adds an extra layer of security to your account. To log in, in addition you'll need to provide a 6 digit code</div>
+                                </div>
+                                <!--end::Content-->
+                                <!--begin::Action-->
+                                <a asp-page="./Enable2FA" class="btn btn-primary px-6 align-self-center text-nowrap">
+                                    <i class="fas fa-lock-open me-2"></i>Enable
+                                </a>
+                                <!--end::Action-->
                             </div>
-                            <!--end::Content-->
-                            <!--begin::Action-->
-                            <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap" data-bs-toggle="modal" data-bs-target="#kt_modal_two_factor_authentication">
-                                Enable
-                            </a>
-                            <!--end::Action-->
+                            <!--end::Wrapper-->
                         </div>
-                        <!--end::Wrapper-->
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="notice d-flex bg-light-success rounded border-success border border-dashed p-6">
+                            <!--begin::Icon-->
+                            <div class="position-relative ms-4 me-4">
+                                <i class="fas fa-shield-check fa-3x fs-2tx text-success"></i>
+                                <i class="fas fa-check-circle position-absolute bottom-0 end-0 text-white bg-success rounded-circle p-1" style="font-size: 1rem;"></i>
+                            </div>
+                            <!--end::Icon-->
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+                                <!--begin::Content-->
+                                <div class="mb-3 mb-md-0 fw-semibold">
+                                    <h4 class="text-gray-900 fw-bold">2FA Protection Active</h4>
+                                    <div class="fs-6 text-gray-700 pe-7">Your account is secured with two-factor authentication</div>
+                                </div>
+                                <!--end::Content-->
+                                <!--begin::Action-->
+                                @* 
+                                 <form asp-area="Identity" asp-page="/Account/Manage/Disable2FA" method="post"> 
+                                     <button type="submit" class="btn btn-danger px-6 align-self-center text-nowrap"> 
+                                         Disable 
+                                     </button> 
+                                 </form> 
+                                 *@
+                                <a asp-page="./Disable2FA" class="btn btn-danger px-6 align-self-center text-nowrap">
+                                    <i class="fas fa-lock me-2"></i>Disable
+                                </a>
+                                <!--end::Action-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                    }
                     <!--end::Two-factor authentication-->
                 </div>
                 <!--end::Card body-->

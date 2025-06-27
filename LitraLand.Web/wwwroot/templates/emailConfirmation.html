@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        html, body {
+            padding: 0;
+            margin: 0;
+            font-family: Inter, Helvetica, "sans-serif";
+            background-color: #f8f9fa;
+        }
+
+        a {
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #009ef7;
+            transform: translateY(-2px);
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, #009ef7, #1bc5bd);
+            padding: 30px 0;
+            text-align: center;
+            color: white;
+        }
+
+        h2 {
+            color: #009ef7;
+        }
+
+        .email-content {
+            padding: 0 40px 40px 40px; /*top: 0; */
+        }
+
+        .verify-btn {
+            background: linear-gradient(135deg, #009ef7, #1bc5bd);
+            border-radius: 30px;
+            display: inline-block;
+            padding: 14px 28px;
+            color: #009ef7 !important;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 158, 247, 0.3);
+        }
+
+        .verify-btn:hover {
+            background: linear-gradient(135deg, #0085d0, #0da89e);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 158, 247, 0.4);
+        }
+
+        .email-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #7E8299;
+            border-top: 1px solid #eee;
+        }
+
+        .note {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 14px;
+            border-left: 4px solid #009ef7;
+        }
+    </style>
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body>
+    <!--begin::Main-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Body-->
+            <div class="scroll-y flex-column-fluid px-10 py-10">
+                <!--begin::Email template-->
+                <div class="email-container">
+                    <!--begin::Header-->
+                    <div class="email-header">
+                        <img alt="Logo" src="https://res.cloudinary.com/trojan74/image/upload/v1738607125/eb2a4a39-de59-451e-a3dd-d096587714d6_ep9p5l.png" style="height: 100px;" />
+                        <h2 style="margin:0; font-weight:700;">Email Verification</h2>
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Content-->
+                    <div class="email-content">
+                        <p style="font-size: 16px; color: #5E6278; font-size: 18px; font-weight: 700">Hey <strong>[userName]</strong>,</p>
+                        <p style="font-size:15px; line-height:1.6; color:#5E6278;">Welcome to our community! We're excited to have you on board.</p>
+
+                        <p style="font-size:15px; line-height:1.6; color:#5E6278;">Please verify your email address by clicking the button below:</p>
+
+                        <div style="text-align:center;">
+                            <a href='[url]' target="_blank" class="verify-btn">Verify Email Address</a>
+                        </div>
+
+                        <div class="note">
+                            <p style="margin:0; color:#5E6278;"><strong>Note:</strong> This verification link will expire in 24 hours. If you didn't create this account, please ignore this email.</p>
+                        </div>
+                    </div>
+                    <!--end::Content-->
+                    <!--begin::Footer-->
+                    <div class="email-footer">
+                        <p style="margin:0;">© 2025 LitraLand. All rights reserved.</p>
+                        <p style="margin:10px 0 0 0;">
+                            <a href="#" style="color:#009ef7; text-decoration:none;">Help Center</a>
+                        </p>
+                    </div>
+                    <!--end::Footer-->
+                </div>
+                <!--end::Email template-->
+            </div>
+            <!--end::Body-->
+        </div>
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Main-->
+</body>
+<!--end::Body-->
+</html>
+
+
+
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="padding: 0; margin: 0; font-family: Inter, Helvetica, sans-serif; background-color: #f8f9fa;">
+    <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: column; flex: 1 0 auto;">
+            <div style="overflow-y: auto; flex: 1 0 auto; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
+                <div style="max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e0e0e0;">
+                    <div style="background: linear-gradient(135deg, #009ef7, #1bc5bd); padding: 30px 0; text-align: center; color: white;">
+                        <img alt="Logo" src="https://res.cloudinary.com/trojan74/image/upload/v1738607125/eb2a4a39-de59-451e-a3dd-d096587714d6_ep9p5l.png" style="height: 80px; margin-bottom: 15px;" />
+                        <h2 style="margin:0; font-weight:700;">Email Verification</h2>
+                    </div>
+                    <div style="padding: 40px;">
+                        <p style="font-size:16px; color:#5E6278;">Hey <strong>[userName]</strong>,</p>
+                        <p style="font-size:15px; line-height:1.6; color:#5E6278;">Welcome to our community! We're excited to have you on board.</p>
+
+                        <div style="text-align:center;">
+                            <img alt="Verification" src="https://res.cloudinary.com/trojan74/image/upload/v1740774488/icon-positive-vote-1_qrtznr.svg" style="height: 100px; margin: 20px 0;" />
+                        </div>
+
+                        <p style="font-size:15px; line-height:1.6; color:#5E6278;">Please verify your email address by clicking the button below:</p>
+
+                        <div style="text-align:center;">
+                            <a href='[url]' target="_blank" style="background: linear-gradient(135deg, #009ef7, #1bc5bd); border-radius: 30px; display: inline-block; padding: 14px 28px; color: #FFFFFF !important; font-size: 16px; font-weight: 600; text-decoration: none; margin: 20px 0; box-shadow: 0 4px 15px rgba(0, 158, 247, 0.3);">Verify Email Address</a>
+                        </div>
+
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 25px 0; font-size: 14px; border-left: 4px solid #009ef7;">
+                            <p style="margin:0; color:#5E6278;"><strong>Note:</strong> This verification link will expire in 24 hours. If you didn't create this account, please ignore this email.</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 20px; font-size: 12px; color: #7E8299; border-top: 1px solid #eee;">
+                        <p style="margin:0;">© 2025 LitraLand. All rights reserved.</p>
+                        <p style="margin:10px 0 0 0;">
+                            <a href="#" style="color:#009ef7; text-decoration:none;">Help Center</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+-->

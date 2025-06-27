@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +14,7 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly List<string> _allowedRolesToLogin = new List<string> { AppRoles.SuperAdmin, AppRoles.LibraryAdmin, AppRoles.Archive, AppRoles.Reception };
 
         public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger)
         {
@@ -116,6 +118,15 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                     return Page();
                 }
 
+                // check if the user is not allowed to login(e.g., not having the role of SuperAdmin, LibraryAdmin, Archive or Reception)
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                if (!userRoles.Any(role => _allowedRolesToLogin.Contains(role)))
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: true);
 
                 if (result.Succeeded)
@@ -125,6 +136,7 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
+                    TempData["ReturnUrl"] = returnUrl; // we will use this in the LoginWith2fa page to hold the returnUrl if the user refreshes the page (this is a workaround for the issue of losing the returnUrl when the user refreshes the page)
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
                 if (result.IsLockedOut)

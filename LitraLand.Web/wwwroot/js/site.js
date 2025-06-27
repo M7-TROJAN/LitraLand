@@ -236,14 +236,18 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
             height: "430",
             plugins: [
                 // Core editing features
-                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'fontsize'
             ],
+            toolbar: 'undo redo | bold italic underline | fontsizeselect | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat',
+            fontsize_formats: '10pt 12pt 14pt 16pt 18pt 24pt 36pt',
+            content_style: 'body { font-size: 14pt; }'
         };
 
         if (KTThemeMode.getMode() === "dark") {
             options["skin"] = "oxide-dark";
             options["content_css"] = "dark";
         }
+
         tinymce.init(options);
     }
     // end TinyMCE
@@ -282,6 +286,13 @@ document.addEventListener("DOMContentLoaded", function () { // This is the same 
         $('#SignOutForm').trigger('submit');
 
     });
+
+    // Handle password strength meter
+    setupPasswordStrengthMeter();
+
+    // Handle password visibility toggle
+    togglePasswordVisibility();
+
 });
 // end Document Ready
 

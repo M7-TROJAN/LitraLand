@@ -5,6 +5,124 @@
     ViewData["Title"] = "Manage Email";
 }
 
+
+<div class="card shadow-lg border-0 rounded-3">
+    <div class="card-header bg-primary text-white py-4 rounded-top">
+        <h3 class="mb-0 text-center">@ViewData["Title"]</h3>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+        <partial name="_StatusMessage" for="StatusMessage" />
+
+        <div class="row align-items-center">
+            <!-- Form Column -->
+            <div class="col-md-6">
+                <form id="email-form" method="post">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="flex-shrink-0 text-primary">
+                                <i class="fas fa-envelope-open-text fa-2x text-primary"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="mb-1" style="font-size: 1.4rem;">Email Configuration</h4>
+                                <p class="text-muted mb-0" style="font-size: 1rem;">Secure and verified communication</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            @if (Model.IsEmailConfirmed)
+                            {
+                                <div class="alert alert-success border-start border-4 border-success p-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle fa-lg me-3 text-primary"></i>
+                                        <div>
+                                            <p class="mb-0 fw-medium">Verified Email Address</p>
+                                            <input asp-for="Email" class="form-control-plaintext mt-1" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning border-start border-4 border-warning p-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle fa-lg me-3 text-warning"></i>
+                                        <div>
+                                            <p class="mb-0 fw-medium">Unverified Email Address</p>
+                                            <input asp-for="Email" class="form-control-plaintext mt-1" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Input.NewEmail" class="form-control form-control-lg form-control-solid"
+                                   placeholder="name@example.com" autocomplete="email" aria-required="true" />
+                            <label asp-for="Input.NewEmail" class="form-label">
+                                <i class="fas fa-envelope me-2 text-primary"></i>New Email Address
+                            </label>
+                            <span asp-validation-for="Input.NewEmail" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            @if (!Model.IsEmailConfirmed)
+                            {
+                                <button type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-warning btn-lg py-3">
+                                    <i class="fas fa-paper-plane me-2"></i> Resend Verification Email
+                                </button>
+                            }
+
+                            <button type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary btn-lg py-3">
+                                <i class="fas fa-sync-alt me-2"></i> Update Email Address
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Illustration Column -->
+            <div class="col-md-6 mb-4 mb-md-0 text-center hide-in-small-screens">
+                <img src="~/assets/images/email-verification.svg" alt="Email Management" class="img-fluid animated-img" style="max-height: 450px;">
+                <div class="mt-4">
+                    <span class="badge bg-info text-dark">Security First</span>
+                    <span class="badge bg-warning text-dark mx-2">Instant Update</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light py-3 text-center small text-muted">
+        <i class="fas fa-info-circle me-1"></i>
+        Email changes require verification. Check your inbox after submission.
+    </div>
+</div>
+
+<style>
+    .animated-img {
+        transition: transform 0.3s ease;
+    }
+
+    .animated-img:hover {
+        transform: scale(1.05);
+    }
+
+    .form-control-lg {
+        border-radius: 0.5rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .form-floating label {
+        padding-left: 2.5rem;
+    }
+
+    
+</style>
+
+
+
+
+
+@*
 <h3>@ViewData["Title"]</h3>
 <div class="card mb-5 mb-xl-10">
     <div class="card-body pt-9">
@@ -39,6 +157,10 @@
         </div>
     </div>
 </div>
+*@
+
+
+
 
 
 @*

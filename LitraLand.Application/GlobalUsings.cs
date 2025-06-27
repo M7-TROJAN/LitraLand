@@ -1,0 +1,9 @@
+﻿global using LitraLand.Application.Common.Interfaces;
+global using LitraLand.Application.Common.Models;
+global using LitraLand.Domain.Entities.Library;
+global using LitraLand.Domain.Entities.Common;
+global using LitraLand.Domain.Dtos;
+global using LitraLand.Domain.Dtos.Library;
+global using LitraLand.Domain.Consts;
+global using LitraLand.Domain.Enums;
+global using Microsoft.EntityFrameworkCore;

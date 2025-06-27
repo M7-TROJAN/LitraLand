@@ -4,20 +4,108 @@
     ViewData["Title"] = "Register confirmation";
 }
 
-<h1>@ViewData["Title"]</h1>
-@{
-    if (@Model.DisplayConfirmAccountLink)
-    {
-<p>
-    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-    Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
-</p>
-    }
-    else
-    {
-<p>
-        Please check your email to confirm your account.
-</p>
-    }
-}
+<div class="d-flex flex-column flex-root" id="kt_app_root">
+    <!--begin::Page bg image-->
+    <style>
+        body {
+            background-image: url('/assets/images/bg5.jpg');
+        }
 
+        [data-bs-theme="dark"] body {
+            background-image: url('/assets/images/bg5-dark.jpg');
+        }
+    </style>
+    <!--end::Page bg image-->
+    <!--begin::Authentication - Signup Welcome Message -->
+    <div class="d-flex flex-column flex-center flex-column-fluid">
+        <!--begin::Content-->
+        <div class="d-flex flex-column flex-center text-center p-10">
+            <!--begin::Wrapper-->
+            <div class="card card-flush w-lg-650px py-5">
+                <div class="card-body py-15 py-lg-20">
+                    <!--begin::Logo-->
+                    <div class="mb-14">
+                        <a href="/" class="">
+                            <img alt="Logo" src="~/assets/images/logo4.png" class="h-100px">
+                        </a>
+                    </div>
+                    <!--end::Logo-->
+                    @if (Model.Resent)
+                    {
+                        <div class="alert alert-success mt-3" role="alert">
+                            A new confirmation email has been sent to <strong>@Model.Email</strong>. Please check your inbox.
+                        </div>
+                    }
+                    else 
+                    {
+                    <!--begin::Title-->
+                    <h1 class="fw-bolder text-gray-900 mb-5">
+                        Hey @Model.FullName Thank you for registering!
+                    </h1>
+                    <!--end::Title-->
+                    <div class="fs-6 mb-8">
+                        <p class="fw-semibold text-gray-500">
+                            A confirmation email has been sent to <strong>@Model.Email</strong>.
+                            <br />
+                            Please check your inbox and click the link to confirm your account.
+                        </p>
+                    </div>
+                    <!--begin::Action-->
+                    <div class="fs-6 mb-8">
+                        <span class="fw-semibold text-gray-500">Did’t receive an email?</span>
+                    </div>
+                    <!--end::Action-->
+                    <!--begin::Link-->
+                    <div class="mb-11">
+                        <form method="post" id="resendForm">
+                            <input type="hidden" name="email" value="@Model.Email" />
+                            <button type="submit" class="btn btn-sm btn-primary" id="resendBtn">Resend Confirmation Email</button>
+                            <span id="countdown" class="ms-2 text-muted" style="display:none;"></span>
+                        </form>
+                    </div>
+                    <!--end::Link-->
+                    }
+                    <!--begin::Illustration-->
+                    <div class="mb-0">
+                        <img src="/assets/images/mail-sent.svg" class="mw-100 mh-300px" alt="">
+                    </div>
+                    <!--end::Illustration-->
+                    <!-- Back to Home Button -->
+                    <a href="~/" class="btn btn-primary mt-4">
+                        <i class="fas fa-home me-5"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Authentication - Signup Welcome Message-->
+</div>
+
+@section Scripts {
+    <script>
+        const form = document.getElementById("resendForm");
+        const resendBtn = document.getElementById("resendBtn");
+        const countdownEl = document.getElementById("countdown");
+
+        form.addEventListener("submit", function () {
+            // Prevent spamming by disabling the button for 30 seconds
+            let seconds = 30;
+            resendBtn.disabled = true;
+            countdownEl.style.display = "inline";
+            countdownEl.textContent = `(${seconds}s)`;
+
+            const interval = setInterval(() => {
+                seconds--;
+                countdownEl.textContent = `(${seconds}s)`;
+
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    resendBtn.disabled = false;
+                    countdownEl.style.display = "none";
+                }
+            }, 1000);
+        });
+    </script>
+}

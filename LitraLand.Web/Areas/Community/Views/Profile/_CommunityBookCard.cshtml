@@ -1,0 +1,65 @@
+﻿@using LitraLand.Web.Helpers
+@model List<CommunityBookViewModel>
+@foreach (var book in Model)
+{
+    <!--begin::Col-->
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3 community-book-container" data-aos="fade-up">
+        <!--begin::book card-->
+        <div class="m-0">
+            <!--begin::book pic-->
+            <div class="card-rounded overflow-hidden position-relative w-100 mb-3" style="aspect-ratio: 3/4;">
+                <div class="bgi-position-center bgi-no-repeat bgi-size-cover w-100 h-100" style="background-image:url('@book.ImageThumbnailUrl');"></div>
+            </div>
+            <!--end::book pic-->
+            <!--begin::book Info-->
+            <div class="m-0">
+                <a asp-controller="CommunityBooks" asp-action="Details" asp-route-key="@book.Key">
+                    <!-- Truncated Title for md+ -->
+                    <h5 class="text-gray-800 text-hover-primary fs-5 fw-bold d-none d-md-block mb-1" title="@book.Title">
+                        @book.Title.Truncate(10)
+                    </h5>
+                    <!-- Full Title for small screens -->
+                    <h5 class="text-gray-800 text-hover-primary fs-5 fw-bold d-block d-md-none mb-1">
+                        @book.Title
+                    </h5>
+                </a>
+                <!-- Truncated Author for md+ -->
+                <span class="fw-bold fs-6 text-gray-500 d-none d-md-block mb-1" title="@book.Author">
+                    @book.Author.Truncate(10)
+                </span>
+                <span class="fw-bold fs-6 text-gray-500 d-block d-md-none mb-1">
+                    @book.Author
+                </span>
+
+                <div class="text-gray-600 small mb-1 d-flex flex-wrap gap-2 align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-arrow-left-right me-1 @(book.IsForExchange ? "text-success" : "text-muted")"></i>
+                        <span class="badge badge-light-@(book.IsForExchange ? "success" : "warning") me-auto"
+                              title="@(book.IsForExchange ? "This book is available for exchange" : "This book is not for exchange")">
+                            @(book.IsForExchange ? "For Exchange" : "Not For Exchange")
+                        </span>
+                    </div>
+                </div>
+                <div class="text-gray-600 small mb-1">
+                    <i class="bi bi-cash-coin me-1 text-success"></i>
+                    Price: <strong>@book.Price.ToString("F2") EGP</strong>
+                </div>
+            </div>
+            <!--end::book Info-->
+            <!--begin::Actions-->
+            <div class="actions mt-2 d-flex flex-wrap gap-2">
+                <a href="javascript:;" data-name="Book" data-url="/Community/CommunityBooks/Delete?key=@book.Key"
+                   class="btn btn-sm btn-danger fw-semibold text-nowrap js-delete-community-book">
+                    Delete
+                </a>
+                <a asp-controller="CommunityBooks" asp-action="Edit" asp-route-key="@book.Key"
+                   class="btn btn-sm btn-secondary fw-semibold text-nowrap">
+                    Edit
+                </a>
+            </div>
+            <!--end::Actions-->
+        </div>
+        <!--end::book card-->
+    </div>
+    <!--end::Col-->
+}

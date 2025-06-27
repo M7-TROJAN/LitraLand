@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (governorateId != '') {
             $.ajax({
-                url: '/Users/GetAreas?governorateId=' + governorateId,
+                url: '/Locations/GetAreas?governorateId=' + governorateId,
                 type: 'GET',
                 success: function (areas) {
                     $.each(areas, function (i, area) {

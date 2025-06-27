@@ -1,4 +1,6 @@
-﻿namespace LitraLand.Infrastructure.Persistence.Configuration
+﻿using LitraLand.Domain.Entities.Common;
+
+namespace LitraLand.Infrastructure.Persistence.Configuration
 {
     internal class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
@@ -11,6 +13,15 @@
             // prevent duplicated email and username
             builder.HasIndex(u => u.Email).IsUnique();
             builder.HasIndex(u => u.UserName).IsUnique();
+
+            // prevent duplicated phone number if not null
+            builder.HasIndex(u => u.PhoneNumber)
+                .IsUnique()
+                .HasDatabaseName("IX_ApplicationUser_PhoneNumber")
+                .HasFilter("[PhoneNumber] IS NOT NULL"); // only unique if not null (e.g. for users who don't have a phone number)
+
+            builder.Property(u => u.PhoneNumber)
+                .HasMaxLength(20);
 
             builder.Property(u => u.DateOfBirth)
                 .HasColumnType("date");

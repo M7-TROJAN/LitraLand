@@ -1,4 +1,5 @@
-﻿@model IEnumerable<BookViewModel>
+﻿@using LitraLand.Web.Areas.Library.Core.ViewModels.BookViews
+@model IEnumerable<BookViewModel>
 
 @{
 	ViewData["Title"] = "Home Page";
@@ -14,13 +15,18 @@
 				<div class="d-flex flex-column flex-column-fluid mb-5 mb-lg-10 me-xl-20">
 					<!--begin::Logo-->
 					<div class="d-flex flex-center pt-10 pt-lg-0 mb-10 mb-lg-0 h-lg-225px">
+						<!--begin::Sidebar toggle-->
+						<!--end::Sidebar toggle-->
+						<div class="btn btn-icon btn-active-color-primary w-30px h-30px d-lg-none me-4 ms-n15" id="kt_sidebar_toggle">
+							<i class="fas fa-bars fs-1 text-white"></i>
+						</div>
 						<a href="/">
 							<img alt="Logo" src="~/assets/images/logo1.png" class="h-70px" />
 						</a>
 					</div>
 					<!--end::Logo-->
 					<!--begin::Row (the three cards)-->
-					<div class="row g-7 w-xxl-850px">
+					<div class="row g-7 w-xxl-850px cards-container-offset">
 						<!--begin::Staff Col-->
 						<div class="col">
 							<!--begin::Card-->
@@ -33,7 +39,7 @@
 										<h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">LitraLand Staff</h3>
 										<!--end::Heading-->
 										<!--begin::Link-->
-										<a asp-controller="Dashboard" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Dashboard</a>
+										<a asp-area="Library" asp-controller="Dashboard" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Dashboard</a>
 										<!--end::Link-->
 									</div>
 									<!--end::Wrapper-->
@@ -58,7 +64,7 @@
 										<h3 class="text-white mb-2 fw-bolder text-center text-uppercase mb-6">Find a book</h3>
 										<!--end::Heading-->
 										<!--begin::Link-->
-										<a asp-controller="Search" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Books Finder</a>
+										<a asp-area="" asp-controller="Search" asp-action="Index" class="btn btn-hover-rise text-white bg-white bg-opacity-10 text-uppercase fs-7 fw-bold">Go To Books Finder</a>
 										<!--end::Link-->
 									</div>
 									<!--end::Wrapper-->
@@ -83,7 +89,7 @@
 										<h3 class="text-gray-900 fw-bolder text-uppercase mb-2 text-center mb-6">Marketplace</h3>
 										<!--end::Heading-->
 										<!--begin::Link-->
-										<a asp-area="Marketplace" asp-controller="MarketplaceHome" asp-action="Index" class="btn btn-hover-rise text-gray-900 text-uppercase fs-7 fw-bold" style="background-color: #EBEE51">Go to Book Marketplace</a>
+										<a asp-area="Community" asp-controller="CommunityHome" asp-action="Index" asp-route-returnUrl="/Community/CommunityHome" class="btn btn-hover-rise text-gray-900 text-uppercase fs-7 fw-bold" style="background-color: #EBEE51">Go to Book Marketplace</a>
 										<!--end::Link-->
 									</div>
 									<!--end::Wrapper-->
@@ -100,58 +106,64 @@
 					<!--end::Row (the three cards)-->
 				</div>
 				<!--end::Menu-->
+				<div class="d-flex flex-column-auto flex-center">
+					<!--begin::Navs-->
+					<ul class="menu fw-semibold order-1">
+						<li class="menu-item"><a href="#" target="_blank" class="menu-link text-white opacity-50 opacity-100-hover px-3">About</a></li>
+
+						<li class="menu-item"><a href="#" target="_blank" class="menu-link text-white opacity-50 opacity-100-hover px-3">Support</a></li>
+
+						<li class="menu-item"><a href="#" target="_blank" class="menu-link text-white opacity-50 opacity-100-hover px-3">Purchase</a></li>
+					</ul>
+					<!--end::Navs-->
+				</div>
 			</div>
 			<!--end::Container-->
 		</div>
 		<!--end::Content-->
 		<!--begin::Newly Added Books Sidebar-->
- 		<div id="kt_sidebar" class="sidebar px-5 py-5 py-lg-8 px-lg-11" data-kt-drawer="true" data-kt-drawer-name="sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="300px" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_sidebar_toggle">
+		<div id="kt_sidebar" class="sidebar px-5 py-5 py-lg-8 px-lg-11"
+			 data-kt-drawer="true"
+			 data-kt-drawer-name="sidebar"
+			 data-kt-drawer-activate="{default: true, lg: false}"
+			 data-kt-drawer-overlay="true"
+			 data-kt-drawer-width="300px"
+			 data-kt-drawer-direction="end"
+			 data-kt-drawer-toggle="#kt_sidebar_toggle">
+
 			<!--begin::Header-->
 			<div class="d-flex flex-stack mb-5 mb-lg-8" id="kt_sidebar_header">
-				<!--begin::Title-->
 				<h2 class="text-white">Newly Added Books</h2>
-				<!--end::Title-->
 			</div>
 			<!--end::Header-->
 			<!--begin::Body-->
-			<div class="mb-5 mb-lg-8" id="kt_sidebar_body">
-				<!--begin::Scroll-->
-				<div class="hover-scroll-y me-n6 pe-6" id="kt_sidebar_body" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_sidebar_header, #kt_sidebar_footer" data-kt-scroll-wrappers="#kt_page, #kt_sidebar, #kt_sidebar_body" data-kt-scroll-offset="0">
-					<div class="pb-20">
-						@foreach (var book in Model)
+			<div id="kt_sidebar_body" class="flex-grow-1 me-n6 pe-6 overflow-auto">
+				<div class="">
+					@foreach (var book in Model)
+					{
+						<!--begin::Item-->
+						<a class="d-flex flex-stack" asp-area="" asp-controller="Search" asp-action="Details" asp-route-bKey="@book.Key">
+							<div class="symbol symbol-60px me-4">
+								<img src="@book.ImageThumbnailUrl" alt="@book.Title" />
+							</div>
+							<div class="d-flex align-items-center flex-row-fluid flex-wrap">
+								<div class="flex-grow-1 me-2">
+									<h5 class="text-white text-hover-primary fs-5 fw-bolder">@book.Title</h5>
+									<span class="text-gray-400 fw-semibold d-block fs-6">@book.Author</span>
+								</div>
+							</div>
+						</a>
+						@if (book != Model.Last())
 						{
-							<!--begin::Item-->
-							<a class="d-flex flex-stack" asp-controller="Search" asp-action="Details" asp-route-bKey="@book.Key">
-								<!--begin::Symbol-->
-								<div class="symbol symbol-60px me-4">
-									<img src="@book.ImageThumbnailUrl" class="" alt="@book.Title" />
-								</div>
-								<!--end::Symbol-->
-								<!--begin::Section-->
-								<div class="d-flex align-items-center flex-row-fluid flex-wrap">
-									<!--begin:Author-->
-									<div class="flex-grow-1 me-2">
-										<h5 class="text-white text-hover-primary fs-5 fw-bolder">@book.Title</h5>
-										<span class="text-gray-400 fw-semibold d-block fs-6">@book.Author</span>
-									</div>
-									<!--end:Author-->
-								</div>
-								<!--end::Section-->
-							</a>
-							<!--end::Item-->
-							@if (book != Model.Last())
-							{
-								<!--begin::Separator-->
-								<div class="separator separator-dashed my-5"></div>
-								<!--end::Separator-->
-							}
+							<div class="separator separator-dashed my-5"></div>
 						}
-					</div>
+					}
 				</div>
-				<!--end::Scroll-->
 			</div>
 			<!--end::Body-->
+
 		</div>
 		<!--end::Newly Added Books Sidebar-->
+
 	</div>
 </div>

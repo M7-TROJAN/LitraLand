@@ -53,6 +53,10 @@
       "files": [
         "handlebars.min.js"
       ]
+    },
+    {
+      "library": "aos@2.3.4",
+      "destination": "wwwroot/lib/aos/"
     }
   ]
 }

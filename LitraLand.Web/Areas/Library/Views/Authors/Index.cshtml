@@ -1,0 +1,75 @@
+﻿@using LitraLand.Web.Areas.Library.Core.ViewModels.AuthorViews
+@model IEnumerable<AuthorViewModel>
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+@section Styles {
+    @* DataTables CSS *@
+    <link href="~/assets/plugins/datatables/datatables.bundle.css" rel="stylesheet" />
+}
+
+<div class="alert  bg-light-primary border border-primary border-3 border-dashed d-flex justify-content-between w-100 p-5 mb-10">
+    <div class="d-flex align-items-center">
+        <!--begin::Icon-->
+        <div class="symbol symbol-40px me-4">
+            <div class="symbol-label fs-2 fw-semibold text-success">
+                <span class="symbol-label fs-2 fw-semibold text-success">
+                    <i class="bi bi-person-badge text-primary fs-2"></i> <!-- Icon for Authors -->
+                </span>
+            </div>
+        </div>
+        <!--end::Icon-->
+        <!--begin::Content-->
+        <div class="d-flex flex-column pe-0 pe-sm-10">
+            <h5 class="mb-1">Authors</h5>
+        </div>
+        <!--end::Content-->
+    </div>
+    <div>
+        <!--begin:: Add Button-->
+        <a href="javascript:;" class="btn btn-sm btn-primary js-render-modal" data-title="Add Author" data-url="Authors/Create">
+            <i class="bi bi-plus-square-dotted"></i>
+            Add
+        </a>
+        <!--end:: Add Button-->
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <partial name="_DataTablesCardHeader" /> <!-- This is the partial view that contains the search input and export buttons -->
+    <div class="card-body pt-0">
+        <div class="table-responsive">
+            <table class="table table-row-dashed table-row-gray-300 gy-3 align-middle js-datatables" data-document-title="authors Report">
+                <thead>
+                    <tr class="fw-bold fs-6 text-gray-800">
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created On</th>
+                        <th>Last Updated On</th>
+                        <th class="js-no-export text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var author in Model)
+                    {
+                        <partial name="_AuthorRow" model="@author" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Plugins {
+    @* DataTables JS *@
+    <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
+}
+
+@section Scripts {
+    <!-- Client Side Validation -->
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LitraLand.Domain.Entities.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace LitraLand.Web.Seeds
 {
@@ -12,6 +13,7 @@ namespace LitraLand.Web.Seeds
                 UserName = "superadmin",
                 Email = "superadmin@litraland.com",
                 FullName = "Super Admin",
+                AppllicationArea = AppConstants.LibraryStaffArea,
                 EmailConfirmed = true
             };
 
@@ -25,25 +27,46 @@ namespace LitraLand.Web.Seeds
                 await userManager.AddToRoleAsync(superAdmin, AppRoles.SuperAdmin);
             }
 
-            // seed the admin user
-            ApplicationUser admin = new ApplicationUser
-            {
-                UserName = "admin",
-                Email = "admin@litraland.com",
-                FullName = "Admin",
-                EmailConfirmed = true
+            // seed the libraryadmin user
+            //ApplicationUser admin = new ApplicationUser
+            //{
+            //    UserName = "libraryadmin",
+            //    Email = "libraryadmin@litraland.com",
+            //    FullName = "Library Admin",
+            //    AppllicationArea = AppConstants.LibraryStaffArea,
+            //    EmailConfirmed = true
 
-            };
+            //};
 
-            // first check if the admin user already exists
-            user = await userManager.FindByEmailAsync(admin.Email);
+            //// first check if the libraryadmin user already exists
+            //user = await userManager.FindByEmailAsync(admin.Email);
 
-            // if the admin user does not exist, create it
-            if (user is null)
-            {
-                await userManager.CreateAsync(admin, "Admin@123");
-                await userManager.AddToRoleAsync(admin, AppRoles.Admin);
-            }
+            //// if the libraryadmin user does not exist, create it
+            //if (user is null)
+            //{
+            //    await userManager.CreateAsync(admin, "Admin@123");
+            //    await userManager.AddToRoleAsync(admin, AppRoles.LibraryAdmin);
+            //}
+
+            //// seed the communityadmin user
+            //ApplicationUser communityadmin = new ApplicationUser
+            //{
+            //    UserName = "communityadmin",
+            //    Email = "community_admin@LitraLand.com",
+            //    FullName = "Community Admin",
+            //    AppllicationArea = AppConstants.CommunityArea,
+            //    EmailConfirmed = true
+            //};
+
+            //// first check if the communityadmin user already exists
+            //user = await userManager.FindByEmailAsync(communityadmin.Email);
+
+            //// if the communityadmin user does not exist, create it
+            //if (user is null)
+            //{
+            //    await userManager.CreateAsync(communityadmin, "Admin@123");
+            //    await userManager.AddToRoleAsync(communityadmin, AppRoles.CommunityAdmin);
+            //}
         }
     }
 }

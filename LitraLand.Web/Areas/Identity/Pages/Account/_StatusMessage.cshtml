@@ -1,5 +1,38 @@
 ﻿@model string
 
+@{
+    var statusMessage = Model ?? string.Empty;
+    var statusMessageClass = "info";
+
+    if (statusMessage.StartsWith("ErrorAndDelete", StringComparison.OrdinalIgnoreCase))
+    {
+        statusMessageClass = "danger";
+        statusMessage = statusMessage.Substring("ErrorAndDelete".Length).Trim(); // remove the "ErrorAndDelete" prefix from the message
+    }
+    else if (statusMessage.StartsWith("Error", StringComparison.OrdinalIgnoreCase))
+    {
+        statusMessageClass = "danger";
+        // متشيلش حاجة
+    }
+    else if (statusMessage.StartsWith("Success", StringComparison.OrdinalIgnoreCase))
+    {
+        statusMessageClass = "success";
+        statusMessage = statusMessage.Substring("Success".Length).Trim();
+    }
+}
+@if (!string.IsNullOrWhiteSpace(Model))
+{
+    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        @statusMessage
+    </div>
+}
+
+
+
+
+@*old code*@
+@*
 @if (!String.IsNullOrEmpty(Model))
 {
     var statusMessageClass = Model.StartsWith("Error") ? "danger" : "success";
@@ -8,3 +41,4 @@
         @Model
     </div>
 }
+*@

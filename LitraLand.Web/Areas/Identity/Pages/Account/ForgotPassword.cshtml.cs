@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -22,6 +23,16 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _emailBodyBuilder = emailBodyBuilder;
         }
+
+
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
+
+        public string SafeReturnUrl =>
+            !string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl)
+            ? ReturnUrl
+            : Url.Content("~/");
+
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

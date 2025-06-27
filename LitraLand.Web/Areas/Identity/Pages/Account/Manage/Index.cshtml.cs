@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -29,11 +30,7 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             _imageServices = imageServices;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public string Username { get; set; }
+        public bool Is2FAEnabled { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -55,6 +52,10 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public class InputModel
         {
+            [Required, MaxLength(20, ErrorMessage = Errors.MaxLength), Display(Name = "Username")]
+            [RegularExpression(RegexPatterns.Username, ErrorMessage = Errors.InvalidUsername)]
+            public string Username { get; set; }
+
             [Required, MaxLength(100, ErrorMessage = Errors.MaxLength), Display(Name = "Full Name")]
             [RegularExpression(RegexPatterns.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
             public string FullName { get; set; } = null!;
@@ -94,10 +95,9 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            Username = userName;
-
             Input = new InputModel
             {
+                Username = userName,
                 FullName = user.FullName,
                 PhoneNumber = phoneNumber,
                 DateOfBirth = user.DateOfBirth,
@@ -107,6 +107,8 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 GovernorateId = user.GovernorateId,
                 Address = user.Address
             };
+
+            Is2FAEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
 
             PopulateInputModel();
         }
@@ -167,12 +169,49 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            // check if phone number was changed
             if (Input.PhoneNumber != phoneNumber)
             {
+                if (!string.IsNullOrWhiteSpace(Input.PhoneNumber))
+                {
+                    // check if phone number already exists for another user
+                    var existingUser = await _userManager.Users
+                        .Where(u => u.PhoneNumber == Input.PhoneNumber && u.Id != user.Id)
+                        .FirstOrDefaultAsync();
+
+                    if (existingUser != null)
+                    {
+                        ModelState.AddModelError("Input.PhoneNumber", "This phone number is already used by another user.");
+                        await LoadAsync(user);
+                        return Page();
+                    }
+                }
+
+                // now safe to update
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "ErrorAndDelete Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+            // check if username was changed
+            if (Input.Username != user.UserName)
+            {
+                // validate the uniqueness of the new username
+                var hasError = await ValidateUserUniquenessAsync(Input.Username);
+                if (hasError)
+                {
+                    ModelState.AddModelError("Input.Username", "Username is already taken.");
+                    await LoadAsync(user);
+                    return Page();
+                }
+                // now safe to update
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username.Trim());
+                if (!setUserNameResult.Succeeded)
+                {
+                    StatusMessage = "ErrorAndDelete Unexpected error when trying to set username.";
                     return RedirectToPage();
                 }
             }
@@ -195,19 +234,19 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                StatusMessage = "Unexpected error when updating user information.";
+                StatusMessage = "ErrorAndDelete Unexpected error when updating user information.";
                 return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated successfully.";
+            StatusMessage = "SuccessAndDelete Your profile has been updated successfully.";
             return RedirectToPage();
         }
 
         // a helper method to populate the InputModel with the governorates and areas dropdown lists
         private void PopulateInputModel()
         {
-            var governorates = _context.Governorates.Where(a => !a.IsDeleted).OrderBy(a => a.Name).ToList();
+            var governorates = _context.Governorates.Where(g => !g.IsDeleted).OrderBy(g => g.Name).ToList();
 
             Input.Governorates = _mapper.Map<IEnumerable<SelectListItem>>(governorates);
 
@@ -221,6 +260,17 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
 
                 Input.Areas = _mapper.Map<IEnumerable<SelectListItem>>(areas);
             }
+        }
+
+        private async Task<bool> ValidateUserUniquenessAsync(string username)
+        {
+            var hasError = false;
+
+            var existingUsernameUser = await _userManager.FindByNameAsync(username);
+            if (existingUsernameUser != null)
+                hasError = true;
+
+            return hasError;
         }
     }
 }

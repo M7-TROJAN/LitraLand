@@ -8,6 +8,7 @@
         public const string DuplicatedBook = "Book with the same title is already exists with the same author!";
         public const string NotAllowedExtension = "Invalid Image format. Only .jpg, .jpeg, .png and .webp are allowed.";
         public const string MaxSize = "Image size should not exceed 2MB.";
+        public const string RequiredField = "Required field";
         public const string Required = "{0} is required.";
         public const string NotAllowFutureDates = "{0} cannot be in the future!";
         public const string InvalidRange = "{0} should be between {1} and {2}.!"; // note that the {0}, {1}, and {2} are replaced with the property name, min, and max values respectively
@@ -23,6 +24,7 @@
         public const string InvalidSerialNumber = "Invalid serial number.";
         public const string NotAvilableRental = "This book/copy is not available for rental.";
         public const string EmptyImage = "Please select an image.";
+        public const string NotFoundSubscriber = "This subscriber is found.";
         public const string BlackListedSubscriber = "This subscriber is blacklisted.";
         public const string InactiveSubscriber = "This subscriber is inactive.";
         public const string InvalidCopiesCount = "The selected copies count is more than the allowed count.";

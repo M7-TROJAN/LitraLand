@@ -12,6 +12,8 @@
     <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
     <PackageReference Include="Hangfire" Version="1.8.18" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
@@ -34,6 +36,7 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Areas\Community\Views\Shared\" />
 		<Folder Include="wwwroot\images\books\" />
 		<Folder Include="wwwroot\images\Users\" />
 	</ItemGroup>

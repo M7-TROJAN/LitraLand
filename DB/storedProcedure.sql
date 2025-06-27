@@ -48,3 +48,28 @@ EXEC GetMostPopularBooks @TopN = 5;
 EXEC GetMostPopularBooks @TopN = NULL;
 
 EXEC GetMostPopularBooks;
+
+
+
+
+
+
+CREATE PROCEDURE GetTopCommunityMembers
+    @TopN INT = 6
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP (@TopN)
+        u.Id AS UserId,
+        u.UserName,
+        u.ImageThumbnailUrl,
+        COUNT(b.Id) AS BookCount
+    FROM AspNetUsers u
+    INNER JOIN AspNetUserRoles ur ON u.Id = ur.UserId
+    INNER JOIN AspNetRoles r ON ur.RoleId = r.Id
+    LEFT JOIN CommunityBooks b ON u.Id = b.OwnerId
+    WHERE r.Name = 'CommunityMember'
+    GROUP BY u.Id, u.UserName, u.ImageThumbnailUrl
+    ORDER BY COUNT(b.Id) DESC;
+END;

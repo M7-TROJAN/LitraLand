@@ -1,0 +1,56 @@
+﻿@model List<CommunityBookViewModel>
+@foreach (var book in Model)
+{
+    <!--begin::Col-->
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3 community-book-container" data-aos="fade-up">
+        <!--begin::book card-->
+        <div class="m-0">
+            <!--begin::book pic-->
+            <div class="card-rounded overflow-hidden position-relative w-100 mb-3" style="aspect-ratio: 3/4;">
+                <div class="bgi-position-center bgi-no-repeat bgi-size-cover w-100 h-100" style="background-image:url('@book.ImageThumbnailUrl');"></div>
+            </div>
+            <!--end::book pic-->
+            <!--begin::book Info-->
+            <div class="m-0">
+                <a asp-controller="CommunityBooks" asp-action="Details" asp-route-key="@book.Key">
+                    <h5 class="text-gray-800 text-hover-primary fs-5 fw-bold d-block mb-1">@book.Title</h5>
+                </a>
+                <span class="fw-bold fs-6 text-gray-500 d-block mb-1">@book.Author</span>
+
+                <div class="text-gray-600 small mb-1">
+                    @{
+                        var truncatedUserName = book.OwnerUserName.Length > 10
+                        ? book.OwnerUserName.Substring(0, 10) + "..."
+                        : book.OwnerUserName;
+                    }
+                    <i class="bi bi-person-circle me-1 text-primary"></i>
+                    Owner:
+                    <a asp-controller="Members" asp-action="Profile" asp-route-id="@book.OwnerId" class="d-none d-md-inline text-decoration-none">
+                        <strong>@truncatedUserName</strong>
+                    </a>
+
+                    <a asp-controller="Members" asp-action="Profile" asp-route-id="@book.OwnerId" class="d-inline d-md-none text-decoration-none">
+                        <strong>@book.OwnerUserName</strong>
+                    </a>
+                </div>
+
+                <div class="text-gray-600 small mb-1 d-flex flex-wrap gap-2 align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-arrow-left-right me-1 @(book.IsForExchange ? "text-warning" : "text-muted")"></i>
+                        <span class="badge @(book.IsForExchange ? "bg-warning text-dark" : "bg-light text-muted border")"
+                              title="@(book.IsForExchange ? "This book is available for exchange" : "This book is not for exchange")">
+                            @(book.IsForExchange ? "For Exchange" : "Not For Exchange")
+                        </span>
+                    </div>
+                </div>
+                <div class="text-gray-600 small mb-1">
+                    <i class="bi bi-cash-coin me-1 text-warning"></i>
+                    Price: <strong>@book.Price.ToString("F2") EGP</strong>
+                </div>
+            </div>
+            <!--end::book Info-->
+        </div>
+        <!--end::book card-->
+    </div>
+    <!--end::Col-->
+}

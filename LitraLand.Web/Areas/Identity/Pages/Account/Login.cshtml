@@ -79,13 +79,23 @@
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                             <!--end::Password-->
                         </div>
+                        <!--begin:Input group RememberMachine-->
+                        <div class="row mb-2 mt-3">
+                            <div class="col">
+                                <div class="form-check form-switch form-check-solid form-check-custom mb-2">
+                                    <input class="form-check-input" type="checkbox" asp-for="Input.RememberMe">
+                                    <label class="form-check-label" asp-for="Input.RememberMe"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end:Input group RememberMachine-->
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <!--end::Input group=-->
                         <!--begin::Wrapper-->
                         <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
                             <div></div>
                             <!--begin::Link-->
-                            <a asp-page="./ForgotPassword" class="link-primary">Forgot Password?</a>
+                            <a asp-page="./ForgotPassword" asp-route-returnUrl="/Identity/Account/Login">Forgot your password?</a>
                             <!--end::Link-->
                         </div>
                         <!--end::Wrapper-->
@@ -115,6 +125,10 @@
     </div>
     <!--end::Authentication - Sign-in-->
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 
 @* the old code by default is commented out, but it's still here for reference *@
 
@@ -189,25 +203,8 @@
             }
         </section>
     </div>
-</div> *@
-
+</div> 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.getElementById("togglePassword").addEventListener("click", function () {
-            var passwordField = document.getElementById("passwordField");
-            var icon = this.querySelector("i");
-
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash"); // hide password icon
-            } else {
-                passwordField.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            }
-        });
-    </script>
-
 }
+*@

@@ -1,4 +1,4 @@
-﻿using LitraLand.Domain.Entities;
+﻿using LitraLand.Domain.Entities.Common;
 
 namespace LitraLand.Domain.Common
 {

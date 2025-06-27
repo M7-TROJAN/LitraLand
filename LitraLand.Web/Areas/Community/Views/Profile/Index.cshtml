@@ -1,0 +1,178 @@
+﻿@model ProfileViewModel
+@{
+	ViewData["Title"] = "My Profile";
+}
+@section Styles
+{
+	<link href="~/lib/aos/aos.css" rel="stylesheet" />
+}
+<div class="d-flex flex-column flex-column-fluid">
+	<!--begin::Toolbar-->
+	<div class="app-toolbar py-3 py-lg-6 ">
+		<!--begin::Toolbar container-->
+		<div class="app-container  container-xxl d-flex flex-stack ">
+			<!--begin::Page title-->
+			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 ">
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+					My Profile
+				</h1>
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<div id="addBookButton" class="m-0">
+					<a asp-controller="CommunityBooks" asp-action="Create" class="btn btn-sm fw-bold btn-primary">
+						<i class="bi bi-plus-square-dotted"></i>
+						Add new Book
+					</a>
+				</div>
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Toolbar container-->
+	</div>
+	<!--end::Toolbar-->
+	<!--begin::Container-->
+	<div class="d-flex flex-column flex-xl-row">
+		<!--begin::Sidebar-->
+		<div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
+			<!--begin::Card-->
+			<div class="card mb-5 mb-xl-8">
+				<!--begin::Card body-->
+				<div class="card-body pt-15">
+					<!--begin::Summary-->
+					<div class="d-flex flex-center flex-column mb-5">
+						<!--begin::Avatar-->
+						<a data-fslightbox href="@(string.IsNullOrEmpty(Model.Member!.ImageUrl) ? AppConstants.DefaultAvatarUrl : Model.Member!.ImageUrl)">
+							<div class="symbol symbol-150px symbol-circle mb-7">
+								<img src="@(string.IsNullOrEmpty(Model.Member!.ImageThumbnailUrl) ? AppConstants.DefaultAvatarUrl : Model.Member!.ImageThumbnailUrl)" alt="image">
+							</div>
+						</a>
+						<!--end::Avatar-->
+						<!--begin::Name-->
+						<p class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">@Model.Member!.FullName</p>
+						<!--end::Name-->
+						<!--begin::Email-->
+						<p class="fs-5 fw-semibold text-muted text-hover-primary mb-6">@Model.Member!.Email</p>
+						<!--end::Email-->
+					</div>
+					<!--end::Summary-->
+					<!--begin::Details toggle-->
+					<div class="d-flex flex-stack fs-4">
+						<div class="fw-bold">Details</div>
+					</div>
+					<!--end::Details toggle-->
+					<div class="separator separator-dashed my-3"></div>
+					<!--begin::Details content-->
+					<div class="pb-5 fs-6">
+						<!--begin::Membership Date Badge-->
+						<div class="badge badge-light-success d-inline" id="MembershipDateBadge">
+							member since @Model.Member!.MembershipDate.ToString("dd MMM, yyyy")
+						</div>
+						<!--end::Membership Date Badge-->
+						<!--begin::Total Books-->
+						<div class="fw-bold mt-5">TotalBooks</div>
+						<div class="text-gray-600">
+							@if (Model.TotalBooks > 0)
+							{
+								<p id="TotalBooksCount"
+								   class="text-gray-600 text-hover-primary"
+								   data-kt-countup="true"
+								   data-kt-countup-value="@Model.TotalBooks"
+								   data-kt-countup-start-val="0"
+								   data-kt-countup-duration="2"
+								   data-kt-countup-suffix=" Book(s)">
+									0
+								</p>
+							}
+							else
+							{
+								<div class="fs-7 fw-bold text-danger">No books added yet</div>
+							}
+						</div>
+						<!--end::Total Books-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Mobile No.</div>
+						@if (!string.IsNullOrEmpty(Model.Member!.PhoneNumber))
+						{
+							<div class="text-gray-600">
+								<p class="text-gray-600 text-hover-primary">@Model.Member!.PhoneNumber</p>
+							</div>
+						}
+						else
+						{
+							<div class="fs-7 fw-bold text-danger">Phone number not available</div>
+						}
+						<!--end::Details item-->
+						<!--begin::Details item-->
+						<div class="fw-bold mt-5">Address</div>
+						<div class="text-gray-600">
+							@Model.Member!.Address,
+							<br />
+							@Model.Member!.Area,
+							<br />
+							@Model.Member!.Governorate
+						</div>
+						<!--begin::Details item-->
+					</div>
+					<!--end::Details content-->
+				</div>
+				<!--end::Card body-->
+			</div>
+			<!--end::Card-->
+		</div>
+		<!--end::Sidebar-->
+		<!--begin::Content-->
+		<div class="flex-lg-row-fluid ms-lg-15">
+			<!-- Message if no books -->
+			@if (!Model.HasBooks)
+			{
+				<div id="noBooksMessage" class="alert alert-warning text-center w-100 mt-auto shadow-sm rounded-3 p-5">
+					<h4 class="fw-bold mb-3">No Books Added Yet</h4>
+					<p class="mb-4 text-gray-700">You haven’t added any books yet. Click the button below to start sharing your collection!</p>
+					<a asp-controller="CommunityBooks" asp-action="Create" class="btn btn-primary btn-sm fw-bold">
+						<i class="bi bi-plus-square-dotted me-2"></i>Add New Book
+					</a>
+				</div>
+			}
+			else
+			{
+				<!-- Books List Container -->
+				<div class="row g-6 g-xl-9">
+					<div class="card card-flush h-xl-100">
+						<!--begin::Card body-->
+						<div class="card-body pt-7">
+							<div id="booksContainer" class="row g-5 g-xl-9 mb-5 mb-xl-9">
+							</div>
+						</div>
+						<!--end::Card body-->
+					</div>
+				</div>
+
+				<!-- Loader spinner -->
+				<div id="loader" class="text-center my-5" style="display:none;">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+
+				<!-- Scroll sentinel -->
+				<div id="scrollSentinel"></div>
+			}
+		</div>
+		<!--end::Content-->
+	</div>
+	<!--end::Container-->
+</div>
+
+@section Scripts
+{
+	<script src="~/js/community/my-profile.js" asp-append-version="true"></script>
+	<script src="~/js/community/community-book.js" asp-append-version="true"></script>
+}
+
+@section Plugins
+{
+	<script src="~/lib/aos/aos.js"></script>
+	<script src="~/assets/plugins/fslightbox/fslightbox.bundle.js"></script>
+}

@@ -1,9 +1,14 @@
-﻿namespace LitraLand.Web.Core.Mapping
+﻿using LitraLand.Domain.Dtos.Community;
+using LitraLand.Domain.Dtos.Library;
+using LitraLand.Domain.Entities.Common;
+using LitraLand.Domain.Entities.Community;
+namespace LitraLand.Web.Core.Mapping
 {
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
+            // Library management system
             // Category
             CreateMap<Category, CategoryViewModel>(); // Category -> CategoryViewModel
 
@@ -88,6 +93,30 @@
             CreateMap<RentalCopy, CopyHistoryViewModel>()
                 .ForMember(dest => dest.SubscriberName, opt => opt.MapFrom(src => src.Rental!.Subscriber!.FirstName + " " + src.Rental!.Subscriber!.LastName))
                 .ForMember(dest => dest.SubscriberMobile, opt => opt.MapFrom(src => src.Rental!.Subscriber!.PhoneNumber));
+
+            // stord Procedures
+            CreateMap<MostPopularBookDTO, BookViewModel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.BookId)); // MostPopularBook -> BookViewModel
+
+            // Community
+            // MemberViewModel
+            CreateMap<ApplicationUser, MemberViewModel>()
+                .ForMember(dest => dest.MembershipDate, opt => opt.MapFrom(src => src.CreatedOn))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area != null ? src.Area.Name : string.Empty))
+                .ForMember(dest => dest.Governorate, opt => opt.MapFrom(src => src.Governorate != null ? src.Governorate.Name : string.Empty)); // ApplicationUser -> MemberViewModel
+
+            // CommunityBook
+            CreateMap<CommunityBook, CommunityBookViewModel>(); // CommunityBook -> CommunityBookViewModel
+
+            CreateMap<CommunityBookFormViewModel, CommunityBook>()
+                .ReverseMap(); // CommunityBookFormViewModel -> CommunityBook and vice versa
+
+            // stord Procedures
+            CreateMap<TopMemberDto, TopMemberViewModel>()
+                .ForMember(dest => dest.NumberOfBooks, opt => opt.MapFrom(src => src.BookCount))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageThumbnailUrl)); // TopMemberDto -> TopMemberViewModel
+
         }
     }
 }

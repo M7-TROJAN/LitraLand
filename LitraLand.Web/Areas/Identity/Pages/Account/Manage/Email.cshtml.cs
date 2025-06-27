@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Hangfire;
+using LitraLand.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -125,22 +127,23 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
 
                 var placeholders = new Dictionary<string, string>()
                 {
-                    { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
-                    { "header", $"Hey {user.FullName}," },
-                    { "body", "please confirm your email." },
-                    { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
-                    { "linkTitle", "Confirm Email" }
+                    { "userName" , user.UserName },
+                    { "url", HtmlEncoder.Default.Encode(callbackUrl!) }
                 };
 
-                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.EmailConfirmation, placeholders);
 
-                await _emailSender.SendEmailAsync(Input.NewEmail, "Confirm your email", body);
+                BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+                    Input.NewEmail,
+                    "Confirm your email",
+                    body
+                ));
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Success Confirmation link to change email sent. Please check your email.";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Success Your email is unchanged.";
             return RedirectToPage();
         }
 
@@ -168,21 +171,21 @@ namespace LitraLand.Web.Areas.Identity.Pages.Account.Manage
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
 
-
             var placeholders = new Dictionary<string, string>()
             {
-                { "mediaUrl", "https://res.cloudinary.com/trojan74/image/upload/v1740874707/icon-positive-vote-2_sgflmb.svg" },
-                { "header", $"Hey {user.FullName}," },
-                { "body", "please confirm your email." },
-                { "url", HtmlEncoder.Default.Encode(callbackUrl!) },
-                { "linkTitle", "Confirm Email" }
+                { "userName" , user.UserName },
+                { "url", HtmlEncoder.Default.Encode(callbackUrl!) }
             };
 
-            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.EmailConfirmation, placeholders);
 
-            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(
+                email,
+                "Confirm your email",
+                body
+            ));
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Success Verification email sent. Please check your email.";
             return RedirectToPage();
         }
     }

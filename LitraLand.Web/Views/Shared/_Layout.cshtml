@@ -1,5 +1,25 @@
-﻿@inject SignInManager<ApplicationUser> SignInManager
+﻿@using LitraLand.Domain.Entities.Common
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    string asidePartial = ViewData["AsidePartial"]?.ToString() ?? string.Empty;
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var areas = new Dictionary<string, string>
+        {
+            { AppConstants.CommunityArea, "_CommunityAside" },
+            { AppConstants.LibraryStaffArea, "_LibraryAside" },
+        };
 
+        if (string.IsNullOrEmpty(asidePartial))
+        {
+            var userArea = User.GetUserApplicationArea();
+            if (!string.IsNullOrEmpty(userArea) && areas.ContainsKey(userArea))
+            {
+                asidePartial = areas[userArea];
+            }
+        }
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,19 +45,19 @@
         var defaultThemeMode = "light";
         var themeMode;
         if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-theme-mode"))
-                themeMode = document.documentElement.getAttribute("data-theme-mode");
-            else 
-            {
-                if (localStorage.getItem("data-theme") !== null)
-                    themeMode = localStorage.getItem("data-theme");
-                else
-                    themeMode = defaultThemeMode;
-            }
-            if (themeMode === "system")
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (document.documentElement.hasAttribute("data-theme-mode"))
+        themeMode = document.documentElement.getAttribute("data-theme-mode");
+        else
+        {
+        if (localStorage.getItem("data-theme") !== null)
+        themeMode = localStorage.getItem("data-theme");
+        else
+        themeMode = defaultThemeMode;
+        }
+        if (themeMode === "system")
+        themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
-            document.documentElement.setAttribute("data-theme", themeMode);
+        document.documentElement.setAttribute("data-theme", themeMode);
         }
     </script>
     <!--end::Theme mode setup on page load-->
@@ -49,7 +69,6 @@
         </div>
     </noscript>
     <!--end:: no script-->
-
     <!--begin::Page loader-->
     <div class="page-loader">
         <span class="spinner-border text-primary" role="status">
@@ -57,7 +76,6 @@
         </span>
     </div>
     <!--end::Page Loader-->
-
     <!--begin::Main-->
     <!--begin::Root-->
     @if (SignInManager.IsSignedIn(User))
@@ -73,7 +91,10 @@
                     <!--begin::Content wrapper-->
                     <div class="d-flex flex-column-fluid">
                         <!--begin::Aside-->
-                        <partial name="_Aside" />
+                        @if (!string.IsNullOrEmpty(asidePartial))
+                        {
+                            <partial name="@asidePartial" />
+                        }
                         <!--end::Aside-->
                         <!--begin::Container-->
                         <div class="d-flex flex-column flex-column-fluid container-fluid">
@@ -93,31 +114,30 @@
             <!--end::Page-->
         </div>
     }
-    else {
+    else
+    {
         @RenderBody()
     }
     <!--end::Root-->
-	<!--end::Main-->
-
-	<!--begin::Scrolltop Button-->
-	<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
-		<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
-		<span class="svg-icon">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor" />
-				<path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor" />
-			</svg>
-		</span>
-		<!--end::Svg Icon-->
-	</div>
+    <!--end::Main-->
+    <!--begin::Scrolltop Button-->
+    <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+        <span class="svg-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)" fill="currentColor" />
+                <path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z" fill="currentColor" />
+            </svg>
+        </span>
+        <!--end::Svg Icon-->
+    </div>
     <!--end::Scrolltop Button-->
-    
+
     <span id="Message" class="d-none">@TempData["Message"]</span>
-    
+
     <!--begin::Modals-->
     <partial name="_Modal" />
     <!--end::Modals-->
-
     <!--begin::Javascript-->
     <script> var hostUrl = "assets/"; </script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->

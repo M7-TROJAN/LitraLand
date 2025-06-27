@@ -16,7 +16,7 @@ function drawRentalsChart(startDate = null, endDate = null) {
         return;
 
     $.get({
-        url: `/Dashboard/GetRentalsPerDay?startDate=${startDate}&endDate=${endDate}`,
+        url: `/Library/Dashboard/GetRentalsPerDay?startDate=${startDate}&endDate=${endDate}`,
         success: function (returnedData) {
 
             var options = {
@@ -142,7 +142,7 @@ function drawRentalsChart(startDate = null, endDate = null) {
 
 function drawSubscribersChart() {
     $.get({
-        url: '/Dashboard/GetSubscribersPerCity',
+        url: '/Library/Dashboard/GetSubscribersPerCity',
         success: function (figures) {
             var ctx = document.getElementById('SubscribersPerCity'); // ctx means context and it's the canvas element where the chart will be drawn on
 

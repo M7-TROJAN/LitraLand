@@ -186,3 +186,74 @@ function onModalComplete() {
     enableSubmitButton();
 }
 // end Modal functions
+
+
+// start password feilds logic 
+function setupPasswordStrengthMeter() {
+    const passwordInput = document.getElementById("passwordField");
+    const meterSegments = document.querySelectorAll("[data-meter-segment]");
+
+    if (!passwordInput || !meterSegments.length) return;
+
+    const conditions = [
+        function hasUpperCase(pw) {
+            return /[A-Z]/.test(pw);
+        },
+        function hasSpecialChar(pw) {
+            return /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+        },
+        function hasNumberAndLowerCase(pw) {
+            return /[0-9]/.test(pw) && /[a-z]/.test(pw);
+        },
+        function isLongEnough(pw) {
+            return pw.length >= 8;
+        }
+    ];
+
+    passwordInput.addEventListener("input", function () {
+        const password = passwordInput.value;
+        // حساب عدد الشروط المتحققة
+        let trueCount = 0;
+        conditions.forEach(function (cond) {
+            if (cond(password)) {
+                trueCount++;
+            }
+        });
+
+        // تحديث لون الديفات: الديفات من اليسار للعدد trueCount تكون مضيئة
+        meterSegments.forEach((segment, index) => {
+            if (index < trueCount) {
+                segment.classList.remove("bg-secondary");
+                segment.classList.add("bg-success");
+            } else {
+                segment.classList.remove("bg-success");
+                segment.classList.add("bg-secondary");
+            }
+        });
+    });
+}
+
+
+function togglePasswordVisibility() {
+    // get the toggle button
+    var toggleButton = document.getElementById("togglePassword");
+
+    // Check if the password field and toggle button exist
+    if (!toggleButton) return;
+
+    // Add event listener to the toggle button
+    toggleButton.addEventListener("click", function () {
+        var icon = this.querySelector("i");
+        var passwordField = document.getElementById("passwordField");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    });
+}
+// end password feilds logic

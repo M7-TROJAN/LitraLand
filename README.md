@@ -16,6 +16,7 @@ LitraLand is a robust and fully-featured web platform designed for managing libr
   * Authors
   * Categories
   * Publishers
+  * subscribers
   * Users
 * 🛠️ Clean layered architecture with separation of concerns
 * 🧹 Form validation & anti-spam handling

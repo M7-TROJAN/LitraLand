@@ -39,20 +39,19 @@ This is not just a CRUD system. LitraLand was built as a real-world project to d
 
 ```
 LitraLand/
-├── LitraLand.Web/           → MVC presentation layer (views, controllers)
-├── LitraLand.Core/          → Entities, ViewModels, interfaces
-├── LitraLand.Services/      → Business logic (implementations of I...Service)
-├── LitraLand.Infrastructure/→ EF Core, Repositories, DbContext
-└── Shared/                  → Extensions, Helpers, Custom logic
+├── LitraLand.Web/           → MVC Presentation Layer (Controllers, Views, UI Logic)
+├── LitraLand.Application/   → Business Logic Layer (Services, ViewModels, DTOs)
+├── LitraLand.Domain/        → Core Layer (Entities, Interfaces, Business Rules)
+├── LitraLand.Infrastructure/→ Data Access Layer (EF Core, DbContext, Migrations)
 ```
 
-🧠 Patterns Used:
+🧠 **Patterns & Technologies Used**:
 
-* Repository Pattern + Unit of Work
-* AutoMapper for ViewModel mapping
-* FluentValidation for model validation
-* Extension methods for cleaner code
-* Dependency Injection throughout
+* **Clean Architecture** (separated layers: Domain, Application, Infrastructure, Web)
+* **Dependency Injection** (built-in .NET Core DI)
+* **AutoMapper** (mapping between Entities & ViewModels)
+* **FluentValidation** (for input validation)
+* **Extension Methods** (to keep code clean and reusable)
 
 ---
 
@@ -88,6 +87,54 @@ LitraLand/
 * Access logs and activity tracking
 * Validate reviews, moderate content
 * Export data (CSV/PDF support ready for plug-in)
+
+---
+
+## 🔐 Authentication & Access Flow
+
+LitraLand distinguishes between two types of users, each with their own login portal and permissions:
+
+### 🧑‍💼 Library Staff Login
+
+* Accessible only via the dedicated **Library Staff Login Page**.
+* Used exclusively by official library employees.
+* No public registration allowed for staff accounts.
+* After login, staff members access:
+
+  * Book & user management dashboards.
+  * Admin panels and advanced controls.
+
+### 🌐 Community User Access
+
+* Accessible via the **Community Login/Register Page**.
+* Public users can:
+
+  * **Register** for a new account.
+  * **Login** using their community credentials.
+* Once logged in, community users can:
+
+  * Search and browse books.
+  * Join discussions and comment.
+  * Add books to personal lists.
+
+> 🔑 Each user type is isolated with role-based access control to prevent unauthorized usage of staff features.
+
+---
+
+```
+                    ┌────────────────────┐
+                    │   Login Page A     │
+                    │  (Library Staff)   │
+                    └────────┬───────────┘
+                             ↓
+                    [ Admin Dashboard ]
+                             ↑
+┌────────────┐     Role: "SuperAdmin, LibraryAdmin, Archive, Reception"      ┌─────────────┐
+│ Register   │◄────┐                      │ Login Page B│
+│ Community  │     │                      │(Community)  │
+└────────────┘     └────► [ Community Area]◄────────────┘
+                            Role: "CommunityAdmin, CommunityMember"
+```
 
 ---
 

@@ -218,10 +218,10 @@ dotnet run --project LitraLand.Web
 ## 🧑‍💻 Author
 
 **Mahmoud Mohamed Abd Elaziz**
-.NET Developer
-📍 Cairo, Egypt
-📬 [mahmoud.abdalaziz@outlook.com](mailto:mahmoud.abdalaziz@outlook.com)
-[🔗 LinkedIn](https://www.linkedin.com/in/mahmoud-mohamed-abd/) | [💻 GitHub](https://github.com/M7-TROJAN)
+- .NET Developer
+- 📍 Cairo, Egypt
+- 📬 [mahmoud.abdalaziz@outlook.com](mailto:mahmoud.abdalaziz@outlook.com)
+- [🔗 LinkedIn](https://www.linkedin.com/in/mahmoud-mohamed-abd/) | [💻 GitHub](https://github.com/M7-TROJAN)
 
 ---
 

@@ -6,91 +6,94 @@ LitraLand is a robust and fully-featured web platform designed for managing libr
 
 ## 🚀 Project Highlights
 
-- 🔐 Role-based access control (Admin / Reader)
-- 📖 Explore books by author, category, or keywords
-- 🧾 Borrowing system with due dates and penalties
-- ✍️ Reviews & ratings for books
-- 🧑‍💼 Admin dashboard with full CRUD on:
-  - Books
-  - Authors
-  - Categories
-  - Publishers
-  - Users
-- 🛠️ Clean layered architecture with separation of concerns
-- 🧹 Form validation & anti-spam handling
-- 🌐 Localization-ready (Arabic + English support)
+* 🔐 Role-based access control (Admin (library staff) / Community user)
+* 📖 Explore books by author, category, or keywords
+* 🧾 Borrowing system with due dates and penalties
+* ✍️ Reviews & ratings for books
+* 🧑‍💼 Admin dashboard with full CRUD on:
+
+  * Books
+  * Authors
+  * Categories
+  * Publishers
+  * Users
+* 🛠️ Clean layered architecture with separation of concerns
+* 🧹 Form validation & anti-spam handling
+* ☑️ External login support (Google / Facebook Auth)
+* ⏱️ Performance-optimized for high user loads
 
 ---
 
 ## 🧠 Why LitraLand?
 
 This is not just a CRUD system. LitraLand was built as a real-world project to demonstrate:
-- ✅ Clean, scalable architecture in ASP.NET Core MVC
-- ✅ Real separation between Core, Infrastructure, and Presentation
-- ✅ Handling of real-world problems: validation, authorization, extensibility
-- ✅ Ready-to-extend system for schools, communities, or commercial libraries
+
+* ✅ Clean, scalable architecture in ASP.NET Core MVC
+* ✅ Real separation between Core, Infrastructure, and Presentation
+* ✅ Handling of real-world problems: validation, authorization, extensibility
+* ✅ Ready-to-extend system for schools, communities, or commercial libraries
 
 ---
 
 ## 🏗️ Architecture Overview
 
 ```
-
 LitraLand/
 ├── LitraLand.Web/           → MVC presentation layer (views, controllers)
 ├── LitraLand.Core/          → Entities, ViewModels, interfaces
 ├── LitraLand.Services/      → Business logic (implementations of I...Service)
 ├── LitraLand.Infrastructure/→ EF Core, Repositories, DbContext
 └── Shared/                  → Extensions, Helpers, Custom logic
-
-````
+```
 
 🧠 Patterns Used:
-- Repository Pattern + Unit of Work
-- AutoMapper for ViewModel mapping
-- FluentValidation for model validation
-- Extension methods for cleaner code
-- Dependency Injection throughout
+
+* Repository Pattern + Unit of Work
+* AutoMapper for ViewModel mapping
+* FluentValidation for model validation
+* Extension methods for cleaner code
+* Dependency Injection throughout
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer       | Tech |
-|-------------|------|
-| Backend     | ASP.NET Core MVC 7.0 |
-| Database    | SQL Server |
-| ORM         | Entity Framework Core |
-| Frontend    | Razor Views, Bootstrap 5, jQuery |
-| Auth        | ASP.NET Identity |
-| Others      | AutoMapper, FluentValidation, Layered Architecture |
+| Layer    | Tech                                               |
+| -------- | -------------------------------------------------- |
+| Backend  | ASP.NET Core MVC 7.0                               |
+| Database | SQL Server                                         |
+| ORM      | Entity Framework Core                              |
+| Frontend | Razor Views, Bootstrap 5, jQuery                   |
+| Auth     | ASP.NET Identity + Google/Facebook OAuth           |
+| Others   | AutoMapper, FluentValidation, Layered Architecture |
 
 ---
 
 ## 🧪 Features in Detail
 
 ### 🔹 User
-- View all available books
-- Filter/search by keyword, author, or category
-- Borrow/return books (with automatic tracking)
-- Leave reviews, rate books
-- Edit profile and track borrow history
+
+* View all available books
+* Filter/search by keyword, author, or category
+* Borrow/return books (with automatic tracking)
+* Leave reviews, rate books
+* Edit profile and track borrow history
 
 ### 🔸 Admin
-- Full dashboard to manage:
-  - Books, authors, categories, publishers
-  - Users: lock/unlock, delete, assign roles
-- Access logs and activity tracking
-- Validate reviews, moderate content
-- Export data (CSV/PDF support ready for plug-in)
+
+* Full dashboard to manage:
+
+  * Books, authors, categories, publishers
+  * Users: lock/unlock, delete, assign roles
+* Access logs and activity tracking
+* Validate reviews, moderate content
+* Export data (CSV/PDF support ready for plug-in)
 
 ---
 
-## 🖼 UI Sample (Optional — Replace with screenshots)
+## 🗆 UI Demo Video
 
-> Add screenshots like:
-> ![Homepage Screenshot](screenshots/homepage.png)
-> ![Admin Panel](screenshots/admin-dashboard.png)
+> [Watch on YouTube](https://www.youtube.com/watch?v=WQNnlcWqXuE&feature=youtu.be)
 
 ---
 
@@ -101,7 +104,7 @@ LitraLand/
 ```bash
 git clone https://github.com/M7-TROJAN/LitraLand.git
 cd LitraLand
-````
+```
 
 ### 2️⃣ Configure the database
 
@@ -140,7 +143,7 @@ dotnet run --project LitraLand.Web
 | Admin  | [admin@litra.com](mailto:admin@litra.com)   | Admin\@123  |
 | Reader | [reader@litra.com](mailto:reader@litra.com) | Reader\@123 |
 
-🛑 You can register new users and assign roles from the admin panel.
+⛑️ You can register new users and assign roles from the admin panel.
 
 ---
 
@@ -151,6 +154,8 @@ dotnet run --project LitraLand.Web
 * ✅ Validations with FluentValidation (not just DataAnnotations)
 * ✅ Extensible and ready for deployment
 * ✅ Focus on maintainability and code readability
+* ✅ Supports external logins (OAuth2)
+* ✅ Optimized performance for high traffic scenarios
 
 ---
 
@@ -167,3 +172,4 @@ dotnet run --project LitraLand.Web
 ## 📝 License
 
 Licensed under the MIT License – feel free to use, copy, and improve the code.
+

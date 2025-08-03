@@ -123,18 +123,26 @@ LitraLand distinguishes between two types of users, each with their own login po
 ---
 
 ```
-                    ┌────────────────────┐
-                    │   Login Page A     │
-                    │  (Library Staff)   │
-                    └────────┬───────────┘
-                             ↓
-                    [ Admin Dashboard ]
-                             ↑
-┌────────────┐     Role: "SuperAdmin, LibraryAdmin, Archive, Reception"      ┌─────────────┐
-│ Register   │◄────┐                      │ Login Page B│
-│ Community  │     │                      │(Community)  │
-└────────────┘     └────► [ Community Area]◄────────────┘
-                            Role: "CommunityAdmin, CommunityMember"
+                    ┌──────────────────────┐
+                    │     Login Page A     │
+                    │   (Library Staff)    │
+                    └─────────┬────────────┘
+                              ↓
+                    ┌──────────────────────┐
+                    │   Admin Dashboard     │
+                    └─────────▲────────────┘
+              Roles: SuperAdmin, LibraryAdmin, Archive, Reception
+
+┌────────────────┐                                 ┌────────────────────┐
+│  Register Page │◄────────┐              ┌───────►│    Login Page B    │
+│   (Community)  │         │              │        │   (Community)      │
+└────────────────┘         │              │        └─────────┬──────────┘
+                           └──────────────┴──────────────────┘
+                                         ↓
+                          ┌────────────────────────────┐
+                          │     Community Area         │
+                          └────────────▲───────────────┘
+                 Roles: CommunityAdmin, CommunityMember
 ```
 
 ---
